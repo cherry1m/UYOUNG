@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  provider: ^6.0.5
+  shared_preferences: ^2.3.2
 
 dev_dependencies:
   flutter_test:
@@ -20,8 +22,9 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-fonts:
-  - family: MemomentKkukkkuk
-    fonts:
-      - asset: assets/fonts/MemomentKkukkkuk.ttf
+  assets:
+    - assets/images/
+  fonts:
+    - family: memomentKkukkkuk
+      fonts:
+        - asset: assets/fonts/memomentKkukkkuk.ttf
