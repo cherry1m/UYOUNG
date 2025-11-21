@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/pages/memory/memory_card.dart';
-import 'package:uyoung/src/view/pages/memory/memory_datail_page.dart';
+import 'package:uyoung/src/view/pages/memory/memory_detail_page.dart';
+import 'package:uyoung/src/view/pages/memory/memory_search_page.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 
 class MemoryMainPage extends StatefulWidget {
@@ -253,19 +254,28 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
   // MARK: - 화면 전체 UI
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<MemoryViewModel>();
+
     return Scaffold(
       backgroundColor: Colors.white,
 
-      // MARK: - 상단 AppBar
       appBar: AppBar(
         title: Text("기억섬", style: AppFontStyle.M_20),
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => MemorySearchPage(items: vm.items),
+                ),
+              );
+            },
             icon: Image.asset('assets/images/search.png', width: 24),
           ),
+
           IconButton(
             onPressed: () {},
             icon: Image.asset('assets/images/chat.png', width: 55),
@@ -273,7 +283,6 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
           const SizedBox(width: 12),
         ],
       ),
-
       // MARK: - 기억섬 리스트 그리드 뷰
       body: Consumer<MemoryViewModel>(
         builder: (context, vm, _) {
@@ -321,7 +330,7 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                MemoryDatailPage(item: vm.items[index]),
+                                MemoryDetailPage(item: vm.items[index]),
                           ),
                         );
                       },
