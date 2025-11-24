@@ -4,6 +4,7 @@ import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/src/view/pages/memory/album_memory_page.dart';
 import 'package:uyoung/src/view/pages/memory/all_memory_page.dart';
 import 'package:uyoung/src/view/pages/memory/date_memory_page.dart';
+import 'package:uyoung/src/view/pages/memory/member_inquiry_page.dart';
 
 import 'package:uyoung/src/view/pages/memory/timeline_memory_page.dart';
 
@@ -30,8 +31,23 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> {
           ? AppBar(
               backgroundColor: Colors.white,
               elevation: 0,
+              centerTitle: true, // 제목 중앙 유지
               title: Text(widget.item.title, style: AppFontStyle.M_20),
-              centerTitle: true,
+
+              actions: [
+                IconButton(
+                  onPressed: () => MemberInquiryPage(),
+                  icon: Image.asset(
+                    'assets/images/menu.png',
+                    width: 22,
+                    height: 22,
+                  ),
+                ),
+              ],
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
             )
           : null,
 

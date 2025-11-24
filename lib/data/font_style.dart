@@ -8,6 +8,13 @@ class AppFontStyle {
     height: 1.0,
   );
 
+  static TextStyle M_15 = TextStyle(
+    fontFamily: 'memomentKkukkkuk',
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    height: 1.0,
+  );
+
   static TextStyle M_16 = TextStyle(
     fontFamily: 'memomentKkukkkuk',
     fontSize: 16,
