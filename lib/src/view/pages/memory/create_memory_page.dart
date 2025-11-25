@@ -16,13 +16,17 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
   final TextEditingController _titleController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
-  // MARK: - Init, ImgePicker
+  // MARK: 선택된 멤버 목록
+  List<String> selectedMembers = [];
+
+  // MARK: Init
   @override
   void initState() {
     super.initState();
     _titleController.addListener(() => setState(() {}));
   }
 
+  // MARK: 이미지 선택
   Future<void> _pickImage() async {
     debugPrint("gallery button clicked");
 
@@ -59,7 +63,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  // MARK: - 해더
+  // MARK: 상단 섹션
   Widget _headerSection(BuildContext context) {
     return Stack(
       children: [
@@ -68,13 +72,11 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
           height: 300,
           color: const Color(0xFFE6E6E6),
         ),
-
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 0,
           child: _headerBar(context),
         ),
-
         Positioned(bottom: 16, right: 16, child: _galleryButton()),
       ],
     );
@@ -110,7 +112,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  // MARK: - 기억섬 내용 섹션
+  // MARK: 내용 섹션
   Widget _contentSection(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -139,36 +141,54 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  // MARK: - 멤버 프로필 섹션
+  // MARK: 멤버 프로필 UI (가로 스크롤 + 선택 반영)
   Widget _memberProfiles() {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         GestureDetector(
-          onTap: () {
-            Navigator.push(
+          onTap: () async {
+            final result = await Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => SelectMemberPage()),
+              MaterialPageRoute(builder: (_) => const SelectMemberPage()),
             );
+
+            if (result != null && result is List<String>) {
+              setState(() {
+                selectedMembers = result;
+              });
+            }
           },
           child: _addProfileButton(),
         ),
         const SizedBox(width: 16),
-        _selectedProfile("최보빈"),
-        const SizedBox(width: 16),
-        _selectedProfile("한승하"),
+
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: selectedMembers
+                  .map(
+                    (name) => Padding(
+                      padding: const EdgeInsets.only(right: 16),
+                      child: _selectedProfile(name),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  // MARK: - 기억섬 이름 입력 필드
+  // MARK: 기억섬 이름 입력
   Widget _memoryNameField() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text("기억섬 이름", style: AppFontStyle.M_14),
         const SizedBox(height: 8),
-
         Stack(
           children: [
             Positioned.fill(
@@ -182,7 +202,6 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
                 ),
               ),
             ),
-
             Row(
               children: [
                 Expanded(
@@ -198,7 +217,6 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
                     ),
                   ),
                 ),
-
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
@@ -214,37 +232,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  // MARK: - 추가 프로필 버튼
-  Widget _addProfileButton() {
-    return Container(
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
-      ),
-      child: const Icon(Icons.add, color: Color(0xFF4880ED), size: 28),
-    );
-  }
-
-  // MARK: - 갤러리 버튼
-  Widget _galleryButton() {
-    return GestureDetector(
-      onTap: _pickImage,
-      child: Container(
-        width: 32,
-        height: 32,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: Colors.black.withOpacity(0.6),
-        ),
-        child: const Icon(Icons.photo_outlined, color: Colors.white, size: 20),
-      ),
-    );
-  }
-
-  // MARK: - 확인 버튼
+  // MARK: 추가 버튼
   Widget _confirmButton() {
     return SizedBox(
       width: double.infinity,
@@ -265,7 +253,37 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  // MARK: - 선택된 프로필 UI
+  // MARK: 프로필 추가 버튼
+  Widget _addProfileButton() {
+    return Container(
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(color: const Color(0xFFF0F0F0), width: 1),
+      ),
+      child: const Icon(Icons.add, color: Color(0xFF4880ED), size: 28),
+    );
+  }
+
+  // MARK: 갤러리 버튼
+  Widget _galleryButton() {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        width: 32,
+        height: 32,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black.withOpacity(0.6),
+        ),
+        child: const Icon(Icons.photo_outlined, color: Colors.white, size: 20),
+      ),
+    );
+  }
+
+  // MARK: 선택된 멤버 UI
   Widget _selectedProfile(String name) {
     return Column(
       children: [
@@ -283,15 +301,18 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
             Positioned(
               top: -2,
               right: -2,
-              child: Container(
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: const Color(0xFF6EA8EB),
-                  border: Border.all(color: Colors.white, width: 2),
+              child: GestureDetector(
+                onTap: () => setState(() => selectedMembers.remove(name)),
+                child: Container(
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: const Color(0xFF6EA8EB),
+                    border: Border.all(color: Colors.white, width: 2),
+                  ),
+                  child: const Icon(Icons.close, size: 14, color: Colors.white),
                 ),
-                child: const Icon(Icons.close, size: 14, color: Colors.white),
               ),
             ),
           ],

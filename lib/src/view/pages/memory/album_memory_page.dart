@@ -159,7 +159,7 @@ class _AlbumMemoryPageState extends State<AlbumMemoryPage> {
     );
   }
 
-  // MARK: - Album Grid
+  // MARK: - 앨범 그리드
   Widget _albumGrid() {
     return GridView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
@@ -174,7 +174,7 @@ class _AlbumMemoryPageState extends State<AlbumMemoryPage> {
     );
   }
 
-  // MARK: - Album Card
+  // MARK: - 앨범 카드
   Widget _albumItem(int index) {
     final item = albums[index];
     final cardKey = GlobalKey();
@@ -241,7 +241,7 @@ class _AlbumMemoryPageState extends State<AlbumMemoryPage> {
     );
   }
 
-  // MARK: - Rename Logic
+  // MARK: - 이름 변경 로직
   void _renameAlbum(int index, String text) {
     setState(() {
       albums[index]["title"] = text.trim();
