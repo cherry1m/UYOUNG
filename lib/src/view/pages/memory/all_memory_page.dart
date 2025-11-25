@@ -10,8 +10,54 @@ class AllMemoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // MARK: - 더미 게시물 리스트
-    final List<MemoryPostModel> dummyPosts = List.generate(
+    final List<MemoryPostModel> dummyPosts = _mockPosts();
+
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: _buildBody(dummyPosts),
+    );
+  }
+
+  // MARK: 바디 UI 구성
+  Widget _buildBody(List<MemoryPostModel> posts) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(child: _buildDateLabel()),
+          const SizedBox(height: 18),
+
+          // MARK: 게시물 리스트 영역
+          ListView.builder(
+            itemCount: posts.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (_, i) => MemoryPostItem(post: posts[i]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // MARK: 날짜 라벨 UI
+  Widget _buildDateLabel() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0xFF6EA8EB), width: 1),
+      ),
+      child: Text(
+        "2025년 8월 14일 화요일",
+        style: AppFontStyle.M_14.copyWith(color: const Color(0xFF6EA8EB)),
+      ),
+    );
+  }
+
+  // MARK: 더미 데이터 생성
+  List<MemoryPostModel> _mockPosts() {
+    return List.generate(
       10,
       (i) => MemoryPostModel(
         name: i % 2 == 0 ? "윤채림" : "조성은",
@@ -19,8 +65,6 @@ class AllMemoryPage extends StatelessWidget {
             ? "assets/images/profile1.png"
             : "assets/images/profile2.png",
         createdAt: "${i + 1}분 전",
-
-        // MARK: - 홀/짝 이미지 변경
         images: i % 2 == 0
             ? [
                 "assets/images/sample1.png",
@@ -33,44 +77,6 @@ class AllMemoryPage extends StatelessWidget {
                 "assets/images/sample6.png",
                 "assets/images/sample5.png",
               ],
-      ),
-    );
-
-    return Scaffold(
-      backgroundColor: Colors.white,
-
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(child: _date()),
-            const SizedBox(height: 18),
-
-            // MARK: - 게시물 리스트
-            ListView.builder(
-              itemCount: dummyPosts.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (_, i) => MemoryPostItem(post: dummyPosts[i]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // MARK: - 날짜 라벨 UI
-  Widget _date() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF6EA8EB), width: 1),
-      ),
-      child: Text(
-        "2025년 8월 14일 화요일",
-        style: AppFontStyle.M_14.copyWith(color: const Color(0xFF6EA8EB)),
       ),
     );
   }

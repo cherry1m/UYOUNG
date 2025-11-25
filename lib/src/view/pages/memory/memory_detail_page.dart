@@ -25,7 +25,7 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> {
 
   // MARK: - 이미지 선택
   Future<void> _pickImage() async {
-    debugPrint(">>> FAB CLICKED");
+    debugPrint("FAB CLICKED");
 
     // iOS 시뮬레이터는 갤러리 동작 불가
     if (!kIsWeb && Platform.isIOS && !Platform.isAndroid) {
