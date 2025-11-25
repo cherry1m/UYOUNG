@@ -35,7 +35,7 @@ class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MemoryCommonAppBar(title: widget.item.title),
+      appBar: MemoryCommonAppBar(title: widget.item.title, post: null),
 
       // MARK: 화면 전체 레이아웃
       body: Column(

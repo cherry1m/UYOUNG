@@ -157,7 +157,7 @@ class _AlbumMemoryPageState extends State<AlbumMemoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MemoryCommonAppBar(title: widget.item.title),
+      appBar: MemoryCommonAppBar(title: widget.item.title, post: null),
 
       body: GridView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),

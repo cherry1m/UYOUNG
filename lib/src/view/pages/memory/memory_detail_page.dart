@@ -36,7 +36,8 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> {
 
               actions: [
                 IconButton(
-                  onPressed: () => MemberInquiryPage(),
+                  onPressed: () =>
+                      MemberInquiryPage(albumName: '', albumImage: ''),
                   icon: Image.asset(
                     'assets/images/menu.png',
                     width: 22,

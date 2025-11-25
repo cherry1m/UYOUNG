@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/model/memory/memory_post_model.dart';
+import 'package:uyoung/src/view/pages/memory/member_inquiry_page.dart';
 
 class MemoryCommonAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
+  final MemoryPostModel? post;
 
-  const MemoryCommonAppBar({super.key, required this.title});
+  const MemoryCommonAppBar({
+    super.key,
+    required this.title,
+    required this.post,
+  });
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -32,7 +39,17 @@ class MemoryCommonAppBar extends StatelessWidget
           icon: Image.asset('assets/images/check.png', width: 18),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => MemberInquiryPage(
+                  albumName: post!.name,
+                  albumImage: post!.images[0],
+                ),
+              ),
+            );
+          },
           icon: Image.asset('assets/images/menu.png', width: 18),
         ),
         const SizedBox(width: 4),
