@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/common/memory/common_confirm_dialog.dart';
+import 'package:uyoung/src/view/pages/memory/create_memory_page.dart';
 import 'package:uyoung/src/view/pages/memory/memory_card.dart';
 import 'package:uyoung/src/view/pages/memory/memory_detail_page.dart';
 import 'package:uyoung/src/view/pages/memory/memory_search_page.dart';
@@ -18,13 +19,13 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
   // MARK: - Overlay 관련 변수 롱프레스 시 뜨는 모달
   OverlayEntry? _overlayEntry;
 
-  // MARK: - 선택된 카드 인덱스
+  // - 선택된 카드 인덱스
   int? selectedIndex;
 
   @override
   void initState() {
     super.initState();
-    // MARK: - 화면 진입 시 저장된 기억섬 데이터 로드
+    // 화면 진입 시 저장된 기억섬 데이터 로드
     // Future.microtask(() => context.read<MemoryViewModel>().load());
   }
 
@@ -202,7 +203,12 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
             icon: Image.asset('assets/images/search.png', width: 24),
           ),
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateMemoryPage()),
+              );
+            },
             icon: Image.asset('assets/images/chat.png', width: 55),
           ),
           const SizedBox(width: 12),
