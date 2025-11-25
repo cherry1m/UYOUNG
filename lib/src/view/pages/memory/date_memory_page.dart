@@ -12,7 +12,7 @@ class DateMemoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MemoryCommonAppBar(title: item.title, post: null),
+      appBar: MemoryCommonAppBar(title: item.title),
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
