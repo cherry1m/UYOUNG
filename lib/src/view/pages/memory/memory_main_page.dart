@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/src/view/common/memory/common_confirm_dialog.dart';
 import 'package:uyoung/src/view/pages/memory/memory_card.dart';
 import 'package:uyoung/src/view/pages/memory/memory_detail_page.dart';
 import 'package:uyoung/src/view/pages/memory/memory_search_page.dart';
@@ -24,7 +25,7 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
   void initState() {
     super.initState();
     // MARK: - 화면 진입 시 저장된 기억섬 데이터 로드
-    Future.microtask(() => context.read<MemoryViewModel>().load());
+    // Future.microtask(() => context.read<MemoryViewModel>().load());
   }
 
   @override
@@ -48,7 +49,7 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
     selectedIndex = index;
     setState(() {});
 
-    ///카드 위치, 사이즈 계산
+    /// 카드 위치, 사이즈 계산
     final render = cardKey.currentContext!.findRenderObject() as RenderBox;
     final pos = render.localToGlobal(Offset.zero);
     final size = render.size;
@@ -108,16 +109,18 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
             vm.startEditing(index);
             _removeOverlay();
           }),
+          const Divider(height: 1),
 
           _modalItem("assets/images/black_favorites.png", "즐겨찾기", () {
             vm.toggleFavorite(index);
             _removeOverlay();
           }),
+          const Divider(height: 1),
 
           _modalItem(
             item.isNotificationOn
-                ? "assets/images/bell_on.png"
-                : "assets/images/bell_off.png",
+                ? "assets/images/alert.png"
+                : "assets/images/alert.png",
             item.isNotificationOn ? "알람 끄기" : "알람 켜기",
             () {
               vm.toggleAlarm(index);
@@ -165,89 +168,13 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
   void _showExitDialog(int index) {
     final vm = context.read<MemoryViewModel>();
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-
-          contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 10),
-          title: Container(
-            width: 330,
-            child: Column(
-              children: [
-                const Image(
-                  image: AssetImage('assets/images/warning.png'),
-                  width: 50,
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  "정말 나가시겠어요?",
-                  style: AppFontStyle.M_22,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "나가면 되돌릴 수 없습니다.",
-                  style: AppFontStyle.M_20.copyWith(color: Color(0xFF707070)),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-
-          /// 버튼 영역
-          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          actions: [
-            Row(
-              children: [
-                /// 취소 버튼
-                Expanded(
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: const Color(0xFFF1F1F5),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      "아니요",
-                      style: AppFontStyle.M_18.copyWith(color: Colors.black),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-
-                /// 나가기 버튼
-                Expanded(
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      backgroundColor: Color(0xFF6EA8EB),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: () {
-                      vm.removeItem(index);
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "네, 나갈게요",
-                      style: AppFontStyle.M_18.copyWith(color: Colors.white),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        );
-      },
+    showCommonConfirmDialog(
+      context,
+      title: "정말 나가시겠어요?",
+      subtitle: "나가면 되돌릴 수 없습니다.",
+      confirmLabel: "네, 나갈게요",
+      cancelLabel: "아니요",
+      onConfirm: () => vm.removeItem(index),
     );
   }
 
@@ -258,7 +185,6 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         title: Text("기억섬", style: AppFontStyle.M_20),
         backgroundColor: Colors.white,
@@ -275,7 +201,6 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
             },
             icon: Image.asset('assets/images/search.png', width: 24),
           ),
-
           IconButton(
             onPressed: () {},
             icon: Image.asset('assets/images/chat.png', width: 55),
@@ -283,10 +208,12 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
           const SizedBox(width: 12),
         ],
       ),
-      // MARK: - 기억섬 리스트 그리드 뷰
       body: Consumer<MemoryViewModel>(
         builder: (context, vm, _) {
-          if (!vm.isLoaded) return const SizedBox();
+          if (!vm.isLoaded) {
+            // 로딩 중일 땐 비어 보이지 않게 간단 로딩 표시
+            return const Center(child: CircularProgressIndicator());
+          }
 
           return GridView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
@@ -317,14 +244,10 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                       imagePath: vm.items[index].imagePath,
                       isEditing: vm.editingIndex == index,
                       controller: vm.textController,
-
-                      /// 엔터 입력 시 이름 저장
                       onEditComplete: () {
                         vm.renameItem(index, vm.textController.text);
                         vm.stopEditing();
                       },
-
-                      /// 카드 클릭 시 상세 페이지 이동
                       onTap: () {
                         Navigator.push(
                           context,
@@ -334,8 +257,6 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                           ),
                         );
                       },
-
-                      /// 카드 롱프레스 시 모달 표시
                       onLongPress: () => _showCardModal(context, key, index),
                     ),
                   ),

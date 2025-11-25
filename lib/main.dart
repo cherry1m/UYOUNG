@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 
-import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
-
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // 추가!
+  await Future.delayed(Duration(milliseconds: 300)); // 안전 대기 (필요)
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => MemoryViewModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => MemoryViewModel()..load()),
+      ],
       child: const UyoungApp(),
     ),
   );
@@ -18,9 +21,9 @@ class UyoungApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const MemoryMainPage(),
+      home: MemoryMainPage(),
     );
   }
 }
