@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/src/view/common/memory/common_memory_appbar.dart';
+import 'package:uyoung/src/view/pages/memory/photo_detail_page.dart'; // 추가
 
 class DateMemoryPage extends StatelessWidget {
   final MemoryItem item;
@@ -10,6 +11,13 @@ class DateMemoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 더미 이미지 리스트
+    final List<String> photoList = [
+      "assets/images/sample8.png",
+      "assets/images/sample9.png",
+      "assets/images/sample10.png",
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: MemoryCommonAppBar(title: item.title),
@@ -26,19 +34,33 @@ class DateMemoryPage extends StatelessWidget {
 
             // MARK: - 3열 Grid
             GridView.builder(
-              itemCount: 9, // 총 30칸
+              itemCount: 9,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3, // 한 줄에 3개
+                crossAxisCount: 3,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
                 childAspectRatio: 1,
               ),
-              itemBuilder: (_, i) {
-                if (i == 0) return _photoItem("assets/images/sample8.png");
-                if (i == 1) return _photoItem("assets/images/sample9.png");
-                if (i == 2) return _photoItem("assets/images/sample10.png");
+              itemBuilder: (_, index) {
+                // 사진 존재하는 경우 → 클릭 가능
+                if (index < photoList.length) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              PhotoDetailPage(imagePath: photoList[index]),
+                        ),
+                      );
+                    },
+                    child: _photoItem(photoList[index]),
+                  );
+                }
+
+                // 빈 박스
                 return _emptyBox();
               },
             ),

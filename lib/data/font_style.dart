@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AppFontStyle {
+  static TextStyle M_12 = TextStyle(
+    fontFamily: 'memomentKkukkkuk',
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    height: 1.0,
+  );
+
   static TextStyle M_14 = TextStyle(
     fontFamily: 'memomentKkukkkuk',
     fontSize: 14,
