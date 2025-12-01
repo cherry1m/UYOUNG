@@ -3,7 +3,9 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
-import 'package:uyoung/data/model/calendar/memory_model.dart';
+import 'package:provider/provider.dart';
+
+import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/view/pages/calendar/widget/memory_drawer.dart';
 
 import 'widget/calendar_day_cell.dart';
@@ -21,29 +23,20 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  final List<MemoryIsland> _memoryIslands = [
-    MemoryIsland('우.정.포.에.버', Colors.amber, true),
-    MemoryIsland('오키나와 팟✈️', Colors.blue, false),
-    MemoryIsland('전국 카페투어☕️', Colors.brown, false),
-    MemoryIsland('인덕대 술모임🍺', Colors.green, true),
-    MemoryIsland('한승하', Colors.grey, false),
-    MemoryIsland('최보빈', Colors.grey, false),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final calendarVM = context.watch<CalendarViewModel>();
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
+
       endDrawer: MemoryIslandDrawer(
-        islands: _memoryIslands,
+        islands: calendarVM.islands,
         onChanged: (index, value) {
-          setState(() {
-            _memoryIslands[index] = _memoryIslands[index].copyWith(
-              isSelected: value,
-            );
-          });
+          calendarVM.updateIslandSelection(index, value);
         },
       ),
+
       body: SafeArea(
         child: Column(
           children: [
@@ -63,31 +56,32 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
     );
   }
 
+  // -------------------------------
+  //  상단 앱바
+  // -------------------------------
   Widget _buildTopAppBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 4),
       child: Row(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 8),
-            child: Text('캘린더', style: AppFontStyle.M_20),
-          ),
+          const SizedBox(width: 8),
+          Text('캘린더', style: AppFontStyle.M_20),
 
           const Spacer(),
 
+          // 필터 버튼
           Builder(
             builder: (context) {
               return IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                onPressed: () {
-                  Scaffold.of(context).openEndDrawer();
-                },
+                onPressed: () => Scaffold.of(context).openEndDrawer(),
                 icon: ImageData(path: ImagePath.filter, width: 44, height: 44),
               );
             },
           ),
 
+          // 오늘 버튼
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -104,6 +98,9 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
     );
   }
 
+  // -------------------------------
+  //  캘린더 위젯
+  // -------------------------------
   Widget _buildCalendar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -117,15 +114,18 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
         rowHeight: 82,
         daysOfWeekVisible: false,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+
         onDaySelected: (selected, focused) {
           setState(() {
             _selectedDay = selected;
             _focusedDay = focused;
           });
         },
+
         onPageChanged: (focused) {
           setState(() => _focusedDay = focused);
         },
+
         calendarBuilders: CalendarBuilders(
           defaultBuilder: (context, day, focusedDay) {
             return CalendarDayCell(
@@ -157,6 +157,9 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
     );
   }
 
+  // -------------------------------
+  //  월/연도 선택 팝업
+  // -------------------------------
   void _openMonthPicker() {
     showDialog(
       context: context,
@@ -182,18 +185,14 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
                       IconButton(
                         icon: const Icon(Icons.arrow_left),
                         onPressed: () {
-                          setStateDialog(() {
-                            tempYear--;
-                          });
+                          setStateDialog(() => tempYear--);
                         },
                       ),
                       Text("$tempYear년", style: AppFontStyle.M_20),
                       IconButton(
                         icon: const Icon(Icons.arrow_right),
                         onPressed: () {
-                          setStateDialog(() {
-                            tempYear++;
-                          });
+                          setStateDialog(() => tempYear++);
                         },
                       ),
                     ],
@@ -201,7 +200,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
 
                   const SizedBox(height: 8),
 
-                  // 월 선택 그리드 (임시 선택만)
+                  // 월 선택 그리드
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -211,9 +210,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
 
                       return GestureDetector(
                         onTap: () {
-                          setStateDialog(() {
-                            tempMonth = month;
-                          });
+                          setStateDialog(() => tempMonth = month);
                         },
                         child: Container(
                           width: 60,
@@ -250,11 +247,9 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
 
                   const SizedBox(height: 16),
 
-                  // 하단 버튼 (취소, 확인)
+                  // 🔥 취소/확인 버튼
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // 취소 버튼
                       Expanded(
                         child: TextButton(
                           onPressed: () => Navigator.of(dialogContext).pop(),
@@ -266,15 +261,11 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
                           ),
                         ),
                       ),
-
-                      // 구분선
                       Container(
                         width: 1,
                         height: 30,
                         color: Colors.grey.shade300,
                       ),
-
-                      // 확인 버튼
                       Expanded(
                         child: TextButton(
                           onPressed: () {

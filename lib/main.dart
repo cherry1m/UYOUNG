@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/app.dart';
+import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -11,7 +12,10 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => MemoryViewModel())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => MemoryViewModel()),
+        ChangeNotifierProvider(create: (_) => CalendarViewModel()),
+      ],
       child: const UyoungRoot(),
     ),
   );
