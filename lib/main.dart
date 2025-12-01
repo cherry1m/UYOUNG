@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/app.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('ko_KR', null); // 🔥 이거 중요
+
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => MemoryViewModel())],
@@ -19,7 +24,14 @@ class UyoungRoot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const UyoungApp(), // 실제 앱 전체 구조
+      locale: const Locale('ko', 'KR'),
+      supportedLocales: const [Locale('ko', 'KR')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      home: const UyoungApp(),
     );
   }
 }

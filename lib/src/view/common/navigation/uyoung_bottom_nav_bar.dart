@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/image_data.dart';
 
 class UyoungBottomNavBar extends StatelessWidget {
@@ -16,9 +17,9 @@ class UyoungBottomNavBar extends StatelessWidget {
     return Container(
       height: 75,
       padding: const EdgeInsets.only(bottom: 20),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0xFFF0F0F0), width: 1.5)),
+        border: Border(top: BorderSide(color: AppColors.gray_03, width: 1.5)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
