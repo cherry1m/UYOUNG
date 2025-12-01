@@ -34,7 +34,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      drawer: MemoryIslandDrawer(
+      endDrawer: MemoryIslandDrawer(
         islands: _memoryIslands,
         onChanged: (index, value) {
           setState(() {
@@ -81,7 +81,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
                 onPressed: () {
-                  Scaffold.of(context).openDrawer();
+                  Scaffold.of(context).openEndDrawer();
                 },
                 icon: ImageData(path: ImagePath.filter, width: 44, height: 44),
               );
