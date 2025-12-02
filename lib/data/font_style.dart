@@ -1,73 +1,56 @@
 import 'package:flutter/material.dart';
 
 class AppFontStyle {
-  static TextStyle M_12 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 14,
+  static const String _family = 'memomentKkukkkuk';
+
+  // 공통 베이스 스타일
+  static TextStyle _base(double size) => TextStyle(
+    fontFamily: _family,
+    fontSize: size,
     fontWeight: FontWeight.w400,
     height: 1.0,
   );
 
-  static TextStyle M_14 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
+  // 테두리(Stroke)용 스타일
+  static TextStyle _stroke(double size) => _base(size).copyWith(
+    foreground: Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.2, // 디자인 시트에 Stroke 0.2
   );
 
-  static TextStyle M_15 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 15,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
+  // ───── Headline Font (H1 ~ H10) ─────
+  static final TextStyle H1 = _base(28); // Regular 28px
+  static final TextStyle H2 = _base(26); // Regular 26px
+  static final TextStyle H3 = _base(24); // Regular 24px
+  static final TextStyle H4 = _base(22); // Regular 22px
+  static final TextStyle H5 = _base(20); // Regular 20px
+  static final TextStyle H6 = _base(18); // Regular 18px
+  static final TextStyle H7 = _base(16); // Regular 16px
+  static final TextStyle H8 = _base(14); // Regular 14px
+  static final TextStyle H9 = _base(12); // Regular 12px
+  static final TextStyle H10 = _base(10); // Regular 10px
 
-  static TextStyle M_16 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 16,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
+  // ───── Stroke Font (S1 ~ S10) ─────
+  static final TextStyle S1 = _stroke(28);
+  static final TextStyle S2 = _stroke(26);
+  static final TextStyle S3 = _stroke(24);
+  static final TextStyle S4 = _stroke(22);
+  static final TextStyle S5 = _stroke(20);
+  static final TextStyle S6 = _stroke(18);
+  static final TextStyle S7 = _stroke(16);
+  static final TextStyle S8 = _stroke(14);
+  static final TextStyle S9 = _stroke(12);
+  static final TextStyle S10 = _stroke(10);
 
-  static TextStyle M_18 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 18,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
-
-  static TextStyle M_20 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 20,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
-
-  static TextStyle M_22 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 22,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
-
-  static TextStyle M_24 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 24,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
-
-  static TextStyle M_26 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 26,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
-
-  static TextStyle M_28 = TextStyle(
-    fontFamily: 'memomentKkukkkuk',
-    fontSize: 28,
-    fontWeight: FontWeight.w400,
-    height: 1.0,
-  );
+  // ───── 기존 M_XX 스타일을 alias로 매핑 ─────
+  static final TextStyle M_28 = H1;
+  static final TextStyle M_26 = H2;
+  static final TextStyle M_24 = H3;
+  static final TextStyle M_22 = H4;
+  static final TextStyle M_20 = H5;
+  static final TextStyle M_18 = H6;
+  static final TextStyle M_16 = H7;
+  static final TextStyle M_14 = H8;
+  static final TextStyle M_12 = H9;
+  static final TextStyle M_10 = H10;
 }
