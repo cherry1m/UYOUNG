@@ -17,6 +17,9 @@ dependencies:
   google_maps_flutter: ^2.6.0
   image_picker: ^1.2.1
   file_picker: ^10.3.7
+  table_calendar: ^3.0.9
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 
 class PhotoDetailPage extends StatelessWidget {
-  final String imagePath; // 전달받은 이미지 경로
+  final String imagePath;
 
-  const PhotoDetailPage({
-    super.key,
-    required this.imagePath, // 생성자에서 전달받음
-  });
+  PhotoDetailPage({super.key, required this.imagePath});
+
+  final double _popupWidth = 220;
 
   @override
   Widget build(BuildContext context) {
@@ -19,21 +18,18 @@ class PhotoDetailPage extends StatelessWidget {
     );
   }
 
-  // MARK: - 상단 앱바
+  // MARK: 상단 AppBar
   AppBar _appBar(BuildContext context) {
+    final GlobalKey moreKey = GlobalKey();
+
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
-
-      // 뒤로가기 버튼
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
         onPressed: () => Navigator.pop(context),
       ),
-
       centerTitle: true,
-
-      // 주소 + 날짜
       title: Column(
         children: [
           Text("서울특별시 월계 2동", style: AppFontStyle.M_18),
@@ -44,29 +40,22 @@ class PhotoDetailPage extends StatelessWidget {
           ),
         ],
       ),
-
-      // 다운로드 + 메뉴 버튼
       actions: [
-        GestureDetector(
-          onTap: () {
-            // 다운로드 로직
-          },
-          child: const Padding(
-            padding: EdgeInsets.only(right: 8),
-            child: Image(
-              image: AssetImage("assets/images/download.png"),
-              width: 42,
-            ),
+        Padding(
+          padding: const EdgeInsets.only(right: 8),
+          child: Image(
+            image: const AssetImage("assets/images/download.png"),
+            width: 42,
           ),
         ),
+
         GestureDetector(
-          onTap: () {
-            // 메뉴 호출 로직
-          },
+          key: moreKey,
+          onTap: () => _showMorePopup(context, moreKey),
           child: const Padding(
             padding: EdgeInsets.only(right: 14),
             child: Image(
-              image: AssetImage("assets/images/menu.png"),
+              image: AssetImage("assets/images/more.png"),
               width: 22,
             ),
           ),
@@ -75,34 +64,129 @@ class PhotoDetailPage extends StatelessWidget {
     );
   }
 
-  // MARK: - 본문 (사진 + 업로드 정보)
-  Widget _body(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          // MARK: 큰 사진 영역
-          GestureDetector(
-            onTap: () {
-              // 이미지 클릭 시 동작
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Container(
-                width: double.infinity,
-                height: 530, // 요청한 높이
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(imagePath), // ← 전달받은 경로 적용!
-                    fit: BoxFit.cover,
+  // MARK: 더보기 아이콘 클릭 시 호출되는 팝업
+  void _showMorePopup(BuildContext context, GlobalKey key) {
+    final RenderBox? renderBox =
+        key.currentContext?.findRenderObject() as RenderBox?;
+
+    if (renderBox == null) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    double left = position.dx - (_popupWidth - size.width);
+
+    if (left < 16) left = 16;
+    if (left + _popupWidth > screenWidth) {
+      left = screenWidth - _popupWidth - 16;
+    }
+
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.25),
+      barrierDismissible: true,
+      builder: (_) {
+        return Stack(
+          children: [
+            Positioned(
+              left: left,
+              top: position.dy,
+              //+ size.height,
+              child: Material(
+                color: Colors.transparent,
+                child: Container(
+                  width: _popupWidth,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _popupItem(
+                        imagePath: "assets/images/date.png",
+                        label: "날짜 및 시간 조정",
+                        onTap: () => Navigator.pop(context),
+                      ),
+
+                      _divider(),
+
+                      _popupItem(
+                        imagePath: "assets/images/location.png",
+                        label: "위치 조정",
+                        onTap: () => Navigator.pop(context),
+                      ),
+
+                      _divider(),
+
+                      _popupItem(
+                        imagePath: "assets/images/delete.png",
+                        label: "삭제하기",
+                        color: const Color(0xFFE34B32),
+                        onTap: () => Navigator.pop(context),
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
+          ],
+        );
+      },
+    );
+  }
+
+  // MARK: 팝업 아이템 UI
+  Widget _popupItem({
+    required String imagePath, // ← 아이콘 대신 이미지 경로
+    required String label,
+    required VoidCallback onTap,
+    Color color = Colors.black,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Image.asset(imagePath, width: 20, height: 20),
+            const SizedBox(width: 12),
+            Text(label, style: AppFontStyle.M_16.copyWith(color: color)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _divider() => Container(height: 1, color: const Color(0xFFE6E6E6));
+
+  // MARK: 본문 이미지 및 업로드 한 사용자 이름 출력
+  Widget _body(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: Container(
+              width: double.infinity,
+              height: 530,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage(imagePath),
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
           ),
-
           const SizedBox(height: 18),
-
-          // MARK: 업로드 정보
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Row(
@@ -116,14 +200,13 @@ class PhotoDetailPage extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 14),
         ],
       ),
     );
   }
 
-  // MARK: - 하단 입력창
+  // MARK: 하단 댓글 입력 필드
   Widget _bottomInputField() {
     return SafeArea(
       child: Container(
@@ -131,7 +214,6 @@ class PhotoDetailPage extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
         child: Row(
           children: [
-            // MARK: Rounded 별표 버튼
             Container(
               width: 45,
               height: 45,
@@ -147,10 +229,7 @@ class PhotoDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(width: 10),
-
-            // MARK: 둥근 입력 컨테이너
             Expanded(
               child: Container(
                 height: 48,
@@ -164,18 +243,20 @@ class PhotoDetailPage extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    // 이모지 아이콘
                     Image(
                       image: const AssetImage("assets/images/emo.png"),
                       width: 26,
                     ),
                     const SizedBox(width: 8),
-
-                    // 텍스트
                     Expanded(
-                      child: Text(
-                        "느끼는 감정을 적어 주세요!",
-                        style: AppFontStyle.M_16.copyWith(color: Colors.grey),
+                      child: TextField(
+                        decoration: InputDecoration.collapsed(
+                          hintText: "느끼는 감정을 적어 주세요!",
+                          hintStyle: AppFontStyle.M_16.copyWith(
+                            color: Colors.grey,
+                          ),
+                        ),
+                        style: AppFontStyle.M_16.copyWith(color: Colors.black),
                       ),
                     ),
                   ],
