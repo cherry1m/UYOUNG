@@ -64,7 +64,7 @@ class MemberInquiryPage extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: Image.asset(
-                      "assets/images/calendar.png",
+                      "assets/images/calendar_on.png",
                       width: 26,
                     ),
                     title: Text("캘린더", style: AppFontStyle.M_16),
