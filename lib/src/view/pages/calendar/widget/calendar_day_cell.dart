@@ -29,8 +29,7 @@ class CalendarDayCell extends StatelessWidget {
     final dayTextColor = isSelected ? Colors.white : baseTextColor;
 
     return Padding(
-      // 🔽 세로 패딩 줄이기 (4 -> 2)
-      padding: const EdgeInsets.symmetric(vertical: 1),
+      padding: const EdgeInsets.only(top: 10, bottom: 15),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -53,8 +52,8 @@ class CalendarDayCell extends StatelessWidget {
 
           // 아이콘
           Container(
-            width: 36,
-            height: 36,
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
               image: const DecorationImage(
@@ -63,8 +62,6 @@ class CalendarDayCell extends StatelessWidget {
               ),
             ),
           ),
-
-          const SizedBox(height: 2),
         ],
       ),
     );

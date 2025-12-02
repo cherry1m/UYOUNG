@@ -41,7 +41,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
         child: Column(
           children: [
             _buildTopAppBar(context),
-            const SizedBox(height: 12),
+            const SizedBox(height: 9),
             CalendarMonthHeader(
               month: _focusedDay,
               onTapArrow: _openMonthPicker,
@@ -111,7 +111,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
         locale: 'ko_KR',
         headerVisible: false,
         startingDayOfWeek: StartingDayOfWeek.sunday,
-        rowHeight: 82,
+        rowHeight: 95,
         daysOfWeekVisible: false,
         selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
 
