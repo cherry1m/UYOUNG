@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/src/view/pages/memory/member_inquiry_page.dart';
 
 class MemoryCommonAppBar extends StatelessWidget
     implements PreferredSizeWidget {
@@ -32,7 +33,12 @@ class MemoryCommonAppBar extends StatelessWidget
           icon: Image.asset('assets/images/check.png', width: 18),
         ),
         IconButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const MemberInquiryPage()),
+            );
+          },
           icon: Image.asset('assets/images/menu.png', width: 18),
         ),
         const SizedBox(width: 4),

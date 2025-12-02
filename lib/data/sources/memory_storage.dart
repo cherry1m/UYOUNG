@@ -25,14 +25,14 @@ class MemoryStorage {
     ),
     MemoryItem(
       id: "3",
-      title: "전국 카페투어☕",
+      title: "전국 카페 투어☕",
       isFavorite: false,
       isNotificationOn: true,
       imagePath: "assets/images/3.png",
     ),
     MemoryItem(
       id: "4",
-      title: "인덕대 솔모임🍹",
+      title: "인덕대 술 모임🍹",
       isFavorite: false,
       isNotificationOn: true,
       imagePath: "assets/images/4.png",
@@ -60,13 +60,20 @@ class MemoryStorage {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_key);
 
-    // 저장된 값이 없다면 기본 데이터를 저장한 후 반환한다.
-    if (jsonString == null) {
+    // 1) 저장된 값 자체가 없을 때
+    if (jsonString == null || jsonString.isEmpty) {
       await saveItems(defaultItems);
-      return defaultItems;
+      return List<MemoryItem>.from(defaultItems);
     }
 
+    // 2) 파싱했더니 리스트가 비어 있을 때 (빌드/클린 등으로 날아간 경우)
     final List data = jsonDecode(jsonString);
+    if (data.isEmpty) {
+      await saveItems(defaultItems);
+      return List<MemoryItem>.from(defaultItems);
+    }
+
+    // 3) 정상적으로 데이터가 있을 때
     return data.map((e) => MemoryItem.fromMap(e)).toList();
   }
 

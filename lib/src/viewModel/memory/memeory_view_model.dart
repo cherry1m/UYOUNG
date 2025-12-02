@@ -24,7 +24,14 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 초기 데이터 불러오기
   // 앱 실행 시 저장된 기억섬 데이터를 읽어와 리스트에 넣고 화면을 갱신한다.
   Future<void> load() async {
+    // 로딩 시작
+    isLoaded = false;
+    notifyListeners();
+
+    // SharedPreferences에서 데이터 로드 (비어 있으면 defaultItems 자동 세팅)
     items = await _storage.loadItems();
+
+    // 로딩 완료
     isLoaded = true;
     notifyListeners();
   }
@@ -47,6 +54,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 이름 변경 처리
   // 수정된 제목을 리스트에 반영하고 저장소에도 동일하게 반영한 뒤 화면을 갱신한다.
   void renameItem(int index, String newTitle) {
+    if (index < 0 || index >= items.length) return;
     items[index].title = newTitle;
     _storage.saveItems(items);
     notifyListeners();
@@ -55,6 +63,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 즐겨찾기 토글
   // 선택된 카드의 즐겨찾기 상태를 반전시키고 저장한다.
   void toggleFavorite(int index) {
+    if (index < 0 || index >= items.length) return;
     items[index].isFavorite = !items[index].isFavorite;
     _storage.saveItems(items);
     notifyListeners();
@@ -63,6 +72,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 알람 토글
   // 알림 설정 여부를 반전시키고 저장한 뒤 화면에 반영한다.
   void toggleAlarm(int index) {
+    if (index < 0 || index >= items.length) return;
     items[index].isNotificationOn = !items[index].isNotificationOn;
     _storage.saveItems(items);
     notifyListeners();
@@ -71,6 +81,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 기억섬 삭제
   // 특정 카드를 리스트에서 제거하고 저장소에 반영한다.
   void removeItem(int index) {
+    if (index < 0 || index >= items.length) return;
     items.removeAt(index);
     _storage.saveItems(items);
     notifyListeners();

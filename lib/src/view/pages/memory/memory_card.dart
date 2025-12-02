@@ -99,23 +99,31 @@ class MemoryCard extends StatelessWidget {
           const SizedBox(height: 8),
 
           // MARK: - 하단 제목 영역 (일반/수정 모드)
+          // MemoryCard 내부
           isEditing
-              ? TextField(
-                  // 이름 변경 중이면 TextField를 표시
-                  controller: controller,
-                  autofocus: true,
-                  style: AppFontStyle.M_18,
-
-                  // 엔터 입력 시 이름 수정 완료 처리
-                  onSubmitted: (_) => onEditComplete(),
+              ? Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: controller,
+                      autofocus: true,
+                      style: AppFontStyle.M_18,
+                      decoration: const InputDecoration(
+                        isDense: true,
+                        contentPadding: EdgeInsets.zero,
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (_) => onEditComplete(),
+                    ),
+                    const SizedBox(height: 2),
+                    Container(
+                      height: 2,
+                      width: double.infinity,
+                      color: Color(0xFF6EA8EB), // 메인 블루
+                    ),
+                  ],
                 )
-              : Text(
-                  // 수정 중이 아닐 때는 일반 텍스트로 제목 표시
-                  title,
-                  style: AppFontStyle.M_18,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
+              : Text(title, style: AppFontStyle.M_18),
         ],
       ),
     );
