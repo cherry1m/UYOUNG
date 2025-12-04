@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/calendar/memory_model.dart';
+import 'memory_island_detail_page.dart';
 
 class MemoryIslandSection extends StatelessWidget {
   final MemoryIsland island;
@@ -49,8 +50,8 @@ class MemoryIslandSection extends StatelessWidget {
 
           const SizedBox(height: 15),
 
-          // 🔹 사진 2장 + +N 박스
-          _MemoryPhotoRow(thumbPaths: thumbPaths),
+          // 🔹 사진 2장 + +N 박스 (탭 시 상세 페이지로 이동)
+          _MemoryPhotoRow(thumbPaths: thumbPaths, island: island, date: date),
         ],
       ),
     );
@@ -60,8 +61,22 @@ class MemoryIslandSection extends StatelessWidget {
 /// 가로로 1 ~ 2장 + +N 박스를 보여주는 Row
 class _MemoryPhotoRow extends StatelessWidget {
   final List<String> thumbPaths;
+  final MemoryIsland island;
+  final DateTime date;
 
-  const _MemoryPhotoRow({required this.thumbPaths});
+  const _MemoryPhotoRow({
+    required this.thumbPaths,
+    required this.island,
+    required this.date,
+  });
+
+  void _openDetailPage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => MemoryIslandDetailPage(island: island, date: date),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,16 +91,26 @@ class _MemoryPhotoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _PhotoCard(imagePath: firstThumb, angleDegrees: -3.98),
+          // ✅ 1번 카드 탭 → 상세 페이지
+          GestureDetector(
+            onTap: () => _openDetailPage(context),
+            child: _PhotoCard(imagePath: firstThumb, angleDegrees: -3.98),
+          ),
           const SizedBox(width: 15),
 
           if (secondThumb != null) ...[
-            _PhotoCard(imagePath: secondThumb, angleDegrees: 2.98),
+            GestureDetector(
+              onTap: () => _openDetailPage(context),
+              child: _PhotoCard(imagePath: secondThumb, angleDegrees: 2.98),
+            ),
             const SizedBox(width: 15),
           ],
 
           if (remainingCount > 0)
-            _MoreCountCard(count: remainingCount, angleDegrees: 2.99),
+            GestureDetector(
+              onTap: () => _openDetailPage(context),
+              child: _MoreCountCard(count: remainingCount, angleDegrees: 2.99),
+            ),
         ],
       ),
     );
@@ -148,7 +173,7 @@ class _MoreCountCard extends StatelessWidget {
               offset: Offset(2, 2),
               blurRadius: 6,
               spreadRadius: 0,
-              color: Color(0x2E000000), // #0000002E
+              color: Color(0x2E000000),
             ),
           ],
         ),

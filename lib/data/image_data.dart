@@ -39,6 +39,7 @@ class ImagePath {
   static String get sortUpDown => 'assets/images/sort_up_down.png';
   static String get chevronRight => 'assets/images/chevron_right.png';
   static String get hamburgerBar => 'assets/images/hamburger_bar.png';
+  static String get checkBlack => 'assets/images/check_black.png';
 
   // 바다노트(다이어리)
   static String get diaryOn => 'assets/images/diary_on.png';
