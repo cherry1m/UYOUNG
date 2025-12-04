@@ -31,7 +31,7 @@ class MemoryIslandSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🔹 섬 색상 + 이름 (가운데 정렬)
+          // 섬 색상 + 이름 (가운데 정렬)
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -50,7 +50,7 @@ class MemoryIslandSection extends StatelessWidget {
 
           const SizedBox(height: 15),
 
-          // 🔹 사진 2장 + +N 박스 (탭 시 상세 페이지로 이동)
+          // 사진 2장 + +N 박스 (탭 시 상세 페이지로 이동)
           _MemoryPhotoRow(thumbPaths: thumbPaths, island: island, date: date),
         ],
       ),

@@ -60,7 +60,7 @@ class _MemoryIslandManagePageState extends State<MemoryIslandManagePage> {
     );
   }
 
-  /// 🔹 상단 헤더 영역 (X 아이콘 / 타이틀 / 정렬 아이콘)
+  /// 상단 헤더 영역 (X 아이콘 / 타이틀 / 정렬 아이콘)
   Widget _buildTopBar(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 8, 5, 5),
@@ -96,7 +96,7 @@ class _MemoryIslandManagePageState extends State<MemoryIslandManagePage> {
     );
   }
 
-  /// 🔹 공통으로 쓰는 한 줄 UI (점 + 텍스트 + 오른쪽 아이콘슬롯)
+  /// 공통으로 쓰는 한 줄 UI (점 + 텍스트 + 오른쪽 아이콘슬롯)
   Widget _buildIslandRow({
     required MemoryIsland island,
     required Widget trailing,
@@ -163,7 +163,7 @@ class _MemoryIslandManagePageState extends State<MemoryIslandManagePage> {
     );
   }
 
-  /// 🔹 정렬 모드 리스트 (ReorderableListView)
+  /// 정렬 모드 리스트 (ReorderableListView)
   Widget _buildReorderableList(
     List<MemoryIsland> islands,
     CalendarViewModel calendarVM,

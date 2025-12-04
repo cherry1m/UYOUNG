@@ -94,7 +94,7 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
 
-      /// 🔹 선택 모드일 때만 하단 바 고정
+      /// 선택 모드일 때만 하단 바 고정
       bottomNavigationBar: _isSelectionMode
           ? Container(
               height: 86,
@@ -146,7 +146,7 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // 🔹 가운데: 섬 이름 + 날짜 (항상 정확히 중앙)
+                    // 가운데: 섬 이름 + 날짜 (항상 정확히 중앙)
                     Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -166,7 +166,7 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
                       ],
                     ),
 
-                    // 🔹 왼쪽: 뒤로가기 버튼
+                    // 왼쪽: 뒤로가기 버튼
                     Align(
                       alignment: Alignment.centerLeft,
                       child: IconButton(
@@ -178,7 +178,7 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
                       ),
                     ),
 
-                    // 🔹 오른쪽: 선택 아이콘 ↔ 취소 버튼
+                    // 오른쪽: 선택 아이콘 ↔ 취소 버튼
                     Align(
                       alignment: Alignment.centerRight,
                       child: _isSelectionMode
@@ -186,8 +186,7 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
                               onPressed: _toggleSelectionMode,
                               style: TextButton.styleFrom(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
+                                  horizontal: 18,
                                 ),
                                 minimumSize: Size.zero,
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -201,7 +200,9 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
                             )
                           : IconButton(
                               onPressed: _toggleSelectionMode,
-                              padding: const EdgeInsets.all(0),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                              ),
                               constraints: const BoxConstraints(),
                               icon: Image.asset(
                                 ImagePath.checkBlack,
