@@ -13,9 +13,13 @@ class MemoryBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final calendarVM = context.watch<CalendarViewModel>();
 
-    // 해당 날짜에 메모리가 있는 섬들만 추출
+    // Drawer에서 체크된 섬만 && 해당 날짜에 메모리가 있는 섬들만 추출
     final List<MemoryIsland> islandsForDay = calendarVM.islands
-        .where((island) => island.photoDates.any((d) => d.isSameDay(date)))
+        .where(
+          (island) =>
+              island.isSelected &&
+              island.photoDates.any((d) => d.isSameDay(date)),
+        )
         .toList();
 
     return DraggableScrollableSheet(

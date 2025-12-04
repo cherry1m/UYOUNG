@@ -19,7 +19,16 @@ final List<MemoryIsland> defaultMemoryIslands = [
       MemoryDate(10, 19),
       MemoryDate(10, 23),
       MemoryDate(11, 2),
+
       MemoryDate(12, 1),
+      MemoryDate(12, 1, id: 1),
+      MemoryDate(12, 1, id: 2),
+      MemoryDate(12, 1, id: 3),
+      MemoryDate(12, 1, id: 4),
+      MemoryDate(12, 1, id: 5),
+      MemoryDate(12, 1, id: 6),
+      MemoryDate(12, 1, id: 7),
+      MemoryDate(12, 1, id: 8),
     ],
     photoThumbnails: {
       MemoryDate(9, 6): 'assets/images/1.png',
@@ -30,7 +39,16 @@ final List<MemoryIsland> defaultMemoryIslands = [
       MemoryDate(10, 19): 'assets/images/1.png',
       MemoryDate(10, 23): 'assets/images/1.png',
       MemoryDate(11, 2): 'assets/images/1.png',
+
       MemoryDate(12, 1): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 1): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 2): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 3): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 4): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 5): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 6): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 7): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 8): 'assets/images/1.png',
     },
   ),
 
@@ -55,11 +73,37 @@ final List<MemoryIsland> defaultMemoryIslands = [
     '우.정.포.에.버',
     Colors.purple,
     false,
-    photoDates: const [MemoryDate(11, 2), MemoryDate(12, 1), MemoryDate(12, 7)],
+    photoDates: const [
+      MemoryDate(11, 2),
+
+      MemoryDate(12, 1),
+      MemoryDate(12, 1, id: 1),
+      MemoryDate(12, 1, id: 2),
+      MemoryDate(12, 1, id: 3),
+      MemoryDate(12, 1, id: 4),
+
+      // 12/7 날짜 (총 5개)
+      MemoryDate(12, 7),
+      MemoryDate(12, 7, id: 1),
+      MemoryDate(12, 7, id: 2),
+      MemoryDate(12, 7, id: 3),
+      MemoryDate(12, 7, id: 4),
+    ],
     photoThumbnails: {
       MemoryDate(11, 2): 'assets/images/1.png',
+
       MemoryDate(12, 1): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 1): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 2): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 3): 'assets/images/1.png',
+      MemoryDate(12, 1, id: 4): 'assets/images/1.png',
+
+      // 12/7 — 동일 날짜, id로 구분된 5장
       MemoryDate(12, 7): 'assets/images/1.png',
+      MemoryDate(12, 7, id: 1): 'assets/images/1.png',
+      MemoryDate(12, 7, id: 2): 'assets/images/1.png',
+      MemoryDate(12, 7, id: 3): 'assets/images/1.png',
+      MemoryDate(12, 7, id: 4): 'assets/images/1.png',
     },
   ),
 

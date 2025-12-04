@@ -4,19 +4,22 @@ import 'package:flutter/material.dart';
 class MemoryDate {
   final int month;
   final int day;
+  final int id; // 같은 날짜 내에서 여러 사진을 구분하는 key
 
-  const MemoryDate(this.month, this.day);
+  const MemoryDate(this.month, this.day, {this.id = 0});
 
-  /// DateTime과 같은 날인지 비교
-  bool isSameDay(DateTime d) => d.month == month && d.day == day;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is MemoryDate && other.month == month && other.day == day;
+  bool isSameDay(DateTime date) => date.month == month && date.day == day;
 
   @override
-  int get hashCode => Object.hash(month, day);
+  bool operator ==(Object other) {
+    return other is MemoryDate &&
+        other.month == month &&
+        other.day == day &&
+        other.id == id;
+  }
+
+  @override
+  int get hashCode => Object.hash(month, day, id);
 }
 
 /// 기억섬 모델

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/calendar/memory_model.dart';
 
@@ -46,7 +47,7 @@ class MemoryIslandSection extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 15),
 
           // 🔹 사진 2장 + +N 박스
           _MemoryPhotoRow(thumbPaths: thumbPaths),
@@ -71,19 +72,20 @@ class _MemoryPhotoRow extends StatelessWidget {
         : 0;
 
     return SizedBox(
-      height: 142.4,
+      height: 140,
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _PhotoCard(imagePath: firstThumb, angleDegrees: -3.98),
-          const SizedBox(width: 5),
+          const SizedBox(width: 15),
 
           if (secondThumb != null) ...[
             _PhotoCard(imagePath: secondThumb, angleDegrees: 2.98),
-            const SizedBox(width: 5),
+            const SizedBox(width: 15),
           ],
 
           if (remainingCount > 0)
-            _MoreCountCard(count: remainingCount, angleDegrees: -2.99),
+            _MoreCountCard(count: remainingCount, angleDegrees: 2.99),
         ],
       ),
     );
@@ -102,8 +104,8 @@ class _PhotoCard extends StatelessWidget {
     return Transform.rotate(
       angle: angleDegrees * 3.141592 / 180,
       child: Container(
-        width: 106.8,
-        height: 142.4,
+        width: 107,
+        height: 143,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
@@ -111,13 +113,13 @@ class _PhotoCard extends StatelessWidget {
               offset: Offset(2, 2),
               blurRadius: 6,
               spreadRadius: 0,
-              color: Color(0x2E000000), // #0000002E
+              color: Color(0x14000000),
             ),
           ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
-          child: Image.asset(imagePath, fit: BoxFit.cover),
+          image: DecorationImage(
+            image: AssetImage(imagePath),
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
@@ -136,10 +138,10 @@ class _MoreCountCard extends StatelessWidget {
     return Transform.rotate(
       angle: angleDegrees * 3.141592 / 180,
       child: Container(
-        width: 106.7,
-        height: 142.4,
+        width: 107,
+        height: 143,
         decoration: BoxDecoration(
-          color: const Color(0x80414141), // #41414180
+          color: AppColors.gray_12,
           borderRadius: BorderRadius.circular(16),
           boxShadow: const [
             BoxShadow(
