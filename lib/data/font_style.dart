@@ -11,11 +11,17 @@ class AppFontStyle {
     height: 1.0,
   );
 
-  // 테두리(Stroke)용 스타일
+  // ───────── Stroke + Fill 텍스트 ─────────
+  /// S폰트: 기본 텍스트에 흰색 테두리를 얇게 둘러주는 용도
+  /// - 텍스트 색(color)은 그대로 사용
+  /// - 흰색 shadow 4방향을 줘서 stroke처럼 보이게 처리
   static TextStyle _stroke(double size) => _base(size).copyWith(
-    foreground: Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.2, // 디자인 시트에 Stroke 0.2
+    shadows: const [
+      Shadow(offset: Offset(0.2, 0), blurRadius: 0, color: Colors.white),
+      Shadow(offset: Offset(-0.2, 0), blurRadius: 0, color: Colors.white),
+      Shadow(offset: Offset(0, 0.2), blurRadius: 0, color: Colors.white),
+      Shadow(offset: Offset(0, -0.2), blurRadius: 0, color: Colors.white),
+    ],
   );
 
   // ───── Headline Font (H1 ~ H10) ─────
@@ -31,6 +37,7 @@ class AppFontStyle {
   static final TextStyle H10 = _base(10); // Regular 10px
 
   // ───── Stroke Font (S1 ~ S10) ─────
+  /// S폰트는 H폰트에 흰색 테두리가 추가된 버전이라고 생각하면 됨
   static final TextStyle S1 = _stroke(28);
   static final TextStyle S2 = _stroke(26);
   static final TextStyle S3 = _stroke(24);

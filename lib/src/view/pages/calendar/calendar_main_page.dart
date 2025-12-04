@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/view/pages/calendar/widget/memory_drawer.dart';
+import 'package:uyoung/src/view/pages/calendar/widget/memory_bottom_sheet.dart';
+import 'package:uyoung/src/view/pages/calendar/widget/calendar_table_section.dart'; // ⭐ 새로 추가
 
-import 'widget/calendar_day_cell.dart';
 import 'widget/calendar_month_header.dart';
 import 'widget/calendar_week_header.dart';
 
@@ -48,8 +49,10 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
             ),
             const SizedBox(height: 23),
             const CalendarWeekHeader(),
-            const SizedBox(height: 5),
-            Expanded(child: _buildCalendar()),
+            const SizedBox(height: 18),
+            Expanded(
+              child: _buildCalendar(), // ⭐ 내부에서 분리된 위젯 사용
+            ),
           ],
         ),
       ),
@@ -99,61 +102,23 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
   }
 
   // -------------------------------
-  //  캘린더 위젯
+  //  캘린더 위젯 (이제는 분리된 섹션 위젯 사용)
   // -------------------------------
   Widget _buildCalendar() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: TableCalendar(
-        firstDay: DateTime.utc(2020, 1, 1),
-        lastDay: DateTime.utc(2030, 12, 31),
-        focusedDay: _focusedDay,
-        locale: 'ko_KR',
-        headerVisible: false,
-        startingDayOfWeek: StartingDayOfWeek.sunday,
-        rowHeight: 95,
-        daysOfWeekVisible: false,
-        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-
-        onDaySelected: (selected, focused) {
-          setState(() {
-            _selectedDay = selected;
-            _focusedDay = focused;
-          });
-        },
-
-        onPageChanged: (focused) {
-          setState(() => _focusedDay = focused);
-        },
-
-        calendarBuilders: CalendarBuilders(
-          defaultBuilder: (context, day, focusedDay) {
-            return CalendarDayCell(
-              date: day,
-              isOutside: day.month != _focusedDay.month,
-              isSelected: isSameDay(day, _selectedDay),
-            );
-          },
-          selectedBuilder: (context, day, focusedDay) {
-            return CalendarDayCell(
-              date: day,
-              isSelected: true,
-              isOutside: day.month != _focusedDay.month,
-            );
-          },
-          todayBuilder: (context, day, focusedDay) {
-            return CalendarDayCell(
-              date: day,
-              isToday: true,
-              isSelected: isSameDay(day, _selectedDay),
-              isOutside: day.month != _focusedDay.month,
-            );
-          },
-          outsideBuilder: (context, day, focusedDay) {
-            return CalendarDayCell(date: day, isOutside: true);
-          },
-        ),
-      ),
+    return CalendarTableSection(
+      focusedDay: _focusedDay,
+      selectedDay: _selectedDay,
+      onFocusedDayChanged: (day) {
+        setState(() {
+          _focusedDay = day;
+        });
+      },
+      onSelectedDayChanged: (day) {
+        setState(() {
+          _selectedDay = day;
+        });
+      },
+      onOpenMemoryBottomSheet: _openMemoryBottomSheet, // ⭐ 바텀시트 콜백
     );
   }
 
@@ -292,5 +257,25 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
         );
       },
     );
+  }
+
+  // -------------------------------
+  //  기억섬 바텀시트
+  // -------------------------------
+  void _openMemoryBottomSheet(DateTime date) {
+    final calendarVM = context.read<CalendarViewModel>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent, // 내부에서 흰 배경 + shadow
+      barrierColor: Colors.transparent, // 뒤 배경 안 어둡게
+      builder: (context) {
+        return MemoryBottomSheet(date: date);
+      },
+    ).whenComplete(() {
+      // 바텀시트 닫힐 때 간소화 모드 해제
+      calendarVM.closeBottomSheet();
+    });
   }
 }
