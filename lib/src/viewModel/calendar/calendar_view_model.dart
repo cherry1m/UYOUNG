@@ -55,19 +55,22 @@ class CalendarViewModel extends ChangeNotifier {
   MemoryIsland getIsland(int index) => _islands[index];
 
   /// 해당 날짜에 표시할 dot 색상 (선택된 기억섬 기준)
-  Color? getDotColor(DateTime day) {
+  List<Color> getDotColors(DateTime day) {
+    final List<Color> colors = [];
+
     for (final island in _islands) {
-      if (!island.isSelected) continue; // Drawer에서 체크된 섬만 표시
+      if (!island.isSelected) continue; // Drawer에서 체크된 섬만
 
       final hasPhoto = island.photoDates.any(
         (memoryDate) => memoryDate.isSameDay(day),
       );
 
       if (hasPhoto) {
-        return island.color;
+        colors.add(island.color);
       }
     }
-    return null;
+
+    return colors;
   }
 
   /// 해당 날짜에 표시할 썸네일 이미지 경로

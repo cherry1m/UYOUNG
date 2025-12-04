@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:uyoung/data/app_colors.dart';
-import 'package:uyoung/data/font_style.dart';
+import 'package:provider/provider.dart';
+import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
+import 'package:uyoung/data/model/calendar/memory_model.dart';
+import 'package:uyoung/src/view/pages/calendar/widget/memory_island_section.dart';
 
 class MemoryBottomSheet extends StatelessWidget {
   final DateTime date;
-  // 나중에 기억섬 목록, 선택된 섬 등도 여기로 넘기면 됨
 
-  const MemoryBottomSheet({Key? key, required this.date}) : super(key: key);
+  const MemoryBottomSheet({super.key, required this.date});
 
   @override
   Widget build(BuildContext context) {
+    final calendarVM = context.watch<CalendarViewModel>();
+
+    // 해당 날짜에 메모리가 있는 섬들만 추출
+    final List<MemoryIsland> islandsForDay = calendarVM.islands
+        .where((island) => island.photoDates.any((d) => d.isSameDay(date)))
+        .toList();
+
     return DraggableScrollableSheet(
       expand: false,
       initialChildSize: 0.55,
@@ -17,23 +25,23 @@ class MemoryBottomSheet extends StatelessWidget {
       maxChildSize: 0.9,
       builder: (context, scrollController) {
         return Container(
-          // ⭐ box-shadow 적용 + 흰 배경 + 위쪽만 radius
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            boxShadow: const [
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            boxShadow: [
               BoxShadow(
-                color: Color(0x14000000), // #00000014
                 offset: Offset(0, -4),
                 blurRadius: 16,
                 spreadRadius: 0,
+                color: Color(0x14000000), // #00000014
               ),
             ],
           ),
           child: Column(
             children: [
               const SizedBox(height: 12),
-              // 상단 그립바
+
+              // 상단 핸들바
               Container(
                 width: 40,
                 height: 4,
@@ -42,14 +50,14 @@ class MemoryBottomSheet extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
+
               const SizedBox(height: 16),
 
-              // 날짜 타이틀
-              Text("${date.month}월 ${date.day}일", style: AppFontStyle.M_20),
+              // 날짜 타이틀 (쓰고 싶으면 주석 풀기)
+              // Text("${date.month}월 ${date.day}일", style: AppFontStyle.M_20),
+              // const SizedBox(height: 12),
 
-              const SizedBox(height: 12),
-
-              // 컨텐츠 영역
+              // 내용 영역
               Expanded(
                 child: ListView(
                   controller: scrollController,
@@ -58,14 +66,8 @@ class MemoryBottomSheet extends StatelessWidget {
                     vertical: 10,
                   ),
                   children: [
-                    Text(
-                      '이 날짜에 대한 기억섬 데이터를 여기서 보여줄 예정이에요.',
-                      style: AppFontStyle.M_16.copyWith(
-                        color: AppColors.mainGray,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    // TODO: 여기부터 실제 카드, 썸네일 리스트, 태그 등 넣으면 됨
+                    for (final island in islandsForDay)
+                      MemoryIslandSection(island: island, date: date),
                   ],
                 ),
               ),

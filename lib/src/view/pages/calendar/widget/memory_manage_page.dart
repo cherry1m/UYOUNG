@@ -142,7 +142,7 @@ class _MemoryIslandManagePageState extends State<MemoryIslandManagePage> {
 
         return InkWell(
           onTap: () {
-            // ✅ 기억섬 상세 페이지로 이동
+            // 기억섬 상세 페이지로 이동
             Navigator.push(
               context,
               MaterialPageRoute(

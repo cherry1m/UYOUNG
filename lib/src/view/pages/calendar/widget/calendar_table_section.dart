@@ -16,13 +16,13 @@ class CalendarTableSection extends StatelessWidget {
   final void Function(DateTime) onOpenMemoryBottomSheet;
 
   const CalendarTableSection({
-    Key? key,
+    super.key, // <- 경고(use_super_parameters) 해결
     required this.focusedDay,
     required this.selectedDay,
     required this.onFocusedDayChanged,
     required this.onSelectedDayChanged,
     required this.onOpenMemoryBottomSheet,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class CalendarTableSection extends StatelessWidget {
 
         calendarBuilders: CalendarBuilders(
           defaultBuilder: (context, day, _) {
-            final dotColor = calendarVM.getDotColor(day);
+            final dotColors = calendarVM.getDotColors(day); // 수정
             final thumbnailPath = calendarVM.getThumbnailPath(day);
             final compact = calendarVM.isBottomSheetOpen;
 
@@ -72,13 +72,13 @@ class CalendarTableSection extends StatelessWidget {
               date: day,
               isOutside: day.month != focusedDay.month,
               isSelected: isSameDay(day, selectedDay),
-              dotColor: dotColor,
+              dotColors: dotColors,
               thumbnailPath: thumbnailPath,
               isCompactMode: compact,
             );
           },
           selectedBuilder: (context, day, _) {
-            final dotColor = calendarVM.getDotColor(day);
+            final dotColors = calendarVM.getDotColors(day); // 수정
             final thumbnailPath = calendarVM.getThumbnailPath(day);
             final compact = calendarVM.isBottomSheetOpen;
 
@@ -86,13 +86,13 @@ class CalendarTableSection extends StatelessWidget {
               date: day,
               isSelected: true,
               isOutside: day.month != focusedDay.month,
-              dotColor: dotColor,
+              dotColors: dotColors,
               thumbnailPath: thumbnailPath,
               isCompactMode: compact,
             );
           },
           todayBuilder: (context, day, _) {
-            final dotColor = calendarVM.getDotColor(day);
+            final dotColors = calendarVM.getDotColors(day); // 수정
             final thumbnailPath = calendarVM.getThumbnailPath(day);
             final compact = calendarVM.isBottomSheetOpen;
 
@@ -101,20 +101,20 @@ class CalendarTableSection extends StatelessWidget {
               isToday: true,
               isSelected: isSameDay(day, selectedDay),
               isOutside: day.month != focusedDay.month,
-              dotColor: dotColor,
+              dotColors: dotColors,
               thumbnailPath: thumbnailPath,
               isCompactMode: compact,
             );
           },
           outsideBuilder: (context, day, _) {
-            final dotColor = calendarVM.getDotColor(day);
+            final dotColors = calendarVM.getDotColors(day); // 수정
             final thumbnailPath = calendarVM.getThumbnailPath(day);
             final compact = calendarVM.isBottomSheetOpen;
 
             return CalendarDayCell(
               date: day,
               isOutside: true,
-              dotColor: dotColor,
+              dotColors: dotColors,
               thumbnailPath: thumbnailPath,
               isCompactMode: compact,
             );
