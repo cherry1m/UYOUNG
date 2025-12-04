@@ -142,7 +142,7 @@ class _OceanAlbumCard extends StatelessWidget {
 
             Text(
               '$count개',
-              style: AppFontStyle.S9.copyWith(color: AppColors.gray_17),
+              style: AppFontStyle.S9.copyWith(color: AppColors.g03),
             ),
           ],
         ),
