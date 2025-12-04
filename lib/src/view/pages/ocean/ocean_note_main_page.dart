@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
-import 'package:uyoung/data/model/calendar/memory_island_list.dart';
 import 'package:uyoung/data/model/calendar/memory_model.dart';
+import 'package:uyoung/data/model/common/memory_island_list.dart';
 
 class OceanNoteMainPage extends StatelessWidget {
   const OceanNoteMainPage({super.key});
