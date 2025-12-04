@@ -40,6 +40,8 @@ class ImagePath {
   static String get chevronRight => 'assets/images/chevron_right.png';
   static String get hamburgerBar => 'assets/images/hamburger_bar.png';
   static String get checkBlack => 'assets/images/check_black.png';
+  static String get checkedBlack => 'assets/images/checked_black.png';
+  static String get trash => 'assets/images/trash.png';
 
   // 바다노트(다이어리)
   static String get diaryOn => 'assets/images/diary_on.png';
