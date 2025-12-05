@@ -3,6 +3,7 @@ import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/data/model/calendar/memory_model.dart';
+import 'package:uyoung/src/view/pages/calendar/widget/memory_manage_page.dart';
 
 class MemoryIslandDrawer extends StatelessWidget {
   final List<MemoryIsland> islands;
@@ -38,7 +39,11 @@ class MemoryIslandDrawer extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                     onPressed: () {
-                      // TODO: 기억섬 관리/설정 화면
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const MemoryIslandManagePage(),
+                        ),
+                      );
                     },
                     icon: ImageData(
                       path: ImagePath.setting,

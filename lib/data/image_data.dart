@@ -36,6 +36,12 @@ class ImagePath {
   static String get filter => 'assets/images/filter.png';
   static String get today => 'assets/images/today.png';
   static String get setting => 'assets/images/setting.png';
+  static String get sortUpDown => 'assets/images/sort_up_down.png';
+  static String get chevronRight => 'assets/images/chevron_right.png';
+  static String get hamburgerBar => 'assets/images/hamburger_bar.png';
+  static String get checkBlack => 'assets/images/check_black.png';
+  static String get checkedBlack => 'assets/images/checked_black.png';
+  static String get trash => 'assets/images/trash.png';
 
   // 바다노트(다이어리)
   static String get diaryOn => 'assets/images/diary_on.png';
