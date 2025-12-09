@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/image_data.dart';
 
 class MemberInquiryPage extends StatelessWidget {
   const MemberInquiryPage({super.key});
@@ -18,13 +19,13 @@ class MemberInquiryPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: Image.asset("assets/images/alert.png", width: 22),
+            icon: Image.asset("assets/images/alert.png", width: 25),
             onPressed: () {},
           ),
           Padding(
             padding: const EdgeInsets.only(right: 13),
             child: IconButton(
-              icon: Image.asset("assets/images/setting.png", width: 18),
+              icon: Image.asset("assets/images/setting.png", width: 30),
               onPressed: () {},
             ),
           ),
@@ -63,9 +64,10 @@ class MemberInquiryPage extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: Image.asset(
-                      "assets/images/calendar_on.png",
-                      width: 26,
+                    leading: ImageData(
+                      path: ImagePath.calendarOn,
+                      width: 30,
+                      height: 30,
                     ),
                     title: Text("캘린더", style: AppFontStyle.M_16),
                     onTap: () {},

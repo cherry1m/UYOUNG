@@ -36,7 +36,7 @@ class _MemoryPostItemState extends State<MemoryPostItem> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(widget.post.name, style: AppFontStyle.M_15),
+                Text(widget.post.name, style: AppFontStyle.M_16),
                 Text(
                   widget.post.createdAt,
                   style: AppFontStyle.M_14.copyWith(

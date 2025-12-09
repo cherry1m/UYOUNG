@@ -1,6 +1,7 @@
 // lib/src/app/uyoung_app.dart
 import 'package:flutter/material.dart';
 import 'package:uyoung/src/view/common/navigation/uyoung_bottom_nav_bar.dart';
+import 'package:uyoung/src/view/pages/home/home_main.dart';
 import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
 
@@ -24,7 +25,7 @@ class _UyoungAppState extends State<UyoungApp> {
         child: IndexedStack(
           index: _currentIndex,
           children: const [
-            _DummyPage(title: '홈'), // 0
+            HomeMain(), // 0
             MemoryMainPage(), // 1 기억섬
             CalendarMainPage(), // 2 캘린더
             _DummyPage(title: '바다노트'), // 3
