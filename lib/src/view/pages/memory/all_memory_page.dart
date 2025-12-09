@@ -21,7 +21,7 @@ class AllMemoryPage extends StatelessWidget {
   // MARK: 바디 UI 구성
   Widget _buildBody(List<MemoryPostModel> posts) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 3),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

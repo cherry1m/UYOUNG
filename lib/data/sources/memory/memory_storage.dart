@@ -3,11 +3,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 
 class MemoryStorage {
-  // SharedPreferences에 사용할 key 값
+  // MARK: - SharedPreferences에 사용할 key 값
   static const String _key = "memory_items";
 
-  // MARK: 앱 기본 실행 시 최초로 표시되는 기본 기억섬 리스트
-  // 앱을 처음 설치했거나 저장된 값이 없을 때 이 리스트를 사용해 초기 데이터를 구성한다.
+  // MARK: - 앱 기본 실행 시 최초로 표시되는 기본 기억섬 리스트
+  // 앱을 처음 설치했거나 저장된 값이 없을 때 이 리스트를 사용해 초기 데이터 구성
   final List<MemoryItem> defaultItems = [
     MemoryItem(
       id: "1",
@@ -42,7 +42,7 @@ class MemoryStorage {
       title: "울 애깅",
       isFavorite: false,
       isNotificationOn: true,
-      imagePath: "assets/images/memory/couple/couple1.png",
+      imagePath: "assets/images/memory/couple/couple.png",
     ),
     MemoryItem(
       id: "6",
@@ -60,9 +60,10 @@ class MemoryStorage {
     ),
   ];
 
-  // MARK: - 저장된 기억섬 리스트를 불러오는 함수
-  // SharedPreferences에서 JSON 문자열을 읽어와 MemoryItem 리스트로 변환해 반환한다.
-  // 데이터가 존재하지 않으면 기본 리스트를 저장하고 그대로 반환한다.
+  // MARK: - 저장된 기억섬 리스트 불러오기
+  // 1. 저장된 데이터가 없으면 defaultItems 저장 후 반환
+  // 2. 데이터가 비어 있으면 defaultItems로 복구
+  // 3. 정상 데이터 있으면 그대로 반환
   Future<List<MemoryItem>> loadItems() async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = prefs.getString(_key);
@@ -73,22 +74,29 @@ class MemoryStorage {
       return List<MemoryItem>.from(defaultItems);
     }
 
-    // 2) 파싱했더니 리스트가 비어 있을 때 (빌드/클린 등으로 날아간 경우)
+    // 2) JSON 파싱 및 비어있는지 체크
     final List data = jsonDecode(jsonString);
     if (data.isEmpty) {
       await saveItems(defaultItems);
       return List<MemoryItem>.from(defaultItems);
     }
 
-    // 3) 정상적으로 데이터가 있을 때
+    // 3) 정상 데이터 반환
     return data.map((e) => MemoryItem.fromMap(e)).toList();
   }
 
-  // MARK: - 기억섬 리스트를 저장하는 함수
-  // MemoryItem 리스트를 JSON 문자열로 변환한 뒤 SharedPreferences에 저장한다.
+  // MARK: - 기억섬 리스트 저장
+  // MemoryItem 리스트를 JSON 문자열로 변환하여 SharedPreferences에 저장
   Future<void> saveItems(List<MemoryItem> items) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonString = jsonEncode(items.map((e) => e.toMap()).toList());
     await prefs.setString(_key, jsonString);
+  }
+
+  // MARK: - 모든 기억섬 데이터 초기화 (ID 꼬였을 때 필수)
+  // 일본팸/상콩즈 데이터 잘못 매칭될 때 딱 1번만 실행
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
   }
 }

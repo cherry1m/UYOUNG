@@ -37,6 +37,7 @@ flutter:
     - assets/images/memory/europe/
     - assets/images/memory/japan/
     - assets/images/memory/kalchae/
+    - assets/images/memory/shangkong/
   fonts:
     - family: memomentKkukkkuk
       fonts:

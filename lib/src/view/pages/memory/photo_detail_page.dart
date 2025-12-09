@@ -46,7 +46,7 @@ class PhotoDetailPage extends StatelessWidget {
           const SizedBox(height: 2),
           Text(
             "2025년 08월 14일 오후 3:38",
-            style: AppFontStyle.S9.copyWith(color: Colors.grey),
+            style: AppFontStyle.S9.copyWith(color: Color(0xff999999)),
           ),
         ],
       ),
