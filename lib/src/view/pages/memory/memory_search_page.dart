@@ -114,7 +114,7 @@ class MemorySearchPage extends StatelessWidget {
                       isNotificationOn: item.isNotificationOn,
                       imagePath: item.imagePath,
                       isEditing: false,
-                      controller: null,
+                      controller: TextEditingController(),
                       onEditComplete: () {},
                       onTap: () {
                         Navigator.push(

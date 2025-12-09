@@ -3,8 +3,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
+import 'package:uyoung/data/model/memory/memory_post_model.dart';
+import 'package:uyoung/data/sources/memory/memory_post_dummy.dart';
 import 'package:uyoung/src/view/common/memory/common_memory_appbar.dart';
-import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 
 class TimelineMemoryPage extends StatefulWidget {
   final MemoryItem item;
@@ -20,90 +21,77 @@ class TimelineMemoryPage extends StatefulWidget {
 }
 
 class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
-  // MARK: Google Map controller
   GoogleMapController? _mapController;
 
-  // MARK: Default camera position
+  // MARK: 도쿄 고정 위치
   static const CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(37.6280, 127.0905), // 노원구 예시 좌표
-    zoom: 14,
+    target: LatLng(35.6595, 139.7005),
+    zoom: 13,
   );
+
+  final Set<Marker> _markers = {
+    const Marker(
+      markerId: MarkerId("tokyo"),
+      position: LatLng(35.6595, 139.7005),
+    ),
+  };
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<MemoryViewModel>();
+    // MARK: 기억섬 ID로 게시물 불러오기
+    final List<MemoryPostModel> posts =
+        MemoryPostDummy.postsByMemoryId[widget.item.id] ?? [];
+
+    // MARK: 모든 게시물 이미지 일자로 쭉 펼치기
+    final List<String> allImages = posts.expand((post) => post.images).toList();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: MemoryCommonAppBar(title: widget.item.title),
 
-      // MARK: 화면 전체 레이아웃
       body: Column(
         children: [
-          // MARK: 지도 영역
+          // MARK: 지도
           SizedBox(
             height: 300,
             child: GoogleMap(
               initialCameraPosition: _initialPosition,
-              myLocationEnabled: true,
-              mapType: MapType.normal,
               zoomControlsEnabled: false,
+              markers: _markers,
               onMapCreated: (controller) => _mapController = controller,
             ),
           ),
 
-          // MARK: 지도 하단 타임라인 콘텐츠
+          // MARK: 하단 타임라인 영역
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(vertical: 14),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // MARK: 날짜 선택 영역
-                  Padding(
+                  const SizedBox(height: 18),
+
+                  _locationLabel("일본 도쿄"),
+
+                  const SizedBox(height: 12),
+
+                  // MARK: 더미 이미지 실제 그리드
+                  GridView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 18),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        // MARK: 이전 날짜 버튼
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Icon(Icons.arrow_back_ios, size: 18),
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: allImages.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 8,
+                          crossAxisSpacing: 8,
                         ),
-
-                        // MARK: 날짜 드롭다운 버튼
-                        GestureDetector(
-                          onTap: () {},
-                          child: Row(
-                            children: [
-                              Text("오늘", style: AppFontStyle.M_18),
-                              const Icon(Icons.keyboard_arrow_down, size: 22),
-                            ],
-                          ),
-                        ),
-
-                        // MARK: 다음 날짜 버튼
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Icon(Icons.arrow_forward_ios, size: 18),
-                        ),
-                      ],
-                    ),
+                    itemBuilder: (_, index) {
+                      return _photoItem(allImages[index]);
+                    },
                   ),
 
-                  SizedBox(height: 16),
-
-                  // MARK: 위치 라벨 + 그리드 섹션 1
-                  _locationLabel("서울특별시 노원구 월계2동"),
-                  const SizedBox(height: 12),
-                  _grayGrid(),
-
-                  const SizedBox(height: 28),
-
-                  // MARK: 위치 라벨 + 그리드 섹션 2
-                  _locationLabel("서울특별시 중구 명동"),
-                  const SizedBox(height: 12),
-                  _grayGrid(),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
@@ -113,7 +101,7 @@ class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
     );
   }
 
-  // MARK: 위치 라벨 UI
+  // MARK: 위치 라벨
   Widget _locationLabel(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -127,23 +115,12 @@ class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
     );
   }
 
-  // MARK: 3x3 Gray Grid Placeholder
-  Widget _grayGrid() {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      itemCount: 9,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
-      ),
-      itemBuilder: (_, __) => Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFE5E5E5),
-          borderRadius: BorderRadius.circular(8),
-        ),
+  // MARK: 실제 이미지 박스
+  Widget _photoItem(String path) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        image: DecorationImage(image: AssetImage(path), fit: BoxFit.cover),
       ),
     );
   }

@@ -56,7 +56,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   // 2️⃣ 도쿄팸
   // ==========================================
   MemoryIsland(
-    '도쿄팸 ✈️',
+    '일본팸 ✈️',
     Colors.pink,
     false,
     photoDates: const [MemoryDate(9, 1), MemoryDate(9, 2)],

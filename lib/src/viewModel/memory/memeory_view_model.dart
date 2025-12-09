@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
-import 'package:uyoung/data/sources/memory_storage.dart';
+import 'package:uyoung/data/sources/memory/memory_storage.dart';
 
 class MemoryViewModel extends ChangeNotifier {
   // MARK: - 저장소 인스턴스
@@ -56,6 +56,7 @@ class MemoryViewModel extends ChangeNotifier {
   void renameItem(int index, String newTitle) {
     if (index < 0 || index >= items.length) return;
     items[index].title = newTitle;
+    editingIndex = null;
     _storage.saveItems(items);
     notifyListeners();
   }
