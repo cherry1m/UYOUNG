@@ -4,6 +4,7 @@ import 'package:uyoung/src/view/common/navigation/uyoung_bottom_nav_bar.dart';
 import 'package:uyoung/src/view/pages/home/home_main.dart';
 import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
+import 'package:uyoung/src/view/pages/ocean/ocean_note_main_page.dart';
 
 class UyoungApp extends StatefulWidget {
   const UyoungApp({Key? key}) : super(key: key);
@@ -28,7 +29,7 @@ class _UyoungAppState extends State<UyoungApp> {
             HomeMain(), // 0
             MemoryMainPage(), // 1 기억섬
             CalendarMainPage(), // 2 캘린더
-            _DummyPage(title: '바다노트'), // 3
+            OceanNoteMainPage(), // 3 바다노트
             _DummyPage(title: '마이페이지'), // 4
           ],
         ),
