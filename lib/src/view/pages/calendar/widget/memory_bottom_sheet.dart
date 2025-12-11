@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/data/model/calendar/memory_model.dart';
 import 'package:uyoung/src/view/pages/calendar/widget/memory_island_section.dart';
@@ -58,8 +59,8 @@ class MemoryBottomSheet extends StatelessWidget {
               const SizedBox(height: 16),
 
               // 날짜 타이틀 (쓰고 싶으면 주석 풀기)
-              // Text("${date.month}월 ${date.day}일", style: AppFontStyle.M_20),
-              // const SizedBox(height: 12),
+              Text("${date.month}월 ${date.day}일", style: AppFontStyle.M_20),
+              const SizedBox(height: 12),
 
               // 내용 영역
               Expanded(

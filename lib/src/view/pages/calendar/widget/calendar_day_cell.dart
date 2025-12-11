@@ -124,7 +124,7 @@ class CalendarDayCell extends StatelessWidget {
           // 날짜 텍스트
           Container(
             width: 36,
-            height: 24,
+            height: 22,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: backgroundColor,

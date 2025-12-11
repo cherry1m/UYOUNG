@@ -33,7 +33,7 @@ class MemoryIslandSection extends StatelessWidget {
         children: [
           // 섬 색상 + 이름 (가운데 정렬)
           Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Container(
                 width: 12,
