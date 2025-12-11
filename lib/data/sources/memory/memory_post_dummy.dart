@@ -6,9 +6,10 @@ class MemoryPostDummy {
     "1": _tokyoPosts(), // 일본팸
     "2": _shankongPosts(),
     "3": _dolphinPosts(),
-    "4": _europe(),
+    // "4": _europe(),
     "5": _couplePosts(),
     "6": _alcholPosts(),
+    "7": _europe(),
   };
 
   // MARK: - 일본팸 게시물
@@ -131,6 +132,60 @@ class MemoryPostDummy {
   static List<MemoryPostModel> _shankongPosts() {
     return [
       MemoryPostModel(
+        name: "이윤서",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/shangkong/hongkong16.jpeg",
+          "assets/images/memory/shangkong/hongkong17.jpeg",
+          "assets/images/memory/shangkong/hongkong18.jpeg",
+          "assets/images/memory/shangkong/hongkong19.jpeg",
+          "assets/images/memory/shangkong/hongkong20.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "이윤서",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/shangkong/hongkong21.jpeg",
+          "assets/images/memory/shangkong/hongkong22.jpeg",
+          "assets/images/memory/shangkong/hongkong23.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "이윤서",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/shangkong/hongkong24.jpeg",
+          "assets/images/memory/shangkong/hongkong25.jpeg",
+          "assets/images/memory/shangkong/hongkong26.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "이윤서",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/shangkong/hongkong27.jpeg",
+          "assets/images/memory/shangkong/hongkong28.jpeg",
+          "assets/images/memory/shangkong/hongkong29.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "김지영",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/shangkong/hongkong30.jpeg",
+          "assets/images/memory/shangkong/hongkong31.jpeg",
+          "assets/images/memory/shangkong/hongkong32.jpeg",
+          "assets/images/memory/shangkong/hongkong33.jpeg",
+          "assets/images/memory/shangkong/hongkong34.jpeg",
+        ],
+      ),
+      MemoryPostModel(
         name: "김아인",
         profileImage: "assets/images/lee_profile.png",
         createdAt: "1시간 전",
@@ -193,60 +248,7 @@ class MemoryPostDummy {
           "assets/images/memory/shangkong/hongkong15.jpeg",
         ],
       ),
-      MemoryPostModel(
-        name: "이윤서",
-        profileImage: "assets/images/lee_profile.png",
-        createdAt: "1시간 전",
-        images: [
-          "assets/images/memory/shangkong/hongkong16.jpeg",
-          "assets/images/memory/shangkong/hongkong17.jpeg",
-          "assets/images/memory/shangkong/hongkong18.jpeg",
-          "assets/images/memory/shangkong/hongkong19.jpeg",
-          "assets/images/memory/shangkong/hongkong20.jpeg",
-        ],
-      ),
-      MemoryPostModel(
-        name: "이윤서",
-        profileImage: "assets/images/lee_profile.png",
-        createdAt: "1시간 전",
-        images: [
-          "assets/images/memory/shangkong/hongkong21.jpeg",
-          "assets/images/memory/shangkong/hongkong22.jpeg",
-          "assets/images/memory/shangkong/hongkong23.jpeg",
-        ],
-      ),
-      MemoryPostModel(
-        name: "이윤서",
-        profileImage: "assets/images/lee_profile.png",
-        createdAt: "1시간 전",
-        images: [
-          "assets/images/memory/shangkong/hongkong24.jpeg",
-          "assets/images/memory/shangkong/hongkong25.jpeg",
-          "assets/images/memory/shangkong/hongkong26.jpeg",
-        ],
-      ),
-      MemoryPostModel(
-        name: "이윤서",
-        profileImage: "assets/images/lee_profile.png",
-        createdAt: "1시간 전",
-        images: [
-          "assets/images/memory/shangkong/hongkong27.jpeg",
-          "assets/images/memory/shangkong/hongkong28.jpeg",
-          "assets/images/memory/shangkong/hongkong29.jpeg",
-        ],
-      ),
-      MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
-        createdAt: "1시간 전",
-        images: [
-          "assets/images/memory/shangkong/hongkong30.jpeg",
-          "assets/images/memory/shangkong/hongkong31.jpeg",
-          "assets/images/memory/shangkong/hongkong32.jpeg",
-          "assets/images/memory/shangkong/hongkong33.jpeg",
-          "assets/images/memory/shangkong/hongkong34.jpeg",
-        ],
-      ),
+
       MemoryPostModel(
         name: "김지영",
         profileImage: "assets/images/lee_profile.png",
@@ -499,16 +501,88 @@ class MemoryPostDummy {
   static List<MemoryPostModel> _europe() {
     return [
       MemoryPostModel(
-        name: "이윤서",
+        name: "임종훈",
         profileImage: "assets/images/lee_profile.png",
         createdAt: "1시간 전",
         images: [
-          "assets/images/memory/japan/tokyo7.png",
-          "assets/images/memory/japan/tokyo3.png",
-          "assets/images/memory/japan/tokyo2.png",
-          "assets/images/memory/japan/tokyo5.png",
-          "assets/images/memory/japan/tokyo20.png",
-          "assets/images/memory/japan/tokyo21.png",
+          "assets/images/memory/europe/h1.jpeg",
+          "assets/images/memory/europe/h2.jpeg",
+          "assets/images/memory/europe/h3.jpeg",
+          " assets/images/memory/europe/h4.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/h5.jpeg",
+          "assets/images/memory/europe/h6.jpeg",
+          "assets/images/memory/europe/h7.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/c1.jpeg",
+          "assets/images/memory/europe/c2.jpeg",
+          "assets/images/memory/europe/c3.jpeg",
+          " assets/images/memory/europe/c4.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/c5.jpeg",
+          "assets/images/memory/europe/c6.jpeg",
+          "assets/images/memory/europe/c7.jpeg",
+          " assets/images/memory/europe/c8.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/c9.jpeg",
+          "assets/images/memory/europe/c10.jpeg",
+          "assets/images/memory/europe/c11.jpeg",
+          " assets/images/memory/europe/c12.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/c13.jpeg",
+          " assets/images/memory/europe/c14.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/ger1.jpeg",
+          " assets/images/memory/europe/ger2.jpeg",
+          "assets/images/memory/europe/ger3.jpeg",
+          " assets/images/memory/europe/ger4.jpeg",
+          "assets/images/memory/europe/ger5.jpeg",
+        ],
+      ),
+      MemoryPostModel(
+        name: "임종훈",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "1시간 전",
+        images: [
+          "assets/images/memory/europe/o1.jpeg",
+          "assets/images/memory/europe/o2.jpeg",
+          "assets/images/memory/europe/o3.jpeg",
         ],
       ),
     ];
