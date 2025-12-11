@@ -1,5 +1,5 @@
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
-import 'package:uyoung/data/sources/memory_storage.dart';
+import 'package:uyoung/data/sources/memory/memory_storage.dart';
 
 // MARK: - MemoryRepository
 // 이 클래스는 ViewModel과 Storage 사이의 중간 계층이다.
