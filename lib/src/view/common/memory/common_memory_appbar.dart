@@ -8,8 +8,9 @@ class MemoryCommonAppBar extends StatelessWidget
 
   const MemoryCommonAppBar({super.key, required this.title});
 
+  // MARK: - AppBar 전체 높이 축소 (기존 56 → 48)
   @override
-  Size get preferredSize => const Size.fromHeight(56);
+  Size get preferredSize => const Size.fromHeight(48);
 
   @override
   Widget build(BuildContext context) {
@@ -18,30 +19,38 @@ class MemoryCommonAppBar extends StatelessWidget
       elevation: 0,
 
       // MARK: - 타이틀 왼쪽 정렬
-      title: Text(title, style: AppFontStyle.M_20, textAlign: TextAlign.left),
-
+      title: Text(title, style: AppFontStyle.H5),
       centerTitle: false,
 
-      // MARK: - 오른쪽 아이콘 3개 (기본 placeholder)
+      // MARK: - 내부 여백도 함께 축소
+      titleSpacing: 12,
+
+      // MARK: - 오른쪽 아이콘들
       actions: [
         IconButton(
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
           onPressed: () {},
-          icon: Image.asset('assets/images/search.png', width: 22),
+          icon: Image.asset('assets/images/search.png', width: 20),
         ),
         IconButton(
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
           onPressed: () {},
-          icon: Image.asset('assets/images/check.png', width: 18),
+          icon: Image.asset('assets/images/check.png', width: 16),
         ),
         IconButton(
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const MemberInquiryPage()),
             );
           },
-          icon: Image.asset('assets/images/menu.png', width: 18),
+          icon: Image.asset('assets/images/menu.png', width: 16),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: 6),
       ],
     );
   }

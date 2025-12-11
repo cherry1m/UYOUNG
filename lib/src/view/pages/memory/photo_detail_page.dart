@@ -2,9 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 
 class PhotoDetailPage extends StatelessWidget {
+  // MARK: 전달받은 이미지 경로
   final String imagePath;
 
-  PhotoDetailPage({super.key, required this.imagePath});
+  // MARK: 전달받은 업로드한 사람 이름 및 프로필
+  final String uploaderName;
+  final String uploaderProfile;
+
+  PhotoDetailPage({
+    super.key,
+    required this.imagePath,
+    required this.uploaderName,
+    required this.uploaderProfile,
+  });
 
   final double _popupWidth = 220;
 
@@ -32,11 +42,11 @@ class PhotoDetailPage extends StatelessWidget {
       centerTitle: true,
       title: Column(
         children: [
-          Text("서울특별시 월계 2동", style: AppFontStyle.M_18),
+          Text("일본 도쿄", style: AppFontStyle.H6),
           const SizedBox(height: 2),
           Text(
-            "2025년 10월 16일 오후 3:38",
-            style: AppFontStyle.M_12.copyWith(color: Colors.grey),
+            "2025년 08월 14일 오후 3:38",
+            style: AppFontStyle.S9.copyWith(color: Color(0xff999999)),
           ),
         ],
       ),
@@ -92,7 +102,6 @@ class PhotoDetailPage extends StatelessWidget {
             Positioned(
               left: left,
               top: position.dy,
-              //+ size.height,
               child: Material(
                 color: Colors.transparent,
                 child: Container(
@@ -146,7 +155,7 @@ class PhotoDetailPage extends StatelessWidget {
 
   // MARK: 팝업 아이템 UI
   Widget _popupItem({
-    required String imagePath, // ← 아이콘 대신 이미지 경로
+    required String imagePath,
     required String label,
     required VoidCallback onTap,
     Color color = Colors.black,
@@ -186,20 +195,29 @@ class PhotoDetailPage extends StatelessWidget {
               ),
             ),
           ),
+
           const SizedBox(height: 18),
+
+          // MARK: 업로드한 사람 이름 표시
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: Row(
               children: [
-                const CircleAvatar(
+                CircleAvatar(
                   radius: 18,
-                  backgroundImage: AssetImage("assets/images/profile1.png"),
+
+                  backgroundImage: AssetImage(uploaderProfile),
                 ),
                 const SizedBox(width: 10),
-                Text("윤채림 업로드", style: AppFontStyle.M_16),
+
+                Text(
+                  "$uploaderName 업로드",
+                  style: AppFontStyle.S8.copyWith(color: Color(0xff999999)),
+                ),
               ],
             ),
           ),
+
           const SizedBox(height: 14),
         ],
       ),
@@ -230,6 +248,7 @@ class PhotoDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
+
             Expanded(
               child: Container(
                 height: 48,
@@ -248,6 +267,7 @@ class PhotoDetailPage extends StatelessWidget {
                       width: 26,
                     ),
                     const SizedBox(width: 8),
+
                     Expanded(
                       child: TextField(
                         decoration: InputDecoration.collapsed(
