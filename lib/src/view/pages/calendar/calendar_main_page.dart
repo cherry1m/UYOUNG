@@ -49,9 +49,7 @@ class _CalendarMainPageState extends State<CalendarMainPage> {
             const SizedBox(height: 23),
             const CalendarWeekHeader(),
             const SizedBox(height: 18),
-            Expanded(
-              child: _buildCalendar(), // ⭐ 내부에서 분리된 위젯 사용
-            ),
+            Expanded(child: _buildCalendar()),
           ],
         ),
       ),

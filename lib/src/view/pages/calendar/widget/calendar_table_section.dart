@@ -16,7 +16,7 @@ class CalendarTableSection extends StatelessWidget {
   final void Function(DateTime) onOpenMemoryBottomSheet;
 
   const CalendarTableSection({
-    super.key, // <- 경고(use_super_parameters) 해결
+    super.key,
     required this.focusedDay,
     required this.selectedDay,
     required this.onFocusedDayChanged,
@@ -24,9 +24,37 @@ class CalendarTableSection extends StatelessWidget {
     required this.onOpenMemoryBottomSheet,
   });
 
+  // 해당 month가 달력에서 5주인지 6주인지 계산 (StartingDayOfWeek.sunday 기준)
+  int _weeksInMonth(DateTime day) {
+    final firstOfMonth = DateTime(day.year, day.month, 1);
+    final lastOfMonth = DateTime(day.year, day.month + 1, 0);
+
+    DateTime start = firstOfMonth;
+    // dart weekday: Mon=1..Sun=7
+    while (start.weekday != DateTime.sunday) {
+      start = start.subtract(const Duration(days: 1));
+    }
+
+    DateTime end = lastOfMonth;
+    while (end.weekday != DateTime.saturday) {
+      end = end.add(const Duration(days: 1));
+    }
+
+    final totalDays = end.difference(start).inDays + 1;
+    return (totalDays / 7).ceil(); // 5 or 6
+  }
+
   @override
   Widget build(BuildContext context) {
     final calendarVM = context.watch<CalendarViewModel>();
+
+    final isCompact = calendarVM.isBottomSheetOpen;
+    final weeks = _weeksInMonth(focusedDay);
+
+    /// ✅ rowHeight는 여기서만 결정
+    /// - 일반 모드: 95
+    /// - 간소화 모드: 5주 / 6주 다르게
+    final double rowHeight = isCompact ? (weeks == 5 ? 45 : 40) : 95;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -37,14 +65,17 @@ class CalendarTableSection extends StatelessWidget {
         locale: 'ko_KR',
         headerVisible: false,
         startingDayOfWeek: StartingDayOfWeek.sunday,
-        rowHeight: calendarVM.isBottomSheetOpen ? 45 : 95,
         daysOfWeekVisible: false,
+
+        // ✅ 5주 달은 5줄만 나오게
+        sixWeekMonthsEnforced: false,
+
+        rowHeight: rowHeight,
         selectedDayPredicate: (day) => isSameDay(selectedDay, day),
 
         onDaySelected: (selected, newFocused) {
           final vm = context.read<CalendarViewModel>();
 
-          // 부모 상태 업데이트
           onSelectedDayChanged(selected);
           onFocusedDayChanged(newFocused);
 
@@ -64,9 +95,8 @@ class CalendarTableSection extends StatelessWidget {
 
         calendarBuilders: CalendarBuilders(
           defaultBuilder: (context, day, _) {
-            final dotColors = calendarVM.getDotColors(day); // 수정
+            final dotColors = calendarVM.getDotColors(day);
             final thumbnailPath = calendarVM.getThumbnailPath(day);
-            final compact = calendarVM.isBottomSheetOpen;
 
             return CalendarDayCell(
               date: day,
@@ -74,13 +104,13 @@ class CalendarTableSection extends StatelessWidget {
               isSelected: isSameDay(day, selectedDay),
               dotColors: dotColors,
               thumbnailPath: thumbnailPath,
-              isCompactMode: compact,
+              isCompactMode: isCompact,
+              compactWeeks: weeks, // ✅ 전달
             );
           },
           selectedBuilder: (context, day, _) {
-            final dotColors = calendarVM.getDotColors(day); // 수정
+            final dotColors = calendarVM.getDotColors(day);
             final thumbnailPath = calendarVM.getThumbnailPath(day);
-            final compact = calendarVM.isBottomSheetOpen;
 
             return CalendarDayCell(
               date: day,
@@ -88,13 +118,13 @@ class CalendarTableSection extends StatelessWidget {
               isOutside: day.month != focusedDay.month,
               dotColors: dotColors,
               thumbnailPath: thumbnailPath,
-              isCompactMode: compact,
+              isCompactMode: isCompact,
+              compactWeeks: weeks, // ✅ 전달
             );
           },
           todayBuilder: (context, day, _) {
-            final dotColors = calendarVM.getDotColors(day); // 수정
+            final dotColors = calendarVM.getDotColors(day);
             final thumbnailPath = calendarVM.getThumbnailPath(day);
-            final compact = calendarVM.isBottomSheetOpen;
 
             return CalendarDayCell(
               date: day,
@@ -103,20 +133,21 @@ class CalendarTableSection extends StatelessWidget {
               isOutside: day.month != focusedDay.month,
               dotColors: dotColors,
               thumbnailPath: thumbnailPath,
-              isCompactMode: compact,
+              isCompactMode: isCompact,
+              compactWeeks: weeks, // ✅ 전달
             );
           },
           outsideBuilder: (context, day, _) {
-            final dotColors = calendarVM.getDotColors(day); // 수정
+            final dotColors = calendarVM.getDotColors(day);
             final thumbnailPath = calendarVM.getThumbnailPath(day);
-            final compact = calendarVM.isBottomSheetOpen;
 
             return CalendarDayCell(
               date: day,
               isOutside: true,
               dotColors: dotColors,
               thumbnailPath: thumbnailPath,
-              isCompactMode: compact,
+              isCompactMode: isCompact,
+              compactWeeks: weeks, // ✅ 전달
             );
           },
         ),

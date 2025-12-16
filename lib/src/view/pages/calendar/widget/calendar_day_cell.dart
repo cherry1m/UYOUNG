@@ -18,15 +18,19 @@ class CalendarDayCell extends StatelessWidget {
   /// 바텀시트가 열려 있을 때 사용하는 “간소화 모드”
   final bool isCompactMode;
 
+  /// ✅ 5주/6주 정보 (간소화 모드 spacing 조절용)
+  final int compactWeeks;
+
   const CalendarDayCell({
     super.key,
     required this.date,
     this.isSelected = false,
     this.isToday = false,
     this.isOutside = false,
-    this.dotColors = const [], // 기본값: 빈 리스트
+    this.dotColors = const [],
     this.thumbnailPath,
     this.isCompactMode = false,
+    this.compactWeeks = 6, // ✅ 기본값은 여기서
   });
 
   @override
@@ -38,7 +42,6 @@ class CalendarDayCell extends StatelessWidget {
     final backgroundColor = isSelected
         ? AppColors.mainBlue
         : Colors.transparent;
-
     final dayTextColor = isSelected ? Colors.white : baseTextColor;
 
     // 공용: dot 영역 위젯
@@ -47,7 +50,6 @@ class CalendarDayCell extends StatelessWidget {
         return const SizedBox(height: 6);
       }
 
-      // 4개 이하면 전부 점으로 표시
       if (dotColors.length <= 4) {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -63,7 +65,6 @@ class CalendarDayCell extends StatelessWidget {
         );
       }
 
-      // 5개 이상이면 2개만 점으로 표시 + 나머지는 "+N"
       final visibleDots = dotColors.take(2).toList();
       final remainingCount = dotColors.length - 2;
 
@@ -86,16 +87,22 @@ class CalendarDayCell extends StatelessWidget {
       );
     }
 
+    // ✅ 간소화 모드 5주/6주에 따라 내부 spacing도 같이 줄이기
+    final bool isSixWeeks = compactWeeks >= 6;
+    final double compactDateBoxHeight = isSixWeeks ? 22 : 24;
+    final double compactGap = isSixWeeks ? 6 : 8;
+    final double compactBottomPadding = isSixWeeks ? 4 : 6;
+
     // 간소화 모드: 날짜 + dot만
     if (isCompactMode) {
       return Padding(
-        padding: const EdgeInsets.only(bottom: 6),
+        padding: EdgeInsets.only(bottom: compactBottomPadding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               width: 36,
-              height: 24,
+              height: compactDateBoxHeight,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 color: backgroundColor,
@@ -109,7 +116,7 @@ class CalendarDayCell extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: compactGap),
             _buildDotRow(),
           ],
         ),
@@ -121,7 +128,6 @@ class CalendarDayCell extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 6),
       child: Column(
         children: [
-          // 날짜 텍스트
           Container(
             width: 36,
             height: 22,
@@ -138,19 +144,16 @@ class CalendarDayCell extends StatelessWidget {
               ),
             ),
           ),
-
           const SizedBox(height: 5),
 
-          // 썸네일 or 기본 아이콘
           SizedBox(
             width: 42,
             height: 42,
             child: Stack(
               children: [
-                // 🔵 배경 프레임 (기울어진 42x42)
                 if (thumbnailPath != null)
                   Transform.rotate(
-                    angle: 12 * 3.141592 / 180, // -12도 회전
+                    angle: 12 * 3.141592 / 180,
                     child: Container(
                       width: 42,
                       height: 42,
@@ -160,7 +163,7 @@ class CalendarDayCell extends StatelessWidget {
                           image: AssetImage(thumbnailPath!),
                           fit: BoxFit.cover,
                           colorFilter: ColorFilter.mode(
-                            Colors.black.withOpacity(0.15), // 살짝 어둡게 처리 (옵션)
+                            Colors.black.withOpacity(0.15),
                             BlendMode.srcATop,
                           ),
                         ),
@@ -168,18 +171,14 @@ class CalendarDayCell extends StatelessWidget {
                     ),
                   ),
 
-                // 🔴 실제 썸네일
                 Container(
                   width: 42,
                   height: 42,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-
-                    // 썸네일일 경우만 테두리
                     border: thumbnailPath != null
                         ? Border.all(color: const Color(0xFFE5E5E5), width: 0.8)
                         : null,
-
                     image: DecorationImage(
                       image: AssetImage(
                         thumbnailPath ?? 'assets/images/calendar_icon.png',
@@ -195,7 +194,6 @@ class CalendarDayCell extends StatelessWidget {
           ),
 
           const SizedBox(height: 6),
-
           _buildDotRow(),
         ],
       ),

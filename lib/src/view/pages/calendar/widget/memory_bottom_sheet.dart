@@ -25,7 +25,7 @@ class MemoryBottomSheet extends StatelessWidget {
 
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.55,
+      initialChildSize: 0.48,
       minChildSize: 0.35,
       maxChildSize: 0.9,
       builder: (context, scrollController) {
@@ -59,8 +59,8 @@ class MemoryBottomSheet extends StatelessWidget {
               const SizedBox(height: 16),
 
               // 날짜 타이틀 (쓰고 싶으면 주석 풀기)
-              Text("${date.month}월 ${date.day}일", style: AppFontStyle.M_20),
-              const SizedBox(height: 12),
+              // Text("${date.month}월 ${date.day}일", style: AppFontStyle.M_20),
+              // const SizedBox(height: 12),
 
               // 내용 영역
               Expanded(
