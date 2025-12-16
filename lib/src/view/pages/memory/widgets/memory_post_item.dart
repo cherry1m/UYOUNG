@@ -76,7 +76,7 @@ class _MemoryPostItemState extends State<MemoryPostItem> {
                       widget.post.images[i],
                       width: double.infinity,
                       height: 380,
-                      fit: BoxFit.cover, // 사진 꽉 채우기
+                      fit: BoxFit.cover,
                     ),
                   );
                 },

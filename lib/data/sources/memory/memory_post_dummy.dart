@@ -6,7 +6,7 @@ class MemoryPostDummy {
     "1": _tokyoPosts(), // 일본팸
     "2": _shankongPosts(),
     "3": _dolphinPosts(),
-    // "4": _europe(),
+    // "4": _kalchae(),
     "5": _couplePosts(),
     "6": _alcholPosts(),
     "7": _europe(),
@@ -44,8 +44,8 @@ class MemoryPostDummy {
       ),
 
       MemoryPostModel(
-        name: "성지현",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/japan/tokyo27.png",
@@ -54,8 +54,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/japan/Sapporo5.png",
@@ -77,8 +77,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/japan/hukuoka4.png",
@@ -102,8 +102,8 @@ class MemoryPostDummy {
       ),
 
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/japan/hukuoka2.png",
@@ -116,7 +116,7 @@ class MemoryPostDummy {
 
       MemoryPostModel(
         name: "최보빈",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/choi_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/japan/hukuoka19.png",
@@ -174,8 +174,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/hongkong30.jpeg",
@@ -186,8 +186,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/shanghi1.jpeg",
@@ -199,8 +199,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/shanghi7.jpeg",
@@ -213,8 +213,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/hongkong1.jpeg",
@@ -226,8 +226,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/hongkong7.jpeg",
@@ -239,8 +239,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/hongkong13.jpeg",
@@ -250,8 +250,8 @@ class MemoryPostDummy {
       ),
 
       MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/hongkong35.jpeg",
@@ -262,8 +262,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/shangkong/hongkong40.jpeg",
@@ -279,8 +279,8 @@ class MemoryPostDummy {
   static List<MemoryPostModel> _dolphinPosts() {
     return [
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/dolphin/guam1.jpeg",
@@ -290,7 +290,7 @@ class MemoryPostDummy {
       ),
       MemoryPostModel(
         name: "조성은",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/dolphin/guam4.jpeg",
@@ -299,8 +299,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김아인",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/dolphin/guam7.jpeg",
@@ -311,7 +311,7 @@ class MemoryPostDummy {
       ),
       MemoryPostModel(
         name: "조성은",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/dolphin/guam11.jpeg",
@@ -320,8 +320,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "성지현",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/dolphin/vietnam1.jpeg",
@@ -330,8 +330,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "성지현",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/dolphin/vietnam4.jpeg",
@@ -345,8 +345,8 @@ class MemoryPostDummy {
   static List<MemoryPostModel> _couplePosts() {
     return [
       MemoryPostModel(
-        name: "이예원",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple1.jpeg",
@@ -355,8 +355,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김재용",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple4.jpeg",
@@ -364,8 +364,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "이예원",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple6.jpeg",
@@ -373,8 +373,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "이예원",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple8.jpeg",
@@ -382,8 +382,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김재용",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple10.jpeg",
@@ -391,14 +391,14 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "김재용",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: ["assets/images/memory/couple/couple12.png"],
       ),
       MemoryPostModel(
-        name: "이예원",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple13.jpg",
@@ -406,8 +406,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "이예원",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple15.jpeg",
@@ -415,8 +415,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "이예원",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/couple/couple17.jpeg",
@@ -431,8 +431,8 @@ class MemoryPostDummy {
   static List<MemoryPostModel> _alcholPosts() {
     return [
       MemoryPostModel(
-        name: "김지영",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/alcohol/alcohol2.jpeg",
@@ -442,7 +442,7 @@ class MemoryPostDummy {
       ),
       MemoryPostModel(
         name: "윤채림",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/alcohol/alcohol5.jpeg",
@@ -452,7 +452,7 @@ class MemoryPostDummy {
       ),
       MemoryPostModel(
         name: "조성은",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/alcohol/alcohol8.jpeg",
@@ -461,13 +461,13 @@ class MemoryPostDummy {
       ),
       MemoryPostModel(
         name: "윤채림",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: ["assets/images/memory/alcohol/alcohol10.jpeg"],
       ),
       MemoryPostModel(
         name: "최보빈",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/choi_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/alcohol/alcohol11.png",
@@ -478,19 +478,19 @@ class MemoryPostDummy {
       ),
       MemoryPostModel(
         name: "윤채림",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: ["assets/images/memory/alcohol/alcohol15.jpeg"],
       ),
       MemoryPostModel(
         name: "조성은",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: ["assets/images/memory/alcohol/alcohol16.jpeg"],
       ),
       MemoryPostModel(
         name: "조성은",
-        profileImage: "assets/images/lee_profile.png",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: ["assets/images/memory/alcohol/alcohol17.jpeg"],
       ),
@@ -501,8 +501,8 @@ class MemoryPostDummy {
   static List<MemoryPostModel> _europe() {
     return [
       MemoryPostModel(
-        name: "임종훈",
-        profileImage: "assets/images/lee_profile.png",
+        name: "윤채림",
+        profileImage: "assets/images/yoon_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/europe/h1.jpeg",
@@ -512,8 +512,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
-        profileImage: "assets/images/lee_profile.png",
+        name: "최보빈",
+        profileImage: "assets/images/choi_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/europe/h5.jpeg",
@@ -522,8 +522,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
-        profileImage: "assets/images/lee_profile.png",
+        name: "최보빈",
+        profileImage: "assets/images/choi_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/europe/c1.jpeg",
@@ -533,8 +533,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/europe/c5.jpeg",
@@ -544,8 +544,8 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
-        profileImage: "assets/images/lee_profile.png",
+        name: "조성은",
+        profileImage: "assets/images/cho_profile.png",
         createdAt: "1시간 전",
         images: [
           "assets/images/memory/europe/c9.jpeg",
@@ -555,7 +555,7 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
+        name: "이윤서",
         profileImage: "assets/images/lee_profile.png",
         createdAt: "1시간 전",
         images: [
@@ -564,7 +564,7 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
+        name: "이윤서",
         profileImage: "assets/images/lee_profile.png",
         createdAt: "1시간 전",
         images: [
@@ -576,7 +576,7 @@ class MemoryPostDummy {
         ],
       ),
       MemoryPostModel(
-        name: "임종훈",
+        name: "이윤서",
         profileImage: "assets/images/lee_profile.png",
         createdAt: "1시간 전",
         images: [

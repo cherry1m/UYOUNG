@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
+import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 
 class HomeMain extends StatelessWidget {
   const HomeMain({super.key});
@@ -23,14 +24,14 @@ class HomeMain extends StatelessWidget {
           _pearlContent(),
           _shop(),
           _check(),
-          _bottomStoryCard(),
+          _bottomStoryCard(context),
         ],
       ),
     );
   }
 
   // MARK: - 하단 조개 이야기 카드
-  Widget _bottomStoryCard() {
+  Widget _bottomStoryCard(BuildContext context) {
     return Positioned(
       left: 16,
       right: 16,
@@ -60,7 +61,14 @@ class HomeMain extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   GestureDetector(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ShellStoryPage(),
+                        ),
+                      );
+                    },
                     child: Text(
                       "이어서 진행하기 >",
                       style: AppFontStyle.M_14.copyWith(
