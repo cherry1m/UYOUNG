@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
+import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
+import 'package:uyoung/src/view/pages/home/today_shell_story_page.dart';
 
 class HomeMain extends StatelessWidget {
   const HomeMain({super.key});
@@ -19,7 +21,7 @@ class HomeMain extends StatelessWidget {
               alignment: const Alignment(0, -1.0),
             ),
           ),
-          _pearlBox(),
+          _pearlBox(context),
           _alert(),
           _pearlContent(),
           _shop(),
@@ -65,7 +67,7 @@ class HomeMain extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const ShellStoryPage(),
+                          builder: (_) => TodayShellStoryPage(),
                         ),
                       );
                     },
@@ -86,14 +88,22 @@ class HomeMain extends StatelessWidget {
   }
 
   // MARK: - 상단 진주 박스, 알림 아이콘
-  Widget _pearlBox() {
+  Widget _pearlBox(BuildContext context) {
     return Positioned(
       top: 60,
       left: 20,
-      child: Image(
-        image: AssetImage("assets/images/pearl_box.png"),
-        width: 82,
-        height: 36,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendCheckPage()),
+          );
+        },
+        child: Image(
+          image: AssetImage("assets/images/pearl_box.png"),
+          width: 82,
+          height: 36,
+        ),
       ),
     );
   }

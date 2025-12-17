@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
+import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
+import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 
 class MemberInquiryPage extends StatelessWidget {
   const MemberInquiryPage({super.key});
@@ -40,17 +42,14 @@ class MemberInquiryPage extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: Image.asset(
-                "assets/images/1.png",
+                "assets/images/memory_seaotter1.png",
                 width: 200,
                 height: 130,
                 fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              "우.정.포.에.버",
-              style: AppFontStyle.M_22.copyWith(letterSpacing: 2),
-            ),
+            Text("상콩즈 🐼", style: AppFontStyle.M_22.copyWith(letterSpacing: 2)),
             const SizedBox(height: 18),
 
             // 캘린더 & 조개 이야기
@@ -64,26 +63,30 @@ class MemberInquiryPage extends StatelessWidget {
               child: Column(
                 children: [
                   ListTile(
-                    leading: ImageData(
-                      path: ImagePath.calendarOn,
-                      width: 30,
-                      height: 30,
-                    ),
-                    title: Text("캘린더", style: AppFontStyle.M_16),
-                    onTap: () {},
+                    leading: ImageData(path: ImagePath.calendarOn, width: 30),
+                    title: Text("캘린더", style: AppFontStyle.S7),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => CalendarMainPage()),
+                      );
+                    },
                   ),
                   Container(height: 1, color: const Color(0xFFE6E6E6)),
                   ListTile(
-                    leading: Container(
-                      width: 26,
-                      height: 26,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: const Color(0xFFD9D9D9),
-                      ),
+                    leading: Image.asset(
+                      "assets/images/shell_content.png",
+                      width: 45,
                     ),
-                    title: Text("조개 이야기", style: AppFontStyle.M_16),
-                    onTap: () {},
+                    title: Text("조개 이야기", style: AppFontStyle.S7),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ShellStoryPage(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -120,10 +123,10 @@ class MemberInquiryPage extends StatelessWidget {
                     onTap: () {},
                   ),
 
-                  _member("이윤서", "assets/images/user1.png"),
-                  _member("최보빈", "assets/images/user2.png"),
-                  _member("한승하", "assets/images/user3.png"),
-                  _member("김가영", "assets/images/user4.png"),
+                  _member("윤채림", "assets/images/yoon_profile.png"),
+                  _member("이윤서", "assets/images/lee_profile.png"),
+                  _member("조성은", "assets/images/cho_profile.png"),
+                  _member("최보빈", "assets/images/choi_profile.png"),
                 ],
               ),
             ),

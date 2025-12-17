@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/home/shell_story_model.dart';
 import 'package:uyoung/data/sources/home/shell_story_dummy.dart';
+import 'package:uyoung/src/view/pages/home/unfinished_shell_story_list_page.dart';
 
 class ShellStoryPage extends StatelessWidget {
   const ShellStoryPage({super.key});
@@ -12,7 +13,7 @@ class ShellStoryPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: _appBar(),
       body: SingleChildScrollView(
-        child: Column(children: [_middle(), _story()]),
+        child: Column(children: [_middle(context), _story()]),
       ),
     );
   }
@@ -34,7 +35,7 @@ class ShellStoryPage extends StatelessWidget {
     ],
   );
 
-  Widget _middle() => Padding(
+  Widget _middle(BuildContext context) => Padding(
     padding: const EdgeInsets.symmetric(horizontal: 24),
     child: SizedBox(
       height: 170,
@@ -53,10 +54,20 @@ class ShellStoryPage extends StatelessWidget {
                         style: AppFontStyle.F2,
                       ),
                       const SizedBox(height: 8),
-                      Text(
-                        "자세히 보기 >",
-                        style: AppFontStyle.S8.copyWith(
-                          color: const Color(0xFF777777),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => UnfinishedShellStoryListPage(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          "자세히 보기 >",
+                          style: AppFontStyle.S8.copyWith(
+                            color: const Color(0xFF777777),
+                          ),
                         ),
                       ),
                     ],
