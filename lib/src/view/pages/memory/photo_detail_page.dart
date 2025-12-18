@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/src/view/pages/memory/widgets/change_day_sheet.dart';
+import 'package:uyoung/src/view/pages/memory/widgets/comment_input_bar.dart';
+import 'package:uyoung/src/view/pages/memory/widgets/comment_sheet.dart';
+import 'package:uyoung/src/view/pages/memory/widgets/location_sheet.dart';
 
 class PhotoDetailPage extends StatelessWidget {
   // MARK: 전달받은 이미지 경로
@@ -24,7 +28,7 @@ class PhotoDetailPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: _appBar(context),
       body: _body(context),
-      bottomNavigationBar: _bottomInputField(),
+      bottomNavigationBar: CommentInputBar(uploaderProfile: uploaderProfile),
     );
   }
 
@@ -123,7 +127,28 @@ class PhotoDetailPage extends StatelessWidget {
                       _popupItem(
                         imagePath: "assets/images/date.png",
                         label: "날짜 및 시간 조정",
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          Navigator.pop(context); // 기존 팝업 닫기
+
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) {
+                              return Container(
+                                height: 750,
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                child: const ChangeDayPage(),
+                              );
+                            },
+                          );
+                        },
                       ),
 
                       _divider(),
@@ -131,7 +156,26 @@ class PhotoDetailPage extends StatelessWidget {
                       _popupItem(
                         imagePath: "assets/images/location.png",
                         label: "위치 조정",
-                        onTap: () => Navigator.pop(context),
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) {
+                              return Container(
+                                height: 750,
+                                width: double.infinity,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(20),
+                                  ),
+                                ),
+                                child: LocationSheet(),
+                              );
+                            },
+                          );
+                        },
                       ),
 
                       _divider(),
@@ -214,77 +258,19 @@ class PhotoDetailPage extends StatelessWidget {
                   "$uploaderName 업로드",
                   style: AppFontStyle.S8.copyWith(color: Color(0xff999999)),
                 ),
+                SizedBox(width: 220),
+                GestureDetector(
+                  onTap: () {},
+                  child: Image.asset(
+                    "assets/images/favorite.png",
+                    width: 28,
+                    height: 28,
+                  ),
+                ),
               ],
             ),
           ),
-
-          const SizedBox(height: 14),
         ],
-      ),
-    );
-  }
-
-  // MARK: 하단 댓글 입력 필드
-  Widget _bottomInputField() {
-    return SafeArea(
-      child: Container(
-        color: Colors.white,
-        padding: const EdgeInsets.fromLTRB(18, 10, 18, 10),
-        child: Row(
-          children: [
-            Container(
-              width: 45,
-              height: 45,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF6EA8EB), width: 1.6),
-              ),
-              child: const Center(
-                child: Icon(
-                  Icons.star_border,
-                  color: Color(0xFF6EA8EB),
-                  size: 26,
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-
-            Expanded(
-              child: Container(
-                height: 48,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(
-                    color: const Color(0xFF6EA8EB),
-                    width: 1.4,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Image(
-                      image: const AssetImage("assets/images/emo.png"),
-                      width: 26,
-                    ),
-                    const SizedBox(width: 8),
-
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration.collapsed(
-                          hintText: "느끼는 감정을 적어 주세요!",
-                          hintStyle: AppFontStyle.M_16.copyWith(
-                            color: Colors.grey,
-                          ),
-                        ),
-                        style: AppFontStyle.M_16.copyWith(color: Colors.black),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
