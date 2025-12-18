@@ -28,12 +28,7 @@ class FriendProfileFakePage extends StatelessWidget {
                 left: 0,
                 child: GestureDetector(
                   onTap: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FriendListFakePage(),
-                      ),
-                    );
+                    Navigator.pop(context); // ✅ 이전 화면으로 돌아가기
                   },
                   child: Container(
                     width: 56,
