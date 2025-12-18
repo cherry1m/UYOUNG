@@ -11,7 +11,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   MemoryIsland(
     '일본팸 ✈️',
     Colors.pink,
-    true,
+    false,
     photoDates: [
       // ✅ 12월 이후 (더미 반영)
       MemoryDate(12, 7),
@@ -122,7 +122,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   MemoryIsland(
     '물개 달란트 🐬',
     Colors.blue,
-    true,
+    false,
     photoDates: [
       MemoryDate(12, 19),
       MemoryDate(12, 19, id: 1),
@@ -152,7 +152,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   MemoryIsland(
     '칼챔',
     Colors.amber,
-    true,
+    false,
     photoDates: [
       MemoryDate(9, 6),
       MemoryDate(9, 11),
@@ -204,7 +204,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   MemoryIsland(
     '울 애깅',
     Colors.pinkAccent,
-    true,
+    false,
     photoDates: [
       // ✅ 12월 이후 (더미 반영)
       MemoryDate(12, 24),
@@ -275,7 +275,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   MemoryIsland(
     '술독 🍻',
     Colors.green,
-    true,
+    false,
     photoDates: [
       // ✅ 12월 이후 (더미 반영)
       MemoryDate(12, 27),
@@ -328,7 +328,7 @@ final List<MemoryIsland> defaultMemoryIslands = [
   MemoryIsland(
     '유러피안',
     Colors.indigo,
-    true,
+    false,
     photoDates: [
       MemoryDate(12, 31),
       MemoryDate(12, 31, id: 1),
