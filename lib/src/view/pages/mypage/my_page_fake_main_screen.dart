@@ -4,6 +4,7 @@ import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/invite_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/pear_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/store_fake_page.dart';
 
 /// ✅ 마이페이지 “이미지로 속이는” 화면 + 버튼(친구목록 / 조개이야기 / 진주 / 친구초대)
 class MyPageFakeScreen extends StatelessWidget {
@@ -91,6 +92,24 @@ class MyPageFakeScreen extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (_) => const ShellStoryPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // ✅ 상점 클릭 영역
+                Positioned(
+                  top: buttonTop,
+                  left: 110 + buttonWidth,
+                  child: _FakeTapArea(
+                    width: buttonWidth,
+                    height: buttonHeight,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const StoreFakePage(),
                         ),
                       );
                     },
