@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/src/view/pages/ocean/template_photo_select_page.dart';
 
 class TemplateUsePage extends StatelessWidget {
   const TemplateUsePage({super.key});
@@ -68,7 +69,15 @@ class TemplateUsePage extends StatelessWidget {
                     height: 44,
                     child: ElevatedButton(
                       onPressed: () {
-                        // TODO: 템플릿 적용 후 편집 화면으로 이동
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TemplatePhotoSelectPage(
+                              templatePreviewPath:
+                                  'assets/images/template_2.png',
+                            ),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.mainBlue,

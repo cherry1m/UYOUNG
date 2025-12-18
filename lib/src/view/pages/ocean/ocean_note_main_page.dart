@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/src/view/pages/ocean/ocean_album_shangkongz_page.dart';
 import 'package:uyoung/src/view/pages/ocean/template_main_page.dart';
 
 class OceanNoteMainPage extends StatelessWidget {
@@ -62,7 +63,13 @@ class OceanNoteMainPage extends StatelessWidget {
                     count: 1, // ← 하드코딩
                     thumbnailPath:
                         'assets/images/ocean_shang.png', // ← 너 이미지로 바꿔
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => const OceanAlbumShangKongzPage(),
+                        ),
+                      );
+                    },
                   ),
                 ],
               ),
