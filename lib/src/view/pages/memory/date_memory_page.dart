@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
+import 'package:uyoung/data/model/memory/memory_post_model.dart';
 import 'package:uyoung/data/sources/memory/memory_post_dummy.dart';
 import 'package:uyoung/src/view/common/memory/common_memory_appbar.dart';
 import 'package:uyoung/src/view/pages/memory/photo_detail_page.dart';
@@ -8,80 +9,74 @@ import 'package:uyoung/src/view/pages/memory/photo_detail_page.dart';
 class DateMemoryPage extends StatelessWidget {
   final MemoryItem item;
 
-  const DateMemoryPage({super.key, required this.item, required String title});
+  const DateMemoryPage({super.key, required this.item});
 
   @override
   Widget build(BuildContext context) {
-    // MARK: - 해당 기억섬의 전체 게시물 리스트
     final posts = MemoryPostDummy.postsByMemoryId[item.id] ?? [];
 
-    // MARK: - 이미지 + 업로더 정보까지 평탄화
-    final List<Map<String, String>> flatPhotos = posts
-        .expand(
-          (post) => post.images.map(
-            (img) => {
-              "image": img,
-              "name": post.name,
-              "profile": post.profileImage,
-            },
-          ),
-        )
-        .toList();
+    // ✅ 날짜별로 그룹핑: (yyyy-mm-dd) -> 해당 날짜의 사진들
+    final grouped = _groupPhotosByDay(posts);
+
+    // ✅ 최신 날짜가 위로 오게
+    final dates = grouped.keys.toList()..sort((a, b) => b.compareTo(a));
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: MemoryCommonAppBar(title: item.title),
-
-      body: SingleChildScrollView(
+      body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // MARK: 날짜 텍스트
-            Text("2025년 8월 14일 화요일", style: AppFontStyle.M_14),
+        itemCount: dates.length,
+        itemBuilder: (context, index) {
+          final date = dates[index];
+          final photos = grouped[date] ?? [];
 
-            const SizedBox(height: 12),
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // ✅ 날짜 텍스트 (원하는 스타일)
+              Text(_formatKoreanDate(date), style: AppFontStyle.M_14),
+              const SizedBox(height: 12),
 
-            // MARK: - 3열 Grid
-            GridView.builder(
-              itemCount: flatPhotos.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 3,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-                childAspectRatio: 1,
-              ),
-              itemBuilder: (_, index) {
-                final imagePath = flatPhotos[index]["image"]!;
-                final uploaderName = flatPhotos[index]["name"]!;
-                final uploaderProfile = flatPhotos[index]["profile"]!;
-
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => PhotoDetailPage(
-                          imagePath: imagePath,
-                          uploaderName: uploaderName,
-                          uploaderProfile: uploaderProfile,
+              GridView.builder(
+                itemCount: photos.length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1,
+                ),
+                itemBuilder: (_, i) {
+                  final p = photos[i];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => PhotoDetailPage(
+                            imagePath: p.imagePath,
+                            uploaderName: p.uploaderName,
+                            uploaderProfile: p.uploaderProfile,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: _photoItem(imagePath),
-                );
-              },
-            ),
-          ],
-        ),
+                      );
+                    },
+                    child: _photoItem(p.imagePath),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 22),
+            ],
+          );
+        },
       ),
     );
   }
 
-  // MARK: 실제 이미지 박스
+  // ✅ 실제 이미지 박스
   Widget _photoItem(String path) {
     return Container(
       decoration: BoxDecoration(
@@ -90,4 +85,79 @@ class DateMemoryPage extends StatelessWidget {
       ),
     );
   }
+
+  // =========================
+  // 그룹핑 로직
+  // =========================
+
+  Map<DateTime, List<_FlatPhoto>> _groupPhotosByDay(
+    List<MemoryPostModel> posts,
+  ) {
+    final map = <DateTime, List<_FlatPhoto>>{};
+
+    for (final post in posts) {
+      final dt = _toDateTime(post.createdAt);
+      final dayKey = DateTime(dt.year, dt.month, dt.day);
+
+      final list = map.putIfAbsent(dayKey, () => []);
+      for (final img in post.images) {
+        list.add(
+          _FlatPhoto(
+            imagePath: img,
+            uploaderName: post.name,
+            uploaderProfile: post.profileImage,
+          ),
+        );
+      }
+    }
+
+    return map;
+  }
+
+  DateTime _toDateTime(dynamic createdAt) {
+    if (createdAt is DateTime) return createdAt;
+
+    if (createdAt is String) {
+      final s = createdAt.trim();
+      final normalized = s.replaceAll('.', '-').replaceAll('/', '-');
+      final parsed1 = DateTime.tryParse(normalized);
+      if (parsed1 != null) return parsed1;
+
+      final nums = RegExp(
+        r'\d+',
+      ).allMatches(s).map((m) => m.group(0)!).toList();
+
+      if (nums.length >= 3) {
+        return DateTime(
+          int.parse(nums[0]),
+          int.parse(nums[1]),
+          int.parse(nums[2]),
+        );
+      }
+      if (nums.length == 2) {
+        return DateTime(2025, int.parse(nums[0]), int.parse(nums[1]));
+      }
+    }
+
+    return DateTime(1999, 1, 1);
+  }
+
+  String _formatKoreanDate(DateTime d) {
+    const w = ['월', '화', '수', '목', '금', '토', '일'];
+    final weekday = w[d.weekday - 1];
+    return '${d.year}년 ${d.month}월 ${d.day}일 ${weekday}요일';
+  }
+}
+
+// ✅ 날짜별 grid에 들어갈 1칸 데이터
+class _FlatPhoto {
+  final String imagePath;
+  final String uploaderName;
+  final String uploaderProfile;
+
+  const _FlatPhoto({
+    required this.imagePath,
+    required this.uploaderName,
+    required this.uploaderProfile,
+  });
 }
