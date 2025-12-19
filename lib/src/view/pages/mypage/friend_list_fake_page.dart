@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
-import 'package:uyoung/src/view/pages/mypage/my_page_fake_main_screen.dart';
 import 'friend_profile_fake_page.dart';
 
 class FriendListFakePage extends StatelessWidget {
@@ -8,7 +7,7 @@ class FriendListFakePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final width = MediaQuery.of(context).size.width;
+    final w = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -17,34 +16,37 @@ class FriendListFakePage extends StatelessWidget {
           physics: const BouncingScrollPhysics(),
           child: Stack(
             children: [
-              // ✅ 전체 친구목록 이미지
-              Image.asset(
-                'assets/images/friend_list.png',
-                width: width,
-                fit: BoxFit.fitWidth,
+              // ✅ 배경 이미지 터치 방해 방지
+              AbsorbPointer(
+                absorbing: true,
+                child: Image.asset(
+                  'assets/images/friend_list.png',
+                  width: w,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
 
-              // ✅ 뒤로가기 버튼 영역
+              // ✅ 뒤로가기
               Positioned(
-                top: 8,
+                top: 0,
                 left: 0,
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context); // ✅ 이전 화면으로 돌아가기
-                  },
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () => Navigator.pop(context),
                   child: Container(
-                    width: 56,
-                    height: 56,
+                    width: 80,
+                    height: 80,
                     color: Colors.transparent,
                   ),
                 ),
               ),
 
-              // ✅ 첫 번째 친구 프로필 터치 영역
+              // ✅ 첫번째 친구 프로필
               Positioned(
-                top: 150, // ❗️사진 기준으로 맞춘 값 (필요시 미세조정)
+                top: 150,
                 left: 0,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -54,35 +56,12 @@ class FriendListFakePage extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    width: width,
-                    height: 80,
+                    width: w,
+                    height: 90,
                     color: Colors.transparent,
                   ),
                 ),
               ),
-
-              // 👉 나중에 필요하면 이런 식으로 계속 추가 가능
-              /*
-              Positioned(
-                top: 230,
-                left: 0,
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const FriendProfileFakePage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: width,
-                    height: 80,
-                    color: Colors.transparent,
-                  ),
-                ),
-              ),
-              */
             ],
           ),
         ),
