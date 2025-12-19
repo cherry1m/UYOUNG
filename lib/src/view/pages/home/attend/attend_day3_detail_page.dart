@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 
-class AttendDay1Page extends StatelessWidget {
-  const AttendDay1Page({super.key});
+class AttendDay3DetailPage extends StatelessWidget {
+  const AttendDay3DetailPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          /// 배경
           Positioned.fill(
             child: Image.asset(
-              "assets/images/pearl_check.png",
+              "assets/images/trash2_check.png",
               fit: BoxFit.cover,
             ),
           ),
-
-          /// 하단 버튼 영역
           Positioned(
             left: 20,
             right: 20,

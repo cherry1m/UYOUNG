@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
+import 'package:uyoung/src/view/pages/home/attend/attend_stemp.dart';
 import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/home/today_shell_story_page.dart';
@@ -110,13 +111,21 @@ class HomeMain extends StatelessWidget {
 
   // MARK: - 조개 이야기 아이콘
   Widget _pearlContent() {
-    return CommonIconBages(
-      left: 20,
-      top: 106,
-      imagePath: "assets/images/shell_content.png",
-      imageSize: 60,
-      title: "조개 이야기",
-      width: 1,
+    return Builder(
+      builder: (context) {
+        return CommonIconBages(
+          left: 20,
+          top: 106,
+          imagePath: "assets/images/shell_content.png",
+          imageSize: 60,
+          title: "조개 이야기",
+
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => ShellStoryPage()),
+          ),
+        );
+      },
     );
   }
 
@@ -141,19 +150,26 @@ class HomeMain extends StatelessWidget {
       imagePath: "assets/images/store.png",
       imageSize: 60,
       title: "상점",
-      width: 1,
     );
   }
 
   // MARK: - 출석 체크 아이콘
   Widget _check() {
-    return CommonIconBages(
-      left: 335,
-      top: 186,
-      imagePath: "assets/images/pearl_shell.png",
-      imageSize: 35,
-      title: "출석 체크",
-      width: 1,
+    return Builder(
+      builder: (context) {
+        return CommonIconBages(
+          left: 335,
+          top: 186,
+          imagePath: "assets/images/pearl_shell.png",
+          imageSize: 35,
+          title: "출석 체크",
+
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => AttendStempPage()),
+          ),
+        );
+      },
     );
   }
 }

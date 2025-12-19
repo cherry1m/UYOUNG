@@ -1,51 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
 
-class AttendDay1Page extends StatelessWidget {
-  const AttendDay1Page({super.key});
+class AttendStempPage extends StatelessWidget {
+  const AttendStempPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          /// 배경
           Positioned.fill(
             child: Image.asset(
-              "assets/images/pearl_check.png",
+              "assets/images/checkstep2.png",
               fit: BoxFit.cover,
             ),
           ),
-
-          /// 하단 버튼 영역
           Positioned(
             left: 20,
             right: 20,
             bottom: 24,
             child: SafeArea(
               top: false,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _bottomButton(
-                      text: "상점으로 가기",
-                      onTap: () {
-                        // TODO: 상점 페이지 이동
-                      },
-                    ),
-                  ),
-
-                  const SizedBox(width: 12),
-
-                  Expanded(
-                    child: _bottomButton(
-                      text: "홈으로 가기",
-                      onTap: () {
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                      },
-                    ),
-                  ),
-                ],
+              child: Expanded(
+                child: _bottomButton(
+                  text: "아이템 확인해 보기",
+                  onTap: () {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
+                ),
               ),
             ),
           ),
@@ -59,10 +41,11 @@ class AttendDay1Page extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        width: double.infinity,
         height: 52,
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0xFF6EA8EB),
           borderRadius: BorderRadius.circular(14),
           boxShadow: [
             BoxShadow(
@@ -72,10 +55,7 @@ class AttendDay1Page extends StatelessWidget {
             ),
           ],
         ),
-        child: Text(
-          text,
-          style: AppFontStyle.H6.copyWith(color: const Color(0xFF6EA8EB)),
-        ),
+        child: Text(text, style: AppFontStyle.H6.copyWith(color: Colors.white)),
       ),
     );
   }
