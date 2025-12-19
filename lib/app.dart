@@ -1,4 +1,3 @@
-// lib/src/app/uyoung_app.dart
 import 'package:flutter/material.dart';
 import 'package:uyoung/src/view/common/navigation/uyoung_bottom_nav_bar.dart';
 import 'package:uyoung/src/view/pages/home/home_main.dart';
@@ -7,15 +6,25 @@ import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
 import 'package:uyoung/src/view/pages/ocean/ocean_note_main_page.dart';
 
 class UyoungApp extends StatefulWidget {
-  const UyoungApp({Key? key}) : super(key: key);
+  final int initialIndex;
+
+  const UyoungApp({
+    Key? key,
+    this.initialIndex = 0, // 기본 탭
+  }) : super(key: key);
 
   @override
   State<UyoungApp> createState() => _UyoungAppState();
 }
 
 class _UyoungAppState extends State<UyoungApp> {
-  // 기본 탭: 기억섬 (원하면 2로 바꿔서 캘린더부터 열어도 됨)
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex; // ✅ 여기서 초기 탭 설정
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,9 +36,9 @@ class _UyoungAppState extends State<UyoungApp> {
           index: _currentIndex,
           children: const [
             HomeMain(), // 0
-            MemoryMainPage(), // 1 기억섬
-            CalendarMainPage(), // 2 캘린더
-            OceanNoteMainPage(), // 3 바다노트
+            MemoryMainPage(), // 1
+            CalendarMainPage(), // 2
+            OceanNoteMainPage(), // 3 ✅ 바다노트
             _DummyPage(title: '마이페이지'), // 4
           ],
         ),
@@ -46,7 +55,7 @@ class _UyoungAppState extends State<UyoungApp> {
   }
 }
 
-// 임시 화면 – 나중에 실제 페이지로 교체
+// 임시 마이페이지
 class _DummyPage extends StatelessWidget {
   final String title;
 
