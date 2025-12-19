@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/data/model/calendar/memory_model.dart';
 import 'package:uyoung/src/view/pages/calendar/widget/memory_island_section.dart';
@@ -24,7 +25,7 @@ class MemoryBottomSheet extends StatelessWidget {
 
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.55,
+      initialChildSize: 0.48,
       minChildSize: 0.35,
       maxChildSize: 0.9,
       builder: (context, scrollController) {
