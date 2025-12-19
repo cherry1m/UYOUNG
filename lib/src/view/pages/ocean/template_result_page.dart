@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
-import 'package:uyoung/src/view/pages/ocean/ocean_note_main_page.dart';
+import 'package:uyoung/app.dart'; // ✅ 여기! (RootPage가 app.dart에 있을 때)
 
 class TemplateResultPage extends StatelessWidget {
   const TemplateResultPage({super.key});
@@ -12,15 +12,15 @@ class TemplateResultPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
-
-        /// 👉 저장하기 버튼
+        elevation: 0,
         actions: [
           TextButton(
             onPressed: () {
-              // OceanNote 메인으로 이동 (뒤 스택 정리하고 싶으면 pushAndRemoveUntil)
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (_) => const OceanNoteMainPage()),
+                MaterialPageRoute(
+                  builder: (_) => const UyoungApp(initialIndex: 3),
+                ),
                 (route) => false,
               );
             },
