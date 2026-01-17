@@ -6,7 +6,20 @@ import 'package:uyoung/src/view/pages/memory/widgets/sticker_selector.dart';
 class CommentInputBar extends StatefulWidget {
   final String uploaderProfile;
 
-  const CommentInputBar({super.key, required this.uploaderProfile});
+  // 부모 상태(사진 페이지)에서 내려주는 값/이벤트
+  final String? selectedSticker;
+  final ValueChanged<String> onStickerSelected;
+  final VoidCallback onStickerRemoved;
+  final VoidCallback onSend;
+
+  const CommentInputBar({
+    super.key,
+    required this.uploaderProfile,
+    required this.selectedSticker,
+    required this.onStickerSelected,
+    required this.onStickerRemoved,
+    required this.onSend,
+  });
 
   @override
   State<CommentInputBar> createState() => _CommentInputBarState();
@@ -14,26 +27,20 @@ class CommentInputBar extends StatefulWidget {
 
 class _CommentInputBarState extends State<CommentInputBar> {
   bool _isInputMode = false;
-  String? _selectedSticker;
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Container(
         color: Colors.white,
-
-        /// 🔹 여기서 전체 세로 영역 조절
         padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
-
-        /// 🔹 사진 바로 밑까지 차오르게
         constraints: const BoxConstraints(minHeight: 160),
-
         child: _isInputMode ? _commentInputUI() : _defaultButtons(),
       ),
     );
   }
 
-  /// ───────────────── 기본 상태 (3개 버튼)
+  // 기본 상태 (3개 버튼)
   Widget _defaultButtons() {
     return Row(
       children: [
@@ -73,39 +80,35 @@ class _CommentInputBarState extends State<CommentInputBar> {
     );
   }
 
-  /// ───────────────── 입력 모드 전체 UI
+  // 입력 모드 전체 UI
   Widget _commentInputUI() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        /// 🔹 사진 바로 아래 여백 확보
         const SizedBox(height: 6),
 
-        /// ───── 스티커 선택 영역
+        // 스티커 선택 영역
         StickerSelector(
-          selectedSticker: _selectedSticker,
+          selectedSticker: widget.selectedSticker,
           onSelect: (path) {
-            setState(() => _selectedSticker = path);
+            widget.onStickerSelected(path);
           },
           onRemove: () {
-            setState(() => _selectedSticker = null);
+            widget.onStickerRemoved();
           },
         ),
 
         const SizedBox(height: 14),
 
-        /// ───── 입력창 + 프로필 + 전송
+        // 입력창 + 프로필 + 전송
         Row(
           children: [
-            /// 프로필 (좌측)
             CircleAvatar(
               radius: 20,
               backgroundImage: AssetImage(widget.uploaderProfile),
             ),
-
             const SizedBox(width: 8),
 
-            /// 입력 필드
             Expanded(
               child: Container(
                 height: 40,
@@ -129,13 +132,12 @@ class _CommentInputBarState extends State<CommentInputBar> {
 
             const SizedBox(width: 8),
 
-            /// 전송 버튼
             GestureDetector(
               onTap: () {
-                // TODO: 전송 처리
+                widget.onSend();
+
                 setState(() {
                   _isInputMode = false;
-                  _selectedSticker = null;
                 });
               },
               child: Container(
@@ -158,7 +160,7 @@ class _CommentInputBarState extends State<CommentInputBar> {
     );
   }
 
-  /// ───────────────── 공통 원형 버튼
+  // 공통 원형 버튼
   Widget _circleButton({required String image, VoidCallback? onTap}) {
     return GestureDetector(
       onTap: onTap,
