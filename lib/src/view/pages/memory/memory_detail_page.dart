@@ -86,7 +86,7 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> {
             onPageChanged: (i) => setState(() => selectedIndex = i),
             children: [
               AllMemoryPage(title: widget.item.title, memoryId: widget.item.id),
-              DateMemoryPage(title: widget.item.title, item: widget.item),
+              DateMemoryPage(item: widget.item),
               TimelineMemoryPage(title: widget.item.title, item: widget.item),
               AlbumMemoryPage(title: widget.item.title, item: widget.item),
             ],
