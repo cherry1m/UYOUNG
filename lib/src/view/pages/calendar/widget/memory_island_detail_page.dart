@@ -192,7 +192,7 @@ class _MemoryIslandDetailPageState extends State<MemoryIslandDetailPage> {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               child: Text(
-                                '취소',
+                                '삭제',
                                 style: AppFontStyle.M_14.copyWith(
                                   color: Colors.black,
                                 ),

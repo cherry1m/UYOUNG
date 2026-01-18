@@ -52,6 +52,8 @@ class TemplatePhotoBottomSheetPanel extends StatelessWidget {
             ),
           ],
         ),
+
+        // ✅ 패널 자체는 고정, "그리드만" 스크롤 가능하게
         child: Column(
           children: [
             // 핸들
@@ -77,12 +79,10 @@ class TemplatePhotoBottomSheetPanel extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
 
-            // 그리드
-            SizedBox(
-              height: 180, // 시안처럼 2줄 보이게
+            // ✅ 여기! 남은 영역을 그리드가 먹고, 그리드가 스크롤됨
+            Expanded(
               child: _PhotoGrid(
                 photos: photos,
                 selected: selected,
@@ -90,7 +90,7 @@ class TemplatePhotoBottomSheetPanel extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 5),
+            const SizedBox(height: 10),
 
             // 안내 + 다음(카운트)
             Row(
@@ -98,14 +98,14 @@ class TemplatePhotoBottomSheetPanel extends StatelessWidget {
                 Text('메인 사진을 선택해 주세요!', style: AppFontStyle.H7),
                 const Spacer(),
                 SizedBox(
-                  height: 36,
+                  height: 35,
                   child: ElevatedButton(
                     onPressed: canNext ? onNext : null,
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
                       backgroundColor: AppColors.mainBlue,
                       disabledBackgroundColor: const Color(0xFFE3E6EB),
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -119,7 +119,7 @@ class TemplatePhotoBottomSheetPanel extends StatelessWidget {
               ],
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 10),
 
             // 선택 썸네일 바
             _SelectedThumbBar(selected: selected, onRemove: onRemoveSelected),
@@ -130,7 +130,7 @@ class TemplatePhotoBottomSheetPanel extends StatelessWidget {
   }
 }
 
-/// ✅ 그리드
+/// ✅ 그리드 (스크롤 가능)
 class _PhotoGrid extends StatelessWidget {
   final List<String> photos;
   final List<String> selected;
@@ -144,25 +144,27 @@ class _PhotoGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 시안: 사진 없으면 2줄(=8칸) 채워보이게
     final itemCount = 1 + (photos.isEmpty ? 7 : photos.length);
 
     return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
+      padding: const EdgeInsets.only(bottom: 4), // 살짝 여유
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 4,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
+
+        // ✅ 간격 줄이기 (기존 12 → 8)
+        crossAxisSpacing: 5,
+        mainAxisSpacing: 5,
+
+        // ✅ 사진 세로 비율 살짝 키우기
+        childAspectRatio: 1.0, // 기본 정사각 (더 키우고 싶으면 0.95)
       ),
       itemCount: itemCount,
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return _AddPhotoTile(onTap: () {});
-        }
+        if (index == 0) return _AddPhotoTile(onTap: () {});
 
         final photoIndex = index - 1;
         final hasPhoto = photoIndex < photos.length;
-
         if (!hasPhoto) return _PhotoPlaceholderTile(onTap: () {});
 
         final path = photos[photoIndex];
@@ -189,20 +191,23 @@ class _SelectedThumbBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (selected.isEmpty) return const SizedBox(height: 70);
+    // ✅ 0장일 때 높이 10
+    if (selected.isEmpty) return const SizedBox(height: 10);
 
+    // ✅ 1장 이상일 때 높이 70
     return SizedBox(
-      height: 70,
+      height: 75,
       child: ListView.separated(
+        physics: const BouncingScrollPhysics(),
         scrollDirection: Axis.horizontal,
         itemCount: selected.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        separatorBuilder: (_, __) => const SizedBox(width: 5),
         itemBuilder: (context, i) {
           final path = selected[i];
           return Stack(
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(6),
                 child: Image.asset(
                   path,
                   width: 62,
@@ -214,6 +219,7 @@ class _SelectedThumbBar extends StatelessWidget {
                 top: 4,
                 right: 4,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () => onRemove(path),
                   child: Container(
                     width: 18,
@@ -364,7 +370,6 @@ class _PhotoPlaceholderTile extends StatelessWidget {
   }
 }
 
-/// ✅ 실제 사진 타일 + 선택 순번(상단 중앙)
 class _PhotoAssetTile extends StatelessWidget {
   final String assetPath;
   final bool isSelected;
@@ -391,22 +396,19 @@ class _PhotoAssetTile extends StatelessWidget {
             if (isSelected && selectedOrder != null)
               Positioned(
                 top: 8,
-                left: 0,
-                right: 0,
-                child: Center(
-                  child: Container(
-                    width: 26,
-                    height: 26,
-                    decoration: BoxDecoration(
-                      color: AppColors.mainBlue,
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      '$selectedOrder',
-                      style: AppFontStyle.H9.copyWith(color: Colors.white),
-                    ),
+                right: 8,
+                child: Container(
+                  width: 20,
+                  height: 20,
+                  decoration: BoxDecoration(
+                    color: AppColors.mainBlue,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1),
+                  ),
+                  alignment: Alignment.center,
+                  child: Text(
+                    '$selectedOrder',
+                    style: AppFontStyle.H9.copyWith(color: Colors.white),
                   ),
                 ),
               ),
