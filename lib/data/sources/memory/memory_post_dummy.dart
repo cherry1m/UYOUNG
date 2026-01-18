@@ -136,6 +136,16 @@ class MemoryPostDummy {
     return [
       // 12월 13일
       MemoryPostModel(
+        name: "조성은",
+        profileImage: "assets/images/lee_profile.png",
+        createdAt: "12월 13일",
+        images: [
+          "assets/images/memory/shangkong/pic1.jpeg",
+          "assets/images/memory/shangkong/pic2.jpeg",
+          "assets/images/memory/shangkong/pic3.jpeg",
+        ],
+      ),
+      MemoryPostModel(
         name: "이윤서",
         profileImage: "assets/images/lee_profile.png",
         createdAt: "12월 13일",
