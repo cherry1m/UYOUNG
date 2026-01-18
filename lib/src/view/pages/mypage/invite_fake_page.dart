@@ -5,14 +5,17 @@ class InviteFakePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final w = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+      body: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 25),
           child: Image.asset(
             'assets/images/invite_friend.png',
-
+            width: w,
             fit: BoxFit.fitWidth,
           ),
         ),
