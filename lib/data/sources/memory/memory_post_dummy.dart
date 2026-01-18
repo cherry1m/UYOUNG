@@ -131,7 +131,7 @@ class MemoryPostDummy {
     ];
   }
 
-  // MARK: - 상콩팸 게시물
+  // MARK: - 상콩즈 게시물
   static List<MemoryPostModel> _shankongPosts() {
     return [
       // 12월 13일
