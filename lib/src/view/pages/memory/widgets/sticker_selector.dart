@@ -25,51 +25,7 @@ class StickerSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        /// ───── 선택된 스티커 미리보기
-        if (selectedSticker != null)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 96, // ⬅️ 크기 키움
-                  height: 96,
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.45), // ⬅️ 검정 배경만
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Image.asset(selectedSticker!, width: 64, height: 64),
-                  ),
-                ),
-
-                /// X 버튼
-                Positioned(
-                  top: -6,
-                  right: -6,
-                  child: GestureDetector(
-                    onTap: onRemove,
-                    child: Container(
-                      width: 22,
-                      height: 22,
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-        /// ───── 스티커 선택 영역 (테두리 1개)
+        // 스티커 선택 영역
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 18),
           decoration: BoxDecoration(

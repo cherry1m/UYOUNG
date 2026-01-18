@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/data/model/memory/memory_post_model.dart';
@@ -21,21 +20,6 @@ class TimelineMemoryPage extends StatefulWidget {
 }
 
 class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
-  GoogleMapController? _mapController;
-
-  // 일단 고정 도쿄 (나중에 선택 위치에 따라 변경 가능)
-  static const CameraPosition _initialPosition = CameraPosition(
-    target: LatLng(35.6595, 139.7005),
-    zoom: 13,
-  );
-
-  final Set<Marker> _markers = {
-    const Marker(
-      markerId: MarkerId("base"),
-      position: LatLng(35.6595, 139.7005),
-    ),
-  };
-
   String? _selectedDate; // ex) "12월 7일"
 
   @override
@@ -77,15 +61,11 @@ class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
       appBar: MemoryCommonAppBar(title: widget.item.title),
       body: Column(
         children: [
-          // MAP
+          // ✅ MAP 자리 -> 이미지로 대체
           SizedBox(
             height: 300,
-            child: GoogleMap(
-              initialCameraPosition: _initialPosition,
-              zoomControlsEnabled: false,
-              markers: _markers,
-              onMapCreated: (c) => _mapController = c,
-            ),
+            width: double.infinity,
+            child: Image.asset('assets/images/map.png', fit: BoxFit.cover),
           ),
 
           Expanded(
@@ -242,7 +222,7 @@ class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
     final map = <String, List<_PhotoKeyed>>{};
 
     for (final p in photos) {
-      // ✅ 핵심 수정: LocationDummy의 key는 "이미지 경로"다
+      // ✅ LocationDummy의 key는 "이미지 경로"라고 가정
       final info = MemoryLocationDummy.get(p.imagePath);
 
       // label 우선, 없으면 groupKey, 그것도 없으면 "위치 미지정"
