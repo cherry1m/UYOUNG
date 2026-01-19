@@ -83,10 +83,10 @@ class _PhotoDetailPageState extends State<PhotoDetailPage> {
       centerTitle: true,
       title: Column(
         children: [
-          Text("일본 도쿄", style: AppFontStyle.H6),
+          Text("중국 상하이", style: AppFontStyle.H6),
           const SizedBox(height: 2),
           Text(
-            "2025년 08월 14일 오후 3:38",
+            "2025년 12월 13일 오후 3:38",
             style: AppFontStyle.S9.copyWith(color: const Color(0xff999999)),
           ),
         ],
