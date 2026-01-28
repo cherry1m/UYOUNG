@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/store_fake_page.dart';
 
 class MyPageFakeScreen extends StatelessWidget {
   const MyPageFakeScreen({super.key});
@@ -37,7 +38,26 @@ class MyPageFakeScreen extends StatelessWidget {
                     );
                   },
                   child: Container(
-                    width: w - 36,
+                    width: 75,
+                    height: 90, // 친구목록 영역 높이
+                    color: Colors.transparent, // 👈 절대 지우지 마
+                  ),
+                ),
+              ),
+
+              // ✅ 상점 클릭 영역 (조개이야기 옆)
+              Positioned(
+                top: 450, // ❗️조개이야기 옆 위치에 맞게 조절
+                left: 210, // 오른쪽 영역
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const StoreFakePage()),
+                    );
+                  },
+                  child: Container(
+                    width: 75,
                     height: 90, // 친구목록 영역 높이
                     color: Colors.transparent, // 👈 절대 지우지 마
                   ),
