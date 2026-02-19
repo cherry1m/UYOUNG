@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/app.dart';
+import 'package:uyoung/src/view/pages/login/login_main_page.dart';
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -19,7 +19,6 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        // 메모리 뷰모델에 load() 적용
         ChangeNotifierProvider(create: (_) => MemoryViewModel()..load()),
         ChangeNotifierProvider(create: (_) => CalendarViewModel()),
       ],
@@ -42,7 +41,9 @@ class UyoungRoot extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: UyoungApp(),
+
+      // ✅ feat/login 브랜치에서는 로그인 화면부터 시작
+      home: LoginMainPage(),
     );
   }
 }
