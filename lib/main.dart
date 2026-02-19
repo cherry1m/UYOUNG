@@ -6,9 +6,16 @@ import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Supabase 초기화 추가
+  await Supabase.initialize(
+    url: 'YOUR_PROJECT_URL',
+    anonKey: 'YOUR_PUBLIC_ANON_KEY',
+  );
 
   // 날짜 포맷 초기화
   await initializeDateFormatting('ko_KR', null);
