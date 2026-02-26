@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/app.dart';
-import 'package:uyoung/src/view/pages/root_page.dart';
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -49,7 +48,7 @@ class UyoungRoot extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: RootPage(),
+      home: UyoungApp(),
     );
   }
 }
