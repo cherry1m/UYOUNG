@@ -1,8 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/model/memory/invitee_user_model.dart';
+import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 
 class SelectMemberPage extends StatefulWidget {
-  const SelectMemberPage({super.key});
+  final List<InviteeUser> initialSelectedMembers;
+
+  const SelectMemberPage({
+    super.key,
+    this.initialSelectedMembers = const [],
+  });
 
   @override
   State<SelectMemberPage> createState() => _SelectMemberPageState();
@@ -10,69 +20,115 @@ class SelectMemberPage extends StatefulWidget {
 
 class _SelectMemberPageState extends State<SelectMemberPage> {
   final TextEditingController _searchController = TextEditingController();
-
-  final List<String> allMembers = ["윤채림", "이윤서", "조성은", "최보빈", "한승하"];
-  List<String> selectedMembers = [];
+  final List<InviteeUser> _selectedMembers = [];
+  final List<InviteeUser> _searchResults = [];
+  Timer? _debounce;
+  bool _isLoading = false;
+  String? _errorText;
 
   @override
   void initState() {
     super.initState();
-    _searchController.addListener(() => setState(() {}));
+    _selectedMembers.addAll(widget.initialSelectedMembers);
+    _searchController.addListener(_onSearchChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _searchMembers('');
+    });
   }
 
-  List<String> get filteredMembers {
-    if (_searchController.text.isEmpty) return allMembers;
-    return allMembers.where((m) => m.contains(_searchController.text)).toList();
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _searchMembers(_searchController.text.trim());
+    });
+    setState(() {});
+  }
+
+  Future<void> _searchMembers(String keyword) async {
+    setState(() {
+      _isLoading = true;
+      _errorText = null;
+    });
+
+    try {
+      final results = await context.read<MemoryViewModel>().searchUsers(keyword);
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _searchResults
+          ..clear()
+          ..addAll(results);
+      });
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _errorText = error.toString();
+        _searchResults.clear();
+      });
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  bool _isSelected(InviteeUser user) {
+    return _selectedMembers.any((member) => member.id == user.id);
+  }
+
+  void _toggleUser(InviteeUser user) {
+    setState(() {
+      if (_isSelected(user)) {
+        _selectedMembers.removeWhere((member) => member.id == user.id);
+      } else {
+        _selectedMembers.add(user);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool hasSelected = selectedMembers.isNotEmpty;
+    final bool hasSelected = _selectedMembers.isNotEmpty;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: _appBar(),
-
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // MARK: 선택된 멤버 리스트 (가로 스크롤)
-          if (selectedMembers.isNotEmpty)
+          if (_selectedMembers.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: selectedMembers
-                      .map((name) => _selectedProfile(name))
+                  children: _selectedMembers
+                      .map((member) => _selectedProfile(member))
                       .toList(),
                 ),
               ),
             ),
-
-          // MARK: 검색창
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
             child: _searchField(),
           ),
-
           const SizedBox(height: 8),
-
-          // MARK: 전체 멤버 리스트
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              itemCount: filteredMembers.length,
-              itemBuilder: (_, index) {
-                final name = filteredMembers[index];
-                final bool isSelected = selectedMembers.contains(name);
-
-                return _memberRow(name, isSelected);
-              },
-            ),
-          ),
-
-          // MARK: 추가하기 버튼
+          Expanded(child: _buildBody()),
           Container(
             padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
             child: SizedBox(
@@ -80,9 +136,7 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
               height: 56,
               child: TextButton(
                 onPressed: hasSelected
-                    ? () {
-                        Navigator.pop(context, selectedMembers);
-                      }
+                    ? () => Navigator.pop(context, List<InviteeUser>.from(_selectedMembers))
                     : null,
                 style: TextButton.styleFrom(
                   backgroundColor: hasSelected
@@ -93,7 +147,7 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
                   ),
                 ),
                 child: Text(
-                  "추가하기",
+                  '추가하기',
                   style: AppFontStyle.M_18.copyWith(
                     color: hasSelected ? Colors.white : Colors.grey,
                   ),
@@ -106,28 +160,65 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
     );
   }
 
-  // MARK: 멤버 단일 Row
-  Widget _memberRow(String name, bool isSelected) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isSelected ? selectedMembers.remove(name) : selectedMembers.add(name);
-        });
+  Widget _buildBody() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (_errorText != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            _errorText!,
+            style: AppFontStyle.M_14.copyWith(color: Colors.redAccent),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    if (_searchResults.isEmpty) {
+      return Center(
+        child: Text(
+          '검색 결과가 없어요.',
+          style: AppFontStyle.M_16.copyWith(color: Colors.grey),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      itemCount: _searchResults.length,
+      itemBuilder: (_, index) {
+        final user = _searchResults[index];
+        return _memberRow(user, _isSelected(user));
       },
+    );
+  }
+
+  Widget _memberRow(InviteeUser user, bool isSelected) {
+    return GestureDetector(
+      onTap: () => _toggleUser(user),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE6E6E6),
-                shape: BoxShape.circle,
-              ),
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: const Color(0xFFE6E6E6),
+              backgroundImage: user.avatarUrl?.isNotEmpty == true
+                  ? NetworkImage(user.avatarUrl!)
+                  : null,
+              child: user.avatarUrl?.isNotEmpty == true
+                  ? null
+                  : Text(
+                      user.nickname.isEmpty ? '?' : user.nickname[0],
+                      style: AppFontStyle.M_18.copyWith(color: Colors.black54),
+                    ),
             ),
             const SizedBox(width: 16),
-            Expanded(child: Text(name, style: AppFontStyle.M_16)),
+            Expanded(child: Text(user.nickname, style: AppFontStyle.M_16)),
             Container(
               width: 28,
               height: 28,
@@ -135,9 +226,7 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
                 color: isSelected ? const Color(0xFF6EA8EB) : Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected
-                      ? Colors.transparent
-                      : const Color(0xFFBDBDBD),
+                  color: isSelected ? Colors.transparent : const Color(0xFFBDBDBD),
                   width: 1.3,
                 ),
               ),
@@ -151,28 +240,33 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
     );
   }
 
-  // MARK: 선택된 멤버 원 + 제거
-  Widget _selectedProfile(String name) {
+  Widget _selectedProfile(InviteeUser user) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Column(
         children: [
           Stack(
             children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFE6E6E6), width: 1),
-                ),
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: Colors.white,
+                backgroundImage: user.avatarUrl?.isNotEmpty == true
+                    ? NetworkImage(user.avatarUrl!)
+                    : null,
+                child: user.avatarUrl?.isNotEmpty == true
+                    ? null
+                    : Text(
+                        user.nickname.isEmpty ? '?' : user.nickname[0],
+                        style: AppFontStyle.M_18.copyWith(color: Colors.black54),
+                      ),
               ),
               Positioned(
                 top: -2,
                 right: -2,
                 child: GestureDetector(
-                  onTap: () => setState(() => selectedMembers.remove(name)),
+                  onTap: () => setState(() {
+                    _selectedMembers.removeWhere((member) => member.id == user.id);
+                  }),
                   child: Container(
                     width: 22,
                     height: 22,
@@ -181,29 +275,24 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
                       color: const Color(0xFF6EA8EB),
                       border: Border.all(color: Colors.white, width: 2),
                     ),
-                    child: const Icon(
-                      Icons.close,
-                      size: 14,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.close, size: 14, color: Colors.white),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          Text(name, style: AppFontStyle.M_14),
+          Text(user.nickname, style: AppFontStyle.M_14),
         ],
       ),
     );
   }
 
-  // MARK: 검색창
   Widget _searchField() {
     return TextField(
       controller: _searchController,
       decoration: InputDecoration(
-        hintText: "이름 검색",
+        hintText: '이름 또는 초성 검색',
         hintStyle: AppFontStyle.M_16.copyWith(color: Colors.grey),
         suffixIcon: const Icon(Icons.search, color: Colors.black),
         enabledBorder: const UnderlineInputBorder(
@@ -217,7 +306,6 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
     );
   }
 
-  // MARK: AppBar
   AppBar _appBar() => AppBar(
     backgroundColor: Colors.white,
     elevation: 0,
@@ -226,6 +314,6 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
       icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
       onPressed: () => Navigator.pop(context),
     ),
-    title: Text("대화 상대", style: AppFontStyle.M_20),
+    title: Text('대화 상대', style: AppFontStyle.M_20),
   );
 }

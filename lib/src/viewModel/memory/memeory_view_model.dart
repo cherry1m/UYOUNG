@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:uyoung/data/model/memory/invitee_user_model.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
-import 'package:uyoung/data/sources/memory/memory_storage.dart';
+import 'package:uyoung/data/repositories/memory/memory_repository.dart';
 
 class MemoryViewModel extends ChangeNotifier {
-  // MARK: - 저장소 인스턴스
-  // SharedPreferences를 통해 데이터를 저장하고 불러오기 위한 클래스
-  final MemoryStorage _storage = MemoryStorage();
+  final MemoryRepository _repository = MemoryRepository();
 
   // MARK: - 화면에 표시할 기억섬 리스트
   List<MemoryItem> items = [];
@@ -16,6 +16,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 이름 수정 관련 상태
   int? editingIndex;
   final TextEditingController textController = TextEditingController();
+  bool isSubmitting = false;
 
   // MARK: - 초기 데이터 불러오기
   Future<void> load() async {
@@ -26,10 +27,10 @@ class MemoryViewModel extends ChangeNotifier {
     // MARK: - 기존 저장된 기억섬 데이터 초기화 (필요할 때만 사용)
     // 상콩즈, 일본팸 ID 꼬일 때 반드시 필요함
     // 최초 1회만 쓰고 이후엔 주석 처리 권장
-    // await _storage.clearAll();
+    // await _repository.clearAll();
 
     // SharedPreferences에서 데이터 로드
-    items = await _storage.loadItems();
+    items = await _repository.loadItems();
 
     // 로딩 완료
     isLoaded = true;
@@ -56,7 +57,7 @@ class MemoryViewModel extends ChangeNotifier {
     items[index].title = newTitle;
     editingIndex = null;
 
-    _storage.saveItems(items);
+    _repository.saveItems(items);
     notifyListeners();
   }
 
@@ -66,7 +67,7 @@ class MemoryViewModel extends ChangeNotifier {
 
     items[index].isFavorite = !items[index].isFavorite;
 
-    _storage.saveItems(items);
+    _repository.saveItems(items);
     notifyListeners();
   }
 
@@ -76,7 +77,7 @@ class MemoryViewModel extends ChangeNotifier {
 
     items[index].isNotificationOn = !items[index].isNotificationOn;
 
-    _storage.saveItems(items);
+    _repository.saveItems(items);
     notifyListeners();
   }
 
@@ -86,7 +87,75 @@ class MemoryViewModel extends ChangeNotifier {
 
     items.removeAt(index);
 
-    _storage.saveItems(items);
+    _repository.saveItems(items);
     notifyListeners();
+  }
+
+  Future<List<InviteeUser>> searchUsers(String searchTerm) {
+    return _repository.searchUsers(searchTerm);
+  }
+
+  Future<String> createIsland({
+    required String? islandName,
+    required String color,
+    XFile? backgroundImage,
+    List<InviteeUser> invitees = const [],
+  }) async {
+    isSubmitting = true;
+    notifyListeners();
+
+    try {
+      final resolvedName = _resolveIslandName(
+        islandName: islandName,
+        invitees: invitees,
+      );
+      final bgUrl = backgroundImage == null
+          ? null
+          : await _repository.uploadIslandBackground(backgroundImage);
+
+      final islandId = await _repository.createIslandWithMembers(
+        islandName: resolvedName,
+        color: color,
+        bgUrl: bgUrl,
+        inviteeIds: invitees.map((user) => user.id).toList(),
+      );
+
+      items.insert(
+        0,
+        MemoryItem(
+          id: islandId,
+          title: resolvedName,
+          isFavorite: false,
+          isNotificationOn: true,
+          imagePath: bgUrl,
+        ),
+      );
+      await _repository.saveItems(items);
+      return islandId;
+    } finally {
+      isSubmitting = false;
+      notifyListeners();
+    }
+  }
+
+  String _resolveIslandName({
+    required String? islandName,
+    required List<InviteeUser> invitees,
+  }) {
+    final trimmed = islandName?.trim() ?? '';
+    if (trimmed.isNotEmpty) {
+      return trimmed;
+    }
+
+    if (invitees.isEmpty) {
+      return '나의 기억섬';
+    }
+
+    if (invitees.length == 1) {
+      return '${invitees.first.nickname}의 기억섬';
+    }
+
+    final names = invitees.take(2).map((user) => user.nickname).join(', ');
+    return invitees.length > 2 ? '$names 외 ${invitees.length - 2}명' : names;
   }
 }

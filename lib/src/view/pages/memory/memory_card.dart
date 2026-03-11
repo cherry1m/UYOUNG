@@ -50,7 +50,7 @@ class MemoryCard extends StatelessWidget {
                       padding: const EdgeInsets.all(5),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.asset(imagePath!, fit: BoxFit.cover),
+                        child: _buildImage(),
                       ),
                     ),
                   ),
@@ -81,5 +81,17 @@ class MemoryCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildImage() {
+    if (imagePath == null || imagePath!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (imagePath!.startsWith('http://') || imagePath!.startsWith('https://')) {
+      return Image.network(imagePath!, fit: BoxFit.cover);
+    }
+
+    return Image.asset(imagePath!, fit: BoxFit.cover);
   }
 }
