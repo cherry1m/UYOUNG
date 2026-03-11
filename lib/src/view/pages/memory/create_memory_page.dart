@@ -3,133 +3,37 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
-import 'package:uyoung/data/model/memory/invitee_user_model.dart';
+import 'package:uyoung/src/view/pages/memory/memory_creation_result.dart';
 import 'package:uyoung/src/view/pages/memory/select_member_page.dart';
-import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
+import 'package:uyoung/src/viewModel/memory/create_memory_view_model.dart';
 
-class CreateMemoryPage extends StatefulWidget {
+class CreateMemoryPage extends StatelessWidget {
   const CreateMemoryPage({super.key});
 
   @override
-  State<CreateMemoryPage> createState() => _CreateMemoryPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => CreateMemoryViewModel(),
+      child: const _CreateMemoryStepOneView(),
+    );
+  }
 }
 
-class _CreateMemoryPageState extends State<CreateMemoryPage> {
-  static const int _maxTitleLength = 12;
-  static const List<String> _palette = [
-    '#FF6B6B',
-    '#FF8E72',
-    '#FFB26B',
-    '#FFD56B',
-    '#F4E76E',
-    '#A4D96C',
-    '#5FCD8C',
-    '#54D2C6',
-    '#6FD3FF',
-    '#6EA8EB',
-    '#7C93FF',
-    '#9A7CFF',
-    '#B780FF',
-    '#E08EFF',
-    '#FF94C2',
-    '#D7B48C',
-    '#B6BDC6',
-    '#8B9AA9',
-    '#5D6D7E',
-    '#2D3A4A',
-  ];
+class _CreateMemoryStepOneView extends StatelessWidget {
+  const _CreateMemoryStepOneView();
 
-  final TextEditingController _titleController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-  final ImagePicker _imagePicker = ImagePicker();
-
-  List<InviteeUser> _selectedMembers = [];
-  String? _selectedColor;
-  XFile? _selectedImage;
-  Uint8List? _selectedImageBytes;
-
-  @override
-  void initState() {
-    super.initState();
-    _titleController.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _focusNode.dispose();
-    super.dispose();
-  }
-
-  bool get _canSubmit => _selectedColor != null;
-
-  Future<void> _pickImage() async {
-    final file = await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (file == null) {
+  Future<void> _pickImage(BuildContext context) async {
+    final file = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (file == null || !context.mounted) {
       return;
     }
 
-    final bytes = await file.readAsBytes();
-    setState(() {
-      _selectedImage = file;
-      _selectedImageBytes = bytes;
-    });
-  }
-
-  Future<void> _selectMembers() async {
-    final result = await Navigator.push<List<InviteeUser>>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => SelectMemberPage(initialSelectedMembers: _selectedMembers),
-      ),
-    );
-
-    if (result == null) {
-      return;
-    }
-
-    setState(() {
-      _selectedMembers = result;
-    });
-  }
-
-  Future<void> _submit() async {
-    if (!_canSubmit) {
-      return;
-    }
-
-    final vm = context.read<MemoryViewModel>();
-
-    try {
-      final islandId = await vm.createIsland(
-        islandName: _titleController.text,
-        color: _selectedColor!,
-        backgroundImage: _selectedImage,
-        invitees: _selectedMembers,
-      );
-
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('기억섬이 생성됐어요. ID: $islandId')),
-      );
-      Navigator.pop(context);
-    } catch (error) {
-      if (!mounted) {
-        return;
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(error.toString())),
-      );
-    }
+    await context.read<CreateMemoryViewModel>().setSelectedImage(file);
   }
 
   @override
   Widget build(BuildContext context) {
-    final vm = context.watch<MemoryViewModel>();
+    final vm = context.watch<CreateMemoryViewModel>();
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -137,22 +41,22 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _headerSection(context),
+            _headerSection(context, vm),
             const SizedBox(height: 28),
-            _contentSection(context, vm.isSubmitting),
+            _contentSection(context, vm),
           ],
         ),
       ),
     );
   }
 
-  Widget _headerSection(BuildContext context) {
+  Widget _headerSection(BuildContext context, CreateMemoryViewModel vm) {
     return Stack(
       children: [
         SizedBox(
           width: double.infinity,
           height: 300,
-          child: _selectedImageBytes == null
+          child: vm.selectedImageBytes == null
               ? Container(
                   color: const Color(0xFFE6E6E6),
                   alignment: Alignment.center,
@@ -162,14 +66,18 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
                     size: 48,
                   ),
                 )
-              : Image.memory(_selectedImageBytes!, fit: BoxFit.cover),
+              : Image.memory(vm.selectedImageBytes!, fit: BoxFit.cover),
         ),
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 0,
           child: _headerBar(context),
         ),
-        Positioned(bottom: 16, right: 16, child: _galleryButton()),
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: _galleryButton(() => _pickImage(context)),
+        ),
       ],
     );
   }
@@ -205,7 +113,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  Widget _contentSection(BuildContext context, bool isSubmitting) {
+  Widget _contentSection(BuildContext context, CreateMemoryViewModel vm) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
@@ -217,54 +125,19 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
             '바다 위에 새로운 섬이 떠오르고 있어요.',
             style: AppFontStyle.M_14.copyWith(color: Colors.grey),
           ),
-          const SizedBox(height: 20),
-          _memberProfiles(),
           const SizedBox(height: 28),
-          _memoryNameField(),
+          _memoryNameField(vm),
           const SizedBox(height: 28),
-          _colorPaletteSection(),
+          _colorPaletteSection(vm),
           const SizedBox(height: 32),
-          _confirmButton(isSubmitting),
+          _nextButton(context, vm),
           const SizedBox(height: 24),
         ],
       ),
     );
   }
 
-  Widget _memberProfiles() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(onTap: _selectMembers, child: _addProfileButton()),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _selectedMembers.isEmpty
-              ? Padding(
-                  padding: const EdgeInsets.only(top: 14),
-                  child: Text(
-                    '초대할 멤버를 선택하면 여기에 표시돼요.',
-                    style: AppFontStyle.M_14.copyWith(color: Colors.grey),
-                  ),
-                )
-              : SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: _selectedMembers
-                        .map(
-                          (member) => Padding(
-                            padding: const EdgeInsets.only(right: 16),
-                            child: _selectedProfile(member),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-        ),
-      ],
-    );
-  }
-
-  Widget _memoryNameField() {
+  Widget _memoryNameField(CreateMemoryViewModel vm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -277,7 +150,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
                 alignment: Alignment.bottomCenter,
                 child: Container(
                   height: 1,
-                  color: _titleController.text.isEmpty
+                  color: vm.titleController.text.isEmpty
                       ? Colors.grey
                       : const Color(0xFF6EA8EB),
                 ),
@@ -287,14 +160,16 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _titleController,
-                    focusNode: _focusNode,
+                    controller: vm.titleController,
+                    onChanged: (_) => vm.onTitleChanged(),
                     inputFormatters: [
-                      LengthLimitingTextInputFormatter(_maxTitleLength),
+                      LengthLimitingTextInputFormatter(
+                        CreateMemoryViewModel.maxTitleLength,
+                      ),
                     ],
                     style: AppFontStyle.M_16.copyWith(color: Colors.black),
                     decoration: InputDecoration(
-                      hintText: '비워두면 자동으로 이름이 생성돼요',
+                      hintText: '비워두면 친구 이름으로 자동 생성돼요',
                       hintStyle: AppFontStyle.M_16.copyWith(color: Colors.grey),
                       border: InputBorder.none,
                       contentPadding: const EdgeInsets.only(bottom: 8),
@@ -304,7 +179,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
                   child: Text(
-                    '${_titleController.text.length}/$_maxTitleLength',
+                    '${vm.titleController.text.length}/${CreateMemoryViewModel.maxTitleLength}',
                     style: AppFontStyle.M_14.copyWith(color: Colors.grey),
                   ),
                 ),
@@ -316,7 +191,7 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  Widget _colorPaletteSection() {
+  Widget _colorPaletteSection(CreateMemoryViewModel vm) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -325,10 +200,10 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
         Wrap(
           spacing: 12,
           runSpacing: 12,
-          children: _palette.map((color) {
-            final isSelected = _selectedColor == color;
+          children: CreateMemoryViewModel.palette.map((color) {
+            final isSelected = vm.selectedColor == color;
             return GestureDetector(
-              onTap: () => setState(() => _selectedColor = color),
+              onTap: () => vm.setColor(color),
               child: Container(
                 width: 34,
                 height: 34,
@@ -354,14 +229,32 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
     );
   }
 
-  Widget _confirmButton(bool isSubmitting) {
+  Widget _nextButton(BuildContext context, CreateMemoryViewModel vm) {
     return SizedBox(
       width: double.infinity,
       height: 56,
       child: TextButton(
-        onPressed: !_canSubmit || isSubmitting ? null : _submit,
+        onPressed: vm.canProceedToMembers
+            ? () async {
+                final result = await Navigator.push<MemoryCreationResult>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => ChangeNotifierProvider.value(
+                      value: vm,
+                      child: const SelectMemberPage(),
+                    ),
+                  ),
+                );
+
+                if (!context.mounted || result == null) {
+                  return;
+                }
+
+                Navigator.pop(context, result);
+              }
+            : null,
         style: TextButton.styleFrom(
-          backgroundColor: _canSubmit
+          backgroundColor: vm.canProceedToMembers
               ? const Color(0xFF6EA8EB)
               : const Color(0xFFE0E0E0),
           disabledBackgroundColor: const Color(0xFFE0E0E0),
@@ -369,88 +262,19 @@ class _CreateMemoryPageState extends State<CreateMemoryPage> {
             borderRadius: BorderRadius.circular(14),
           ),
         ),
-        child: isSubmitting
-            ? const SizedBox(
-                width: 22,
-                height: 22,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.4,
-                  color: Colors.white,
-                ),
-              )
-            : Text(
-                '기억섬 만들기',
-                style: AppFontStyle.M_18.copyWith(
-                  color: _canSubmit ? Colors.white : Colors.grey,
-                ),
-              ),
-      ),
-    );
-  }
-
-  Widget _addProfileButton() {
-    return Container(
-      width: 70,
-      height: 70,
-      decoration: BoxDecoration(
-        color: const Color(0xFFF3F6FA),
-        borderRadius: BorderRadius.circular(22),
-        border: Border.all(color: const Color(0xFFE4EBF2)),
-      ),
-      child: const Icon(Icons.person_add_alt_1_rounded, color: Color(0xFF6EA8EB)),
-    );
-  }
-
-  Widget _selectedProfile(InviteeUser member) {
-    return Column(
-      children: [
-        Stack(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFFE6E6E6),
-              backgroundImage: member.avatarUrl?.isNotEmpty == true
-                  ? NetworkImage(member.avatarUrl!)
-                  : null,
-              child: member.avatarUrl?.isNotEmpty == true
-                  ? null
-                  : Text(
-                      member.nickname.isEmpty ? '?' : member.nickname[0],
-                      style: AppFontStyle.M_18.copyWith(color: Colors.black54),
-                    ),
-            ),
-            Positioned(
-              top: -2,
-              right: -2,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedMembers.removeWhere((user) => user.id == member.id);
-                  });
-                },
-                child: Container(
-                  width: 22,
-                  height: 22,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: const Color(0xFF6EA8EB),
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: const Icon(Icons.close, size: 14, color: Colors.white),
-                ),
-              ),
-            ),
-          ],
+        child: Text(
+          '다음',
+          style: AppFontStyle.M_18.copyWith(
+            color: vm.canProceedToMembers ? Colors.white : Colors.grey,
+          ),
         ),
-        const SizedBox(height: 6),
-        Text(member.nickname, style: AppFontStyle.M_14),
-      ],
+      ),
     );
   }
 
-  Widget _galleryButton() {
+  Widget _galleryButton(VoidCallback onTap) {
     return GestureDetector(
-      onTap: _pickImage,
+      onTap: onTap,
       child: Container(
         width: 48,
         height: 48,

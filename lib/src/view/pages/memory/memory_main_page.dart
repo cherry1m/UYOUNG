@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/common/memory/common_confirm_dialog.dart';
 import 'package:uyoung/src/view/pages/memory/create_memory_page.dart';
+import 'package:uyoung/src/view/pages/memory/memory_creation_result.dart';
 import 'package:uyoung/src/view/pages/memory/memory_card.dart';
 import 'package:uyoung/src/view/pages/memory/memory_detail_page.dart';
 import 'package:uyoung/src/view/pages/memory/memory_search_page.dart';
@@ -26,7 +27,12 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => context.read<MemoryViewModel>().load());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      context.read<MemoryViewModel>().load();
+    });
   }
 
   // MARK: - Overlay 해제
@@ -203,11 +209,15 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
 
           // MARK: - 기억섬 생성 페이지 이동
           IconButton(
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push<MemoryCreationResult>(
                 context,
                 MaterialPageRoute(builder: (_) => const CreateMemoryPage()),
               );
+
+              if (!mounted || result == null) {
+                return;
+              }
             },
             icon: Image.asset('assets/images/chat.png', width: 55),
           ),
