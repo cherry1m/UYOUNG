@@ -29,6 +29,16 @@ class MemoryItem {
     this.imagePath,
   });
 
+  factory MemoryItem.fromIslandMap(Map<String, dynamic> map) {
+    return MemoryItem(
+      id: map['id'] as String,
+      title: (map['name'] ?? map['island_name'] ?? '') as String,
+      isFavorite: (map['isFavorite'] ?? false) as bool,
+      isNotificationOn: (map['isNotificationOn'] ?? true) as bool,
+      imagePath: (map['bg_url'] ?? map['imagePath']) as String?,
+    );
+  }
+
   // MARK: - Map → MemoryItem 변환
   // SharedPreferences에서 불러온 Map 데이터를 모델 객체로 변환한다.
   factory MemoryItem.fromMap(Map<String, dynamic> map) {

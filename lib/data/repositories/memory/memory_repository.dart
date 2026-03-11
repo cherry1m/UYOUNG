@@ -28,8 +28,36 @@ class MemoryRepository {
   }
 
   // MARK: - 데이터 불러오기
-  // SharedPreferences에서 MemoryItem 리스트를 읽어와 반환한다.
-  Future<List<MemoryItem>> loadItems() => _storage.loadItems();
+  // 서버 우선으로 기억섬 리스트를 읽고, 실패 시 로컬 캐시를 반환한다.
+  Future<List<MemoryItem>> loadItems() async {
+    if (!SupabaseConfig.isConfigured) {
+      return _storage.loadItems();
+    }
+
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    if (currentUser == null) {
+      return _storage.loadItems();
+    }
+
+    try {
+      final response = await _client
+          .from('island_members')
+          .select('islands(id, name, bg_url, color)')
+          .eq('user_id', currentUser.id);
+
+      final islands = (response as List<dynamic>)
+          .map((row) => Map<String, dynamic>.from(row as Map))
+          .map((row) => row['islands'])
+          .whereType<Map>()
+          .map((island) => MemoryItem.fromIslandMap(Map<String, dynamic>.from(island)))
+          .toList();
+
+      await saveItems(islands);
+      return islands;
+    } catch (_) {
+      return _storage.loadItems();
+    }
+  }
 
   // MARK: - 데이터 저장
   // 변경된 MemoryItem 리스트를 SharedPreferences에 저장한다.
