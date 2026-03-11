@@ -19,6 +19,9 @@ class MemoryItem {
   // 카드에 표시되는 이미지 경로.
   String? imagePath;
 
+  // 서버 최신 업데이트 시각.
+  DateTime? updatedAt;
+
   // MARK: - 생성자
   // 전달된 값들을 이용해 MemoryItem 인스턴스를 생성한다.
   MemoryItem({
@@ -27,15 +30,19 @@ class MemoryItem {
     required this.isFavorite,
     required this.isNotificationOn,
     this.imagePath,
+    this.updatedAt,
   });
 
-  factory MemoryItem.fromIslandMap(Map<String, dynamic> map) {
+  factory MemoryItem.fromIslandMemberMap(Map<String, dynamic> map) {
+    final island = Map<String, dynamic>.from((map['islands'] ?? {}) as Map);
+
     return MemoryItem(
-      id: map['id'] as String,
-      title: (map['name'] ?? map['island_name'] ?? '') as String,
-      isFavorite: (map['isFavorite'] ?? false) as bool,
-      isNotificationOn: (map['isNotificationOn'] ?? true) as bool,
-      imagePath: (map['bg_url'] ?? map['imagePath']) as String?,
+      id: island['id'] as String,
+      title: (island['name'] ?? island['island_name'] ?? '') as String,
+      isFavorite: (map['is_favorite'] ?? false) as bool,
+      isNotificationOn: !((map['is_muted'] ?? false) as bool),
+      imagePath: island['bg_url'] as String?,
+      updatedAt: _parseDateTime(island['updated_at']),
     );
   }
 
@@ -48,6 +55,7 @@ class MemoryItem {
       isFavorite: map['isFavorite'],
       isNotificationOn: map['isNotificationOn'],
       imagePath: map['imagePath'],
+      updatedAt: _parseDateTime(map['updatedAt']),
     );
   }
 
@@ -60,6 +68,15 @@ class MemoryItem {
       "isFavorite": isFavorite,
       "isNotificationOn": isNotificationOn,
       "imagePath": imagePath,
+      "updatedAt": updatedAt?.toIso8601String(),
     };
+  }
+
+  static DateTime? _parseDateTime(dynamic value) {
+    if (value is! String || value.isEmpty) {
+      return null;
+    }
+
+    return DateTime.tryParse(value);
   }
 }

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/src/view/common/memory/common_confirm_dialog.dart';
@@ -55,6 +57,7 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
     _removeOverlay();
     selectedIndex = index;
     setState(() {});
+    HapticFeedback.lightImpact();
 
     final render = cardKey.currentContext!.findRenderObject() as RenderBox;
     final pos = render.localToGlobal(Offset.zero);
@@ -67,7 +70,10 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
             // MARK: - 어두운 배경 클릭 시 닫힘
             GestureDetector(
               onTap: _removeOverlay,
-              child: Container(color: Colors.black.withOpacity(0.3)),
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                child: Container(color: Colors.black.withOpacity(0.22)),
+              ),
             ),
 
             // MARK: - 카드 아래에 모달 위치 고정
@@ -176,7 +182,18 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
       subtitle: "나가면 되돌릴 수 없습니다.",
       confirmLabel: "네, 나갈게요",
       cancelLabel: "아니요",
-      onConfirm: () => vm.removeItem(index),
+      onConfirm: () async {
+        try {
+          await vm.removeItem(index);
+        } catch (error) {
+          if (!mounted) {
+            return;
+          }
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(error.toString())));
+        }
+      },
     );
   }
 
@@ -228,6 +245,8 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
       // MARK: - 콘텐츠 영역
       body: vm.isLoaded == false
           ? const Center(child: CircularProgressIndicator())
+          : vm.items.isEmpty
+          ? _emptyState(context)
           : GridView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               itemCount: vm.items.length,
@@ -250,8 +269,8 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                   controller: vm.textController,
 
                   // MARK: - 이름 수정 완료 처리
-                  onEditComplete: () {
-                    vm.renameItem(index, vm.textController.text);
+                  onEditComplete: () async {
+                    await vm.renameItem(index, vm.textController.text);
                     vm.stopEditing();
                   },
 
@@ -270,6 +289,53 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                 );
               },
             ),
+    );
+  }
+
+  Widget _emptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '기억이 모일 섬이 아직 없어요.',
+              style: AppFontStyle.M_20,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Text(
+              '기억섬을 만들고 함께 추억을 쌓아보세요.',
+              style: AppFontStyle.M_14.copyWith(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: TextButton(
+                onPressed: () async {
+                  await Navigator.push<MemoryCreationResult>(
+                    context,
+                    MaterialPageRoute(builder: (_) => const CreateMemoryPage()),
+                  );
+                },
+                style: TextButton.styleFrom(
+                  backgroundColor: const Color(0xFF6EA8EB),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: Text(
+                  '기억섬 생성하기',
+                  style: AppFontStyle.M_18.copyWith(color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -42,14 +42,14 @@ class MemoryRepository {
     try {
       final response = await _client
           .from('island_members')
-          .select('islands(id, name, bg_url, color)')
-          .eq('user_id', currentUser.id);
+          .select('is_favorite, is_muted, islands(id, name, bg_url, color, updated_at)')
+          .eq('user_id', currentUser.id)
+          .order('is_favorite', ascending: false)
+          .order('updated_at', ascending: false, referencedTable: 'islands');
 
       final islands = (response as List<dynamic>)
           .map((row) => Map<String, dynamic>.from(row as Map))
-          .map((row) => row['islands'])
-          .whereType<Map>()
-          .map((island) => MemoryItem.fromIslandMap(Map<String, dynamic>.from(island)))
+          .map(MemoryItem.fromIslandMemberMap)
           .toList();
 
       await saveItems(islands);
@@ -112,6 +112,42 @@ class MemoryRepository {
     );
 
     return response as String;
+  }
+
+  Future<void> updateIslandMemberSettings({
+    required String islandId,
+    bool? isFavorite,
+    bool? isMuted,
+  }) async {
+    final currentUser = _client.auth.currentUser;
+    if (currentUser == null) {
+      throw StateError('로그인이 필요합니다.');
+    }
+
+    final updates = <String, dynamic>{};
+    if (isFavorite != null) {
+      updates['is_favorite'] = isFavorite;
+    }
+    if (isMuted != null) {
+      updates['is_muted'] = isMuted;
+    }
+
+    if (updates.isEmpty) {
+      return;
+    }
+
+    await _client
+        .from('island_members')
+        .update(updates)
+        .eq('island_id', islandId)
+        .eq('user_id', currentUser.id);
+  }
+
+  Future<void> leaveIsland(String islandId) async {
+    await _client.rpc(
+      'leave_island',
+      params: {'target_island_id': islandId},
+    );
   }
 
   String _contentTypeFor(String fileName) {

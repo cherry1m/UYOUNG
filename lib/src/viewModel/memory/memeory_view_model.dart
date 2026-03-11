@@ -14,6 +14,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 이름 수정 관련 상태
   int? editingIndex;
   final TextEditingController textController = TextEditingController();
+  String? errorMessage;
 
   // MARK: - 초기 데이터 불러오기
   Future<void> load() async {
@@ -26,8 +27,13 @@ class MemoryViewModel extends ChangeNotifier {
     // 최초 1회만 쓰고 이후엔 주석 처리 권장
     // await _repository.clearAll();
 
-    // SharedPreferences에서 데이터 로드
-    items = await _repository.loadItems();
+    try {
+      items = await _repository.loadItems();
+      _sortItems();
+      errorMessage = null;
+    } catch (error) {
+      errorMessage = error.toString();
+    }
 
     // 로딩 완료
     isLoaded = true;
@@ -48,49 +54,77 @@ class MemoryViewModel extends ChangeNotifier {
   }
 
   // MARK: - 이름 변경
-  void renameItem(int index, String newTitle) {
+  Future<void> renameItem(int index, String newTitle) async {
     if (index < 0 || index >= items.length) return;
 
     items[index].title = newTitle;
     editingIndex = null;
 
-    _repository.saveItems(items);
+    await _repository.saveItems(items);
     notifyListeners();
   }
 
   // MARK: - 즐겨찾기 토글
-  void toggleFavorite(int index) {
+  Future<void> toggleFavorite(int index) async {
     if (index < 0 || index >= items.length) return;
 
     items[index].isFavorite = !items[index].isFavorite;
-
-    _repository.saveItems(items);
+    await _repository.updateIslandMemberSettings(
+      islandId: items[index].id,
+      isFavorite: items[index].isFavorite,
+    );
+    _sortItems();
+    await _repository.saveItems(items);
     notifyListeners();
   }
 
   // MARK: - 알림 토글
-  void toggleAlarm(int index) {
+  Future<void> toggleAlarm(int index) async {
     if (index < 0 || index >= items.length) return;
 
     items[index].isNotificationOn = !items[index].isNotificationOn;
-
-    _repository.saveItems(items);
+    await _repository.updateIslandMemberSettings(
+      islandId: items[index].id,
+      isMuted: !items[index].isNotificationOn,
+    );
+    await _repository.saveItems(items);
     notifyListeners();
   }
 
   // MARK: - 기억섬 삭제
-  void removeItem(int index) {
+  Future<void> removeItem(int index) async {
     if (index < 0 || index >= items.length) return;
 
+    final removedItem = items[index];
     items.removeAt(index);
-
-    _repository.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.leaveIsland(removedItem.id);
+      await _repository.saveItems(items);
+    } catch (_) {
+      items.insert(index, removedItem);
+      notifyListeners();
+      rethrow;
+    }
   }
 
   Future<void> insertCreatedItem(MemoryItem item) async {
     items.insert(0, item);
+    _sortItems();
     await _repository.saveItems(items);
     notifyListeners();
+  }
+
+  void _sortItems() {
+    items.sort((a, b) {
+      if (a.isFavorite != b.isFavorite) {
+        return a.isFavorite ? -1 : 1;
+      }
+
+      final aUpdatedAt = a.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bUpdatedAt = b.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bUpdatedAt.compareTo(aUpdatedAt);
+    });
   }
 }

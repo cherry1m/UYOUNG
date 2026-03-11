@@ -54,6 +54,24 @@ class MemoryCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                if (!isNotificationOn)
+                  Positioned(
+                    top: 12,
+                    left: 12,
+                    child: _badgeIcon(
+                      Icons.volume_off_rounded,
+                      backgroundColor: Colors.black.withOpacity(0.56),
+                    ),
+                  ),
+                if (isFavorite)
+                  Positioned(
+                    top: 12,
+                    right: 12,
+                    child: _badgeIcon(
+                      Icons.star_rounded,
+                      backgroundColor: const Color(0xFFFFC83D),
+                    ),
+                  ),
               ],
             ),
           ),
@@ -93,5 +111,20 @@ class MemoryCard extends StatelessWidget {
     }
 
     return Image.asset(imagePath!, fit: BoxFit.cover);
+  }
+
+  Widget _badgeIcon(
+    IconData icon, {
+    required Color backgroundColor,
+  }) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        shape: BoxShape.circle,
+      ),
+      child: Icon(icon, size: 14, color: Colors.white),
+    );
   }
 }
