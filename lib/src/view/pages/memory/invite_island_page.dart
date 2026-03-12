@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/island_invite_detail_model.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/src/view/pages/memory/memory_detail_page.dart';
 import 'package:uyoung/src/viewModel/memory/invite_island_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
+import 'dart:async';
 
 class InviteIslandPage extends StatelessWidget {
   final String inviteCode;
@@ -24,12 +26,61 @@ class InviteIslandPage extends StatelessWidget {
   }
 }
 
-class _InviteIslandView extends StatelessWidget {
+class _InviteIslandView extends StatefulWidget {
   const _InviteIslandView();
+
+  @override
+  State<_InviteIslandView> createState() => _InviteIslandViewState();
+}
+
+class _InviteIslandViewState extends State<_InviteIslandView> {
+  StreamSubscription<AuthState>? _authSubscription;
+  bool _waitingForLogin = false;
+  late InviteIslandViewModel _inviteVm;
+  late MemoryViewModel _memoryVm;
+  bool _didBindDependencies = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _authSubscription = Supabase.instance.client.auth.onAuthStateChange.listen((
+      data,
+    ) {
+      if (!_waitingForLogin) {
+        return;
+      }
+
+      if (data.session == null) {
+        return;
+      }
+
+      _waitingForLogin = false;
+      _handleJoin();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didBindDependencies) {
+      return;
+    }
+
+    _inviteVm = context.read<InviteIslandViewModel>();
+    _memoryVm = context.read<MemoryViewModel>();
+    _didBindDependencies = true;
+  }
+
+  @override
+  void dispose() {
+    _authSubscription?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<InviteIslandViewModel>();
+    final isLoggedIn = Supabase.instance.client.auth.currentUser != null;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -55,7 +106,21 @@ class _InviteIslandView extends StatelessWidget {
                 child: TextButton(
                   onPressed: vm.isJoining
                       ? null
-                      : () => _handleJoin(context, vm),
+                      : () {
+                          if (isLoggedIn) {
+                            _handleJoin();
+                            return;
+                          }
+
+                          setState(() {
+                            _waitingForLogin = true;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('로그인 후 이 화면으로 돌아오면 자동으로 입장해요.'),
+                            ),
+                          );
+                        },
                   style: TextButton.styleFrom(
                     backgroundColor: const Color(0xFF6EA8EB),
                     shape: RoundedRectangleBorder(
@@ -72,7 +137,11 @@ class _InviteIslandView extends StatelessWidget {
                           ),
                         )
                       : Text(
-                          '입장하기',
+                          isLoggedIn
+                              ? '입장하기'
+                              : _waitingForLogin
+                              ? '로그인 대기 중'
+                              : '로그인 후 입장하기',
                           style: AppFontStyle.M_18.copyWith(color: Colors.white),
                         ),
                 ),
@@ -81,23 +150,17 @@ class _InviteIslandView extends StatelessWidget {
     );
   }
 
-  Future<void> _handleJoin(
-    BuildContext context,
-    InviteIslandViewModel vm,
-  ) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final memoryVm = context.read<MemoryViewModel>();
-
+  Future<void> _handleJoin() async {
     try {
-      final detail = await vm.join();
+      final detail = await _inviteVm.join();
       final item = detail.toMemoryItem();
-      await memoryVm.insertOrUpdateItem(item);
+      await _memoryVm.insertOrUpdateItem(item);
 
-      if (!context.mounted) {
+      if (!mounted) {
         return;
       }
 
-      messenger.showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('기억섬에 입장했어요.')),
       );
       Navigator.pushReplacement(
@@ -105,11 +168,13 @@ class _InviteIslandView extends StatelessWidget {
         MaterialPageRoute(builder: (_) => MemoryDetailPage(item: item)),
       );
     } catch (error) {
-      if (!context.mounted) {
+      if (!mounted) {
         return;
       }
 
-      messenger.showSnackBar(SnackBar(content: Text(error.toString())));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.toString())));
     }
   }
 }
