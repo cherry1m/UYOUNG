@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/invitee_user_model.dart';
+import 'package:uyoung/data/repositories/memory/memory_repository.dart';
 import 'package:uyoung/src/view/pages/memory/memory_creation_result.dart';
 import 'package:uyoung/src/viewModel/memory/create_memory_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
@@ -29,6 +30,7 @@ class _SelectMemberStepView extends StatefulWidget {
 
 class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
   final TextEditingController _searchController = TextEditingController();
+  final MemoryRepository _repository = MemoryRepository();
 
   @override
   void dispose() {
@@ -48,8 +50,23 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
         return;
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('기억섬이 생성됐어요. ID: ${createdItem.id}')),
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('기억섬이 생성됐어요. ID: ${createdItem.id}'),
+          action: createdItem.inviteCode?.isNotEmpty == true
+              ? SnackBarAction(
+                  label: '링크 복사',
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(
+                        text: _repository.buildInviteLink(createdItem.inviteCode!),
+                      ),
+                    );
+                  },
+                )
+              : null,
+        ),
       );
       Navigator.pop(context, MemoryCreationResult(item: createdItem));
     } catch (error) {
@@ -64,17 +81,9 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
   }
 
   Future<void> _copyInviteLink() async {
-    await Clipboard.setData(
-      const ClipboardData(text: '기억섬 초대 링크는 서버 연동 후 연결 예정입니다.'),
-    );
-
-    if (!mounted) {
-      return;
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('임시 안내 문구를 클립보드에 복사했어요.')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('기억섬 생성 후 링크를 복사할 수 있어요.')));
   }
 
   @override

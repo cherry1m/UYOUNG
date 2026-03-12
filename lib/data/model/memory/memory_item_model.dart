@@ -25,6 +25,8 @@ class MemoryItem {
   // 카드에 노출할 참여 멤버 프리뷰.
   List<MemoryMemberPreview> members;
 
+  String? inviteCode;
+
   // MARK: - 생성자
   // 전달된 값들을 이용해 MemoryItem 인스턴스를 생성한다.
   MemoryItem({
@@ -35,6 +37,7 @@ class MemoryItem {
     this.imagePath,
     this.updatedAt,
     this.members = const [],
+    this.inviteCode,
   });
 
   factory MemoryItem.fromIslandMemberMap(
@@ -51,6 +54,7 @@ class MemoryItem {
       imagePath: island['bg_image_url'] as String?,
       updatedAt: _parseDateTime(island['updated_at']),
       members: members,
+      inviteCode: island['invite_code'] as String?,
     );
   }
 
@@ -67,6 +71,7 @@ class MemoryItem {
       members: ((map['members'] ?? []) as List<dynamic>)
           .map((member) => MemoryMemberPreview.fromMap(Map<String, dynamic>.from(member as Map)))
           .toList(),
+      inviteCode: map['inviteCode'] as String?,
     );
   }
 
@@ -81,6 +86,7 @@ class MemoryItem {
       "imagePath": imagePath,
       "updatedAt": updatedAt?.toIso8601String(),
       "members": members.map((member) => member.toMap()).toList(),
+      "inviteCode": inviteCode,
     };
   }
 

@@ -43,7 +43,7 @@ class MemoryRepository {
       final response = await _client
           .from('island_members')
           .select(
-            'island_id, is_favorite, is_muted, islands(id, name, bg_image_url, theme_color, updated_at)',
+            'island_id, is_favorite, is_muted, islands(id, name, bg_image_url, theme_color, invite_code, updated_at)',
           )
           .eq('user_id', currentUser.id)
           .order('is_favorite', ascending: false)
@@ -172,6 +172,24 @@ class MemoryRepository {
       'leave_island',
       params: {'target_island_id': islandId},
     );
+  }
+
+  Future<String?> fetchInviteCode(String islandId) async {
+    final response = await _client
+        .from('islands')
+        .select('invite_code')
+        .eq('id', islandId)
+        .maybeSingle();
+
+    if (response == null) {
+      return null;
+    }
+
+    return response['invite_code'] as String?;
+  }
+
+  String buildInviteLink(String inviteCode) {
+    return '${SupabaseConfig.inviteBaseUrl}?code=$inviteCode';
   }
 
   String _contentTypeFor(String fileName) {

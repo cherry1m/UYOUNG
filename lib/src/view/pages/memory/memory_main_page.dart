@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/repositories/memory/memory_repository.dart';
 import 'package:uyoung/src/view/common/memory/common_confirm_dialog.dart';
 import 'package:uyoung/src/view/pages/memory/create_memory_page.dart';
 import 'package:uyoung/src/view/pages/memory/memory_creation_result.dart';
@@ -19,6 +20,8 @@ class MemoryMainPage extends StatefulWidget {
 }
 
 class _MemoryMainPageState extends State<MemoryMainPage> {
+  final MemoryRepository _repository = MemoryRepository();
+
   // MARK: - Overlay 관련 상태
   OverlayEntry? _overlayEntry;
 
@@ -138,6 +141,12 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
           ),
           const Divider(height: 1),
 
+          _modalItem("assets/images/chat.png", "초대 링크 복사", () {
+            _copyInviteLink(item);
+            _removeOverlay();
+          }),
+          const Divider(height: 1),
+
           _modalItem("assets/images/exit.png", "기억섬 나가기", () {
             _removeOverlay();
             _showExitDialog(index);
@@ -145,6 +154,31 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _copyInviteLink(item) async {
+    final inviteCode = item.inviteCode as String?;
+    if (inviteCode == null || inviteCode.isEmpty) {
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('초대 링크를 찾을 수 없어요.')));
+      return;
+    }
+
+    await Clipboard.setData(
+      ClipboardData(text: _repository.buildInviteLink(inviteCode)),
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('초대 링크를 복사했어요.')));
   }
 
   // MARK: - 모달 내부 버튼 공통 위젯

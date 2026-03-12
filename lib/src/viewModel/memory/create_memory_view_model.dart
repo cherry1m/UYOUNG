@@ -111,6 +111,7 @@ class CreateMemoryViewModel extends ChangeNotifier {
         bgUrl: bgUrl,
         inviteeIds: _selectedMembers.map((user) => user.id).toList(),
       );
+      final inviteCode = await _repository.fetchInviteCode(islandId);
 
       return MemoryItem(
         id: islandId,
@@ -118,6 +119,7 @@ class CreateMemoryViewModel extends ChangeNotifier {
         isFavorite: false,
         isNotificationOn: true,
         imagePath: bgUrl,
+        inviteCode: inviteCode,
       );
     } finally {
       isSubmitting = false;
