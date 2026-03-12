@@ -22,6 +22,9 @@ class MemoryItem {
   // 서버 최신 업데이트 시각.
   DateTime? updatedAt;
 
+  // 카드에 노출할 참여 멤버 프리뷰.
+  List<MemoryMemberPreview> members;
+
   // MARK: - 생성자
   // 전달된 값들을 이용해 MemoryItem 인스턴스를 생성한다.
   MemoryItem({
@@ -31,9 +34,13 @@ class MemoryItem {
     required this.isNotificationOn,
     this.imagePath,
     this.updatedAt,
+    this.members = const [],
   });
 
-  factory MemoryItem.fromIslandMemberMap(Map<String, dynamic> map) {
+  factory MemoryItem.fromIslandMemberMap(
+    Map<String, dynamic> map, {
+    List<MemoryMemberPreview> members = const [],
+  }) {
     final island = Map<String, dynamic>.from((map['islands'] ?? {}) as Map);
 
     return MemoryItem(
@@ -41,8 +48,9 @@ class MemoryItem {
       title: (island['name'] ?? island['island_name'] ?? '') as String,
       isFavorite: (map['is_favorite'] ?? false) as bool,
       isNotificationOn: !((map['is_muted'] ?? false) as bool),
-      imagePath: island['bg_url'] as String?,
+      imagePath: island['bg_image_url'] as String?,
       updatedAt: _parseDateTime(island['updated_at']),
+      members: members,
     );
   }
 
@@ -56,6 +64,9 @@ class MemoryItem {
       isNotificationOn: map['isNotificationOn'],
       imagePath: map['imagePath'],
       updatedAt: _parseDateTime(map['updatedAt']),
+      members: ((map['members'] ?? []) as List<dynamic>)
+          .map((member) => MemoryMemberPreview.fromMap(Map<String, dynamic>.from(member as Map)))
+          .toList(),
     );
   }
 
@@ -69,6 +80,7 @@ class MemoryItem {
       "isNotificationOn": isNotificationOn,
       "imagePath": imagePath,
       "updatedAt": updatedAt?.toIso8601String(),
+      "members": members.map((member) => member.toMap()).toList(),
     };
   }
 
@@ -78,5 +90,33 @@ class MemoryItem {
     }
 
     return DateTime.tryParse(value);
+  }
+}
+
+class MemoryMemberPreview {
+  final String id;
+  final String nickname;
+  final String? avatarUrl;
+
+  const MemoryMemberPreview({
+    required this.id,
+    required this.nickname,
+    this.avatarUrl,
+  });
+
+  factory MemoryMemberPreview.fromMap(Map<String, dynamic> map) {
+    return MemoryMemberPreview(
+      id: map['id'] as String,
+      nickname: (map['nickname'] ?? '') as String,
+      avatarUrl: map['avatar_url'] as String?,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'nickname': nickname,
+      'avatar_url': avatarUrl,
+    };
   }
 }

@@ -57,38 +57,71 @@ class MemoryViewModel extends ChangeNotifier {
   Future<void> renameItem(int index, String newTitle) async {
     if (index < 0 || index >= items.length) return;
 
+    final previousTitle = items[index].title;
     items[index].title = newTitle;
     editingIndex = null;
-
-    await _repository.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.updateIslandName(
+        islandId: items[index].id,
+        name: newTitle,
+      );
+      items[index].updatedAt = DateTime.now();
+      _sortItems();
+      await _repository.saveItems(items);
+      notifyListeners();
+    } catch (_) {
+      items[index].title = previousTitle;
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // MARK: - 즐겨찾기 토글
   Future<void> toggleFavorite(int index) async {
     if (index < 0 || index >= items.length) return;
 
+    final previousValue = items[index].isFavorite;
     items[index].isFavorite = !items[index].isFavorite;
-    await _repository.updateIslandMemberSettings(
-      islandId: items[index].id,
-      isFavorite: items[index].isFavorite,
-    );
-    _sortItems();
-    await _repository.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.updateIslandMemberSettings(
+        islandId: items[index].id,
+        isFavorite: items[index].isFavorite,
+      );
+      _sortItems();
+      await _repository.saveItems(items);
+      notifyListeners();
+    } catch (_) {
+      items[index].isFavorite = previousValue;
+      _sortItems();
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // MARK: - 알림 토글
   Future<void> toggleAlarm(int index) async {
     if (index < 0 || index >= items.length) return;
 
+    final previousValue = items[index].isNotificationOn;
     items[index].isNotificationOn = !items[index].isNotificationOn;
-    await _repository.updateIslandMemberSettings(
-      islandId: items[index].id,
-      isMuted: !items[index].isNotificationOn,
-    );
-    await _repository.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.updateIslandMemberSettings(
+        islandId: items[index].id,
+        isMuted: !items[index].isNotificationOn,
+      );
+      await _repository.saveItems(items);
+      notifyListeners();
+    } catch (_) {
+      items[index].isNotificationOn = previousValue;
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // MARK: - 기억섬 삭제

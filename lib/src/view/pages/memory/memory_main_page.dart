@@ -265,13 +265,24 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                   imagePath: vm.items[index].imagePath,
                   isFavorite: vm.items[index].isFavorite,
                   isNotificationOn: vm.items[index].isNotificationOn,
+                  members: vm.items[index].members,
                   isEditing: vm.editingIndex == index,
                   controller: vm.textController,
 
                   // MARK: - 이름 수정 완료 처리
                   onEditComplete: () async {
-                    await vm.renameItem(index, vm.textController.text);
-                    vm.stopEditing();
+                    final messenger = ScaffoldMessenger.of(context);
+                    try {
+                      await vm.renameItem(index, vm.textController.text);
+                      vm.stopEditing();
+                    } catch (error) {
+                      if (!mounted) {
+                        return;
+                      }
+                      messenger.showSnackBar(
+                        SnackBar(content: Text(error.toString())),
+                      );
+                    }
                   },
 
                   // MARK: - 카드 클릭 시 상세 이동

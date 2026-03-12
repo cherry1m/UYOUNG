@@ -42,14 +42,31 @@ class MemoryRepository {
     try {
       final response = await _client
           .from('island_members')
-          .select('is_favorite, is_muted, islands(id, name, bg_url, color, updated_at)')
+          .select(
+            'island_id, is_favorite, is_muted, islands(id, name, bg_image_url, theme_color, updated_at)',
+          )
           .eq('user_id', currentUser.id)
           .order('is_favorite', ascending: false)
           .order('updated_at', ascending: false, referencedTable: 'islands');
 
-      final islands = (response as List<dynamic>)
+      final memberRows = (response as List<dynamic>)
           .map((row) => Map<String, dynamic>.from(row as Map))
-          .map(MemoryItem.fromIslandMemberMap)
+          .toList();
+
+      final islandIds = memberRows
+          .map((row) => row['island_id'])
+          .whereType<String>()
+          .toSet()
+          .toList();
+
+      final membersByIsland = await _loadIslandMembers(islandIds);
+      final islands = memberRows
+          .map(
+            (row) => MemoryItem.fromIslandMemberMap(
+              row,
+              members: membersByIsland[row['island_id']] ?? const [],
+            ),
+          )
           .toList();
 
       await saveItems(islands);
@@ -143,6 +160,13 @@ class MemoryRepository {
         .eq('user_id', currentUser.id);
   }
 
+  Future<void> updateIslandName({
+    required String islandId,
+    required String name,
+  }) async {
+    await _client.from('islands').update({'name': name}).eq('id', islandId);
+  }
+
   Future<void> leaveIsland(String islandId) async {
     await _client.rpc(
       'leave_island',
@@ -164,5 +188,36 @@ class MemoryRepository {
       default:
         return 'image/jpeg';
     }
+  }
+
+  Future<Map<String, List<MemoryMemberPreview>>> _loadIslandMembers(
+    List<String> islandIds,
+  ) async {
+    if (islandIds.isEmpty) {
+      return {};
+    }
+
+    final response = await _client
+        .from('island_members')
+        .select('island_id, user_id, profiles!user_id(id, nickname, avatar_url)')
+        .inFilter('island_id', islandIds);
+
+    final grouped = <String, List<MemoryMemberPreview>>{};
+
+    for (final row in response as List<dynamic>) {
+      final map = Map<String, dynamic>.from(row as Map);
+      final islandId = map['island_id'] as String?;
+      final profileRaw = map['profiles'];
+
+      if (islandId == null || profileRaw is! Map) {
+        continue;
+      }
+
+      final profile = Map<String, dynamic>.from(profileRaw);
+      final preview = MemoryMemberPreview.fromMap(profile);
+      grouped.putIfAbsent(islandId, () => []).add(preview);
+    }
+
+    return grouped;
   }
 }
