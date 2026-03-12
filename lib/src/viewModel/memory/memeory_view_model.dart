@@ -149,6 +149,18 @@ class MemoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> insertOrUpdateItem(MemoryItem item) async {
+    final index = items.indexWhere((existing) => existing.id == item.id);
+    if (index >= 0) {
+      items[index] = item;
+    } else {
+      items.insert(0, item);
+    }
+    _sortItems();
+    await _repository.saveItems(items);
+    notifyListeners();
+  }
+
   void _sortItems() {
     items.sort((a, b) {
       if (a.isFavorite != b.isFavorite) {

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/model/memory/invitee_user_model.dart';
+import 'package:uyoung/data/model/memory/island_invite_detail_model.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/data/sources/memory/memory_storage.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
@@ -190,6 +191,61 @@ class MemoryRepository {
 
   String buildInviteLink(String inviteCode) {
     return '${SupabaseConfig.inviteBaseUrl}?code=$inviteCode';
+  }
+
+  Future<IslandInviteDetail?> fetchIslandInviteDetail(String inviteCode) async {
+    final islandResponse = await _client
+        .from('islands')
+        .select('id, name, bg_image_url, invite_code')
+        .eq('invite_code', inviteCode)
+        .maybeSingle();
+
+    if (islandResponse == null) {
+      return null;
+    }
+
+    final island = Map<String, dynamic>.from(islandResponse);
+    final islandId = island['id'] as String;
+    final membersByIsland = await _loadIslandMembers([islandId]);
+
+    return IslandInviteDetail(
+      islandId: islandId,
+      name: island['name'] as String,
+      bgImageUrl: island['bg_image_url'] as String?,
+      inviteCode: (island['invite_code'] ?? inviteCode) as String,
+      members: membersByIsland[islandId] ?? const [],
+    );
+  }
+
+  Future<IslandInviteDetail> joinIslandByInviteCode(String inviteCode) async {
+    final currentUser = _client.auth.currentUser;
+    if (currentUser == null) {
+      throw StateError('로그인 후 입장할 수 있어요.');
+    }
+
+    final detail = await fetchIslandInviteDetail(inviteCode);
+    if (detail == null) {
+      throw StateError('유효하지 않은 초대 링크예요.');
+    }
+
+    final existingMembership = await _client
+        .from('island_members')
+        .select('id')
+        .eq('island_id', detail.islandId)
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+
+    if (existingMembership == null) {
+      await _client.from('island_members').insert({
+        'island_id': detail.islandId,
+        'user_id': currentUser.id,
+        'role': 'member',
+        'is_favorite': false,
+        'is_muted': false,
+      });
+    }
+
+    return detail;
   }
 
   String _contentTypeFor(String fileName) {
