@@ -4,7 +4,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/app.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
+import 'package:uyoung/src/view/pages/login/login_main_page.dart';
 import 'package:uyoung/src/view/pages/memory/invite_island_page.dart';
+import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,7 +29,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        // 메모리 뷰모델에 load() 적용
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => MemoryViewModel()..load()),
         ChangeNotifierProvider(create: (_) => CalendarViewModel()),
       ],
@@ -119,7 +121,28 @@ class _UyoungRootState extends State<UyoungRoot> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const UyoungApp(),
+      home: const AuthGate(),
+    );
+  }
+}
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = Supabase.instance.client.auth;
+
+    return StreamBuilder<AuthState>(
+      stream: auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final session = snapshot.data?.session ?? auth.currentSession;
+        if (session == null) {
+          return const LoginMainPage();
+        }
+
+        return const UyoungApp();
+      },
     );
   }
 }
