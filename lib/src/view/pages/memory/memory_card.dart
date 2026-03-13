@@ -36,9 +36,7 @@ class MemoryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // MARK: 카드 이미지 영역 170 x 126
-          AspectRatio(
-            aspectRatio: 170 / 126,
+          Expanded(
             child: Stack(
               children: [
                 Positioned.fill(
@@ -78,32 +76,34 @@ class MemoryCard extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 6),
-          isEditing
-              ? TextField(
-                  controller: controller,
-                  autofocus: true,
-                  onSubmitted: (_) => onEditComplete(),
-                  style: AppFontStyle.M_16,
-                  decoration: const InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                  ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: AppFontStyle.M_16,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+          SizedBox(
+            height: isEditing ? 32 : 36,
+            child: isEditing
+                ? TextField(
+                    controller: controller,
+                    autofocus: true,
+                    onSubmitted: (_) => onEditComplete(),
+                    style: AppFontStyle.M_16,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: InputBorder.none,
                     ),
-                    const SizedBox(height: 4),
-                    _memberPreviewRow(),
-                  ],
-                ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: AppFontStyle.M_16,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Expanded(child: _memberPreviewRow()),
+                    ],
+                  ),
+          ),
         ],
       ),
     );
@@ -138,46 +138,49 @@ class MemoryCard extends StatelessWidget {
 
   Widget _memberPreviewRow() {
     if (members.isEmpty) {
-      return const SizedBox(height: 18);
+      return const SizedBox.expand();
     }
 
     final visibleMembers = members.take(3).toList();
 
-    return SizedBox(
-      height: 18,
-      child: Stack(
-        children: [
-          for (int index = 0; index < visibleMembers.length; index++)
-            Positioned(
-              left: index * 12,
-              child: Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 1.4),
-                  color: const Color(0xFFE6E6E6),
-                ),
-                child: ClipOval(
-                  child: visibleMembers[index].avatarUrl?.isNotEmpty == true
-                      ? Image.network(
-                          visibleMembers[index].avatarUrl!,
-                          fit: BoxFit.cover,
-                        )
-                      : Center(
-                          child: Text(
-                            visibleMembers[index].nickname.isEmpty
-                                ? '?'
-                                : visibleMembers[index].nickname[0],
-                            style: AppFontStyle.M_10.copyWith(
-                              color: Colors.black54,
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: SizedBox(
+        height: 18,
+        child: Stack(
+          children: [
+            for (int index = 0; index < visibleMembers.length; index++)
+              Positioned(
+                left: index * 12,
+                child: Container(
+                  width: 18,
+                  height: 18,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white, width: 1.4),
+                    color: const Color(0xFFE6E6E6),
+                  ),
+                  child: ClipOval(
+                    child: visibleMembers[index].avatarUrl?.isNotEmpty == true
+                        ? Image.network(
+                            visibleMembers[index].avatarUrl!,
+                            fit: BoxFit.cover,
+                          )
+                        : Center(
+                            child: Text(
+                              visibleMembers[index].nickname.isEmpty
+                                  ? '?'
+                                  : visibleMembers[index].nickname[0],
+                              style: AppFontStyle.M_10.copyWith(
+                                color: Colors.black54,
+                              ),
                             ),
                           ),
-                        ),
+                  ),
                 ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
