@@ -46,12 +46,6 @@ class MyPageFakeScreen extends StatelessWidget {
                           borderRadius: BorderRadius.circular(999),
                           onTap: () async {
                             await context.read<AuthViewModel>().signOut();
-                            if (!context.mounted) {
-                              return;
-                            }
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('로그아웃 되었어요.')),
-                            );
                           },
                           child: Ink(
                             width: 38,

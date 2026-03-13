@@ -94,12 +94,15 @@ class LoginMainPage extends StatelessWidget {
     BuildContext context,
     OAuthProvider provider,
   ) async {
-    final messenger = ScaffoldMessenger.of(context);
-
     try {
       await context.read<AuthViewModel>().signInWithSocial(provider);
     } catch (error) {
-      messenger.showSnackBar(
+      if (!context.mounted) {
+        debugPrint('[auth] login error after dispose: $error');
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('로그인 중 오류가 발생했어요: $error')),
       );
     }

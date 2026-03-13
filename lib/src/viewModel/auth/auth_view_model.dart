@@ -16,6 +16,7 @@ class AuthViewModel extends ChangeNotifier {
       await _auth.signInWithOAuth(
         provider,
         redirectTo: 'uyoung://login-callback',
+        authScreenLaunchMode: LaunchMode.externalApplication,
       );
       debugPrint('[auth] OAuth browser launched: $provider');
     } finally {
