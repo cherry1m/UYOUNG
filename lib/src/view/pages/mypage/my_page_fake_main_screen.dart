@@ -40,25 +40,21 @@ class MyPageFakeScreen extends StatelessWidget {
                     top: 12,
                     right: 16,
                     child: SafeArea(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(999),
-                          onTap: () async {
-                            await context.read<AuthViewModel>().signOut();
-                          },
-                          child: Ink(
-                            width: 38,
-                            height: 38,
-                            decoration: const BoxDecoration(
-                              color: Colors.black87,
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.logout_rounded,
-                              size: 20,
-                              color: Colors.white,
-                            ),
+                      child: GestureDetector(
+                        onTap: () async {
+                          await context.read<AuthViewModel>().signOut();
+                        },
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: const BoxDecoration(
+                            color: Colors.black87,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.logout_rounded,
+                            size: 20,
+                            color: Colors.white,
                           ),
                         ),
                       ),

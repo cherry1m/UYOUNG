@@ -128,34 +128,30 @@ class _LoginButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(20),
-        child: Ink(
-          height: 58,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(20),
-            border: borderColor == null
-                ? null
-                : Border.all(color: borderColor!, width: 1),
-          ),
-          child: Row(
-            children: [
-              const SizedBox(width: 18),
-              Image.asset(assetPath, width: 26, height: 26),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Text(
-                  label,
-                  style: AppFontStyle.M_18.copyWith(color: foregroundColor),
-                ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 58,
+        decoration: BoxDecoration(
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(20),
+          border: borderColor == null
+              ? null
+              : Border.all(color: borderColor!, width: 1),
+        ),
+        child: Row(
+          children: [
+            const SizedBox(width: 18),
+            Image.asset(assetPath, width: 26, height: 26),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Text(
+                label,
+                style: AppFontStyle.M_18.copyWith(color: foregroundColor),
               ),
-              const SizedBox(width: 18),
-            ],
-          ),
+            ),
+            const SizedBox(width: 18),
+          ],
         ),
       ),
     );

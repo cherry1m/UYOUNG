@@ -16,6 +16,14 @@ import 'dart:async';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    debugPrint('[flutter-error] ${details.exceptionAsString()}');
+    if (details.stack != null) {
+      debugPrintStack(stackTrace: details.stack, label: '[flutter-error-stack]');
+    }
+  };
+
   // 날짜 포맷 초기화
   await initializeDateFormatting('ko_KR', null);
 
