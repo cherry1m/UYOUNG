@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
+import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 
 /// ✅ 마이페이지 “이미지로 속이는” 화면 + 버튼(친구목록 / 조개이야기)
 class MyPageFakeScreen extends StatelessWidget {
@@ -31,6 +34,42 @@ class MyPageFakeScreen extends StatelessWidget {
                   width: w,
                   fit: BoxFit.fitWidth,
                 ),
+
+                if (kDebugMode)
+                  Positioned(
+                    top: 12,
+                    right: 16,
+                    child: SafeArea(
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(999),
+                          onTap: () async {
+                            await context.read<AuthViewModel>().signOut();
+                            if (!context.mounted) {
+                              return;
+                            }
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('로그아웃 되었어요.')),
+                            );
+                          },
+                          child: Ink(
+                            width: 38,
+                            height: 38,
+                            decoration: const BoxDecoration(
+                              color: Colors.black87,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.logout_rounded,
+                              size: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
 
                 // =========================
                 // ✅ 친구 목록 버튼

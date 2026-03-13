@@ -12,10 +12,12 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
+      debugPrint('[auth] start OAuth login: $provider');
       await _auth.signInWithOAuth(
         provider,
         redirectTo: 'uyoung://login-callback',
       );
+      debugPrint('[auth] OAuth browser launched: $provider');
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -24,6 +26,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _auth.signOut();
+    debugPrint('[auth] signed out');
     notifyListeners();
   }
 }

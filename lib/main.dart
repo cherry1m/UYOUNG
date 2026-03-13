@@ -66,6 +66,12 @@ class _UyoungRootState extends State<UyoungRoot> {
   }
 
   void _handleUri(Uri uri) {
+    debugPrint('[deeplink] received: $uri');
+    if (_isAuthCallback(uri)) {
+      debugPrint('[deeplink] auth callback received');
+      return;
+    }
+
     final inviteCode = _extractInviteCode(uri);
     if (inviteCode == null || _handledInviteCodes.contains(inviteCode)) {
       return;
@@ -103,6 +109,11 @@ class _UyoungRootState extends State<UyoungRoot> {
     return null;
   }
 
+  bool _isAuthCallback(Uri uri) {
+    return uri.host == 'login-callback' ||
+        uri.pathSegments.contains('login-callback');
+  }
+
   @override
   void dispose() {
     _linkSubscription?.cancel();
@@ -136,7 +147,11 @@ class AuthGate extends StatelessWidget {
     return StreamBuilder<AuthState>(
       stream: auth.onAuthStateChange,
       builder: (context, snapshot) {
+        final event = snapshot.data?.event;
         final session = snapshot.data?.session ?? auth.currentSession;
+        debugPrint(
+          '[auth] event=$event session=${session != null} user=${session?.user.email ?? auth.currentUser?.email}',
+        );
         if (session == null) {
           return const LoginMainPage();
         }
