@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
-import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/my_page_fake_main_screen.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/friend_list_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/my_page_fake_main_screen.dart';
 
 class FriendProfileFakePage extends StatelessWidget {
   const FriendProfileFakePage({super.key});

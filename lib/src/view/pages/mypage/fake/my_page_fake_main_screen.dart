@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
-import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/invite_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/pear_fake_page.dart';
-import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/friend_list_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/invite_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/pear_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/store_fake_page.dart';
 
 class MyPageFakeScreen extends StatelessWidget {
   const MyPageFakeScreen({super.key});
