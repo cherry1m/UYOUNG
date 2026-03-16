@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
