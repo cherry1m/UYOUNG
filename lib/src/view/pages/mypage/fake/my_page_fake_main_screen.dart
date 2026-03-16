@@ -3,10 +3,10 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
-import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/invite_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/pear_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/store_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/friend_list_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/invite_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/pear_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/store_fake_page.dart';
 
 /// ✅ 마이페이지 “이미지로 속이는” 화면 + 버튼(친구목록 / 조개이야기 / 진주 / 친구초대)
 class MyPageFakeScreen extends StatelessWidget {

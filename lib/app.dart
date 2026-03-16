@@ -3,7 +3,7 @@ import 'package:uyoung/src/view/common/navigation/uyoung_bottom_nav_bar.dart';
 import 'package:uyoung/src/view/pages/home/home_main.dart';
 import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
-import 'package:uyoung/src/view/pages/mypage/my_page_fake_main_screen.dart';
+import 'package:uyoung/src/view/pages/mypage/fake/my_page_fake_main_screen.dart';
 import 'package:uyoung/src/view/pages/ocean/ocean_note_main_page.dart';
 
 class UyoungApp extends StatefulWidget {
