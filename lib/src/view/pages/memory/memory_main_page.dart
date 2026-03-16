@@ -357,8 +357,8 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
             ),
             const SizedBox(height: 24),
             SizedBox(
-              width: double.infinity,
-              height: 56,
+              width: 130,
+              height: 38,
               child: TextButton(
                 onPressed: () async {
                   await Navigator.push<MemoryCreationResult>(
@@ -369,7 +369,7 @@ class _MemoryMainPageState extends State<MemoryMainPage> {
                 style: TextButton.styleFrom(
                   backgroundColor: const Color(0xFF6EA8EB),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                 ),
                 child: Text(
