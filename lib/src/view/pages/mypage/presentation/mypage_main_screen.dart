@@ -9,12 +9,9 @@ import 'package:uyoung/src/view/pages/mypage/presentation/fake/pear_fake_page.da
 class MyPageMainScreen extends StatelessWidget {
   const MyPageMainScreen({super.key});
 
-  static const String _otterImageUrl =
-      'https://www.figma.com/api/mcp/asset/65376b85-8c81-49ff-9b00-4e0471d89b25';
-  static const String _pearlImageUrl =
-      'https://www.figma.com/api/mcp/asset/6162ef10-0ac9-460f-81e2-f54b4d916365';
-  static const String _noticeImageUrl =
-      'https://www.figma.com/api/mcp/asset/94669f03-cad5-4bd3-b99f-0489566bdf18';
+  static const String _otterImagePath = 'assets/images/mypage/otter.png';
+  static const String _pearlImagePath = 'assets/images/mypage/pearl.png';
+  static const String _noticeImagePath = 'assets/images/mypage/notice.png';
 
   @override
   Widget build(BuildContext context) {
@@ -60,16 +57,11 @@ class MyPageMainScreen extends StatelessWidget {
                       label: '공지',
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: Image.network(
-                          _noticeImageUrl,
+                        child: Image.asset(
+                          _noticeImagePath,
                           width: 50,
                           height: 50,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => const Icon(
-                            Icons.campaign_outlined,
-                            color: Color(0xFFDEC870),
-                            size: 34,
-                          ),
                         ),
                       ),
                     ),
@@ -187,8 +179,8 @@ class _ProfileHero extends StatelessWidget {
               Positioned.fill(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 44),
-                  child: Image.network(
-                    MyPageMainScreen._otterImageUrl,
+                  child: Image.asset(
+                    MyPageMainScreen._otterImagePath,
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -271,19 +263,11 @@ class _PearlCard extends StatelessWidget {
           child: Row(
             children: [
               ClipOval(
-                child: Image.network(
-                  MyPageMainScreen._pearlImageUrl,
+                child: Image.asset(
+                  MyPageMainScreen._pearlImagePath,
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, _, _) => Container(
-                    width: 40,
-                    height: 40,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFFF0E7FF),
-                    ),
-                  ),
                 ),
               ),
               const SizedBox(width: 12),
