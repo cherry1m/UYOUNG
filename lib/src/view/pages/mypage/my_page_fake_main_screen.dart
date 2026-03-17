@@ -1,11 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/friend_list_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/invite_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/pear_fake_page.dart';
+import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 
-/// ✅ 마이페이지 “이미지로 속이는” 화면 + 버튼(친구목록 / 조개이야기 / 진주 / 친구초대)
 class MyPageFakeScreen extends StatelessWidget {
   const MyPageFakeScreen({super.key});
 
@@ -13,19 +15,15 @@ class MyPageFakeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
 
-    // ✅ 상단 아이콘 버튼 영역 위치 기준값 (이미지에 맞춰 조정)
     const double buttonTop = 450;
     const double buttonHeight = 90;
-    final double buttonWidth = (w - 130) / 3; // 3등분
+    final double buttonWidth = (w - 130) / 3;
 
-    // ✅ 진주(보유 재화) 영역 위치 (이미지에 맞춰 조정)
     const double pearlTop = 365;
     const double pearlHeight = 58;
 
-    // ✅ 친구 초대(리스트 row) 영역 위치 (이미지에 맞춰 조정)
-    // - "초대 및 공유" 섹션의 "친구 초대" 행 전체를 터치 영역으로 잡는 값
-    const double inviteTop = 650; // 필요 시 미세 조정
-    const double inviteHeight = 60; // 행 높이(대략 56~64)
+    const double inviteTop = 650;
+    const double inviteHeight = 60;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -36,20 +34,41 @@ class MyPageFakeScreen extends StatelessWidget {
             alignment: Alignment.topCenter,
             child: Stack(
               children: [
-                /// ✅ 배경 이미지 (마이페이지 스샷)
                 Image.asset(
                   'assets/images/my_page_main.png',
                   width: w,
                   fit: BoxFit.fitWidth,
                 ),
-
-                // =========================
-                // ✅ 진주(보유 재화) 영역 탭
+                if (kDebugMode)
+                  Positioned(
+                    top: 12,
+                    right: 16,
+                    child: SafeArea(
+                      child: GestureDetector(
+                        onTap: () async {
+                          await context.read<AuthViewModel>().signOut();
+                        },
+                        child: Container(
+                          width: 38,
+                          height: 38,
+                          decoration: const BoxDecoration(
+                            color: Colors.black87,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.logout_rounded,
+                            size: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 Positioned(
                   top: pearlTop,
                   left: 18,
                   child: _FakeTapArea(
-                    width: w - 36, // 좌우 18씩 제외한 카드 전체 폭
+                    width: w - 36,
                     height: pearlHeight,
                     onTap: () {
                       Navigator.push(
@@ -59,9 +78,6 @@ class MyPageFakeScreen extends StatelessWidget {
                     },
                   ),
                 ),
-
-                // =========================
-                // ✅ 친구 목록 버튼
                 Positioned(
                   top: buttonTop,
                   left: 18,
@@ -78,8 +94,6 @@ class MyPageFakeScreen extends StatelessWidget {
                     },
                   ),
                 ),
-
-                // ✅ 조개 이야기 버튼
                 Positioned(
                   top: buttonTop,
                   left: 18 + buttonWidth,
@@ -96,14 +110,11 @@ class MyPageFakeScreen extends StatelessWidget {
                     },
                   ),
                 ),
-
-                // =========================
-                // ✅ 친구 초대(row) 탭
                 Positioned(
                   top: inviteTop,
                   left: 18,
                   child: _FakeTapArea(
-                    width: w - 36, // 행 전체 폭
+                    width: w - 36,
                     height: inviteHeight,
                     onTap: () {
                       Navigator.push(
@@ -122,7 +133,6 @@ class MyPageFakeScreen extends StatelessWidget {
   }
 }
 
-/// ✅ 완전 투명 터치 영역
 class _FakeTapArea extends StatelessWidget {
   final double width;
   final double height;

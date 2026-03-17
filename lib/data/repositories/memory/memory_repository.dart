@@ -1,5 +1,12 @@
+import 'dart:typed_data';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uyoung/data/model/memory/invitee_user_model.dart';
+import 'package:uyoung/data/model/memory/island_invite_detail_model.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/data/sources/memory/memory_storage.dart';
+import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 
 // MARK: - MemoryRepository
 // 이 클래스는 ViewModel과 Storage 사이의 중간 계층이다.
@@ -11,11 +18,280 @@ class MemoryRepository {
   // 실제 데이터 저장 및 불러오기를 담당하는 Storage 인스턴스.
   final MemoryStorage _storage = MemoryStorage();
 
+  SupabaseClient get _client {
+    if (!SupabaseConfig.isConfigured) {
+      throw StateError(
+        'Supabase 설정이 없습니다. --dart-define=SUPABASE_URL=... 과 '
+        '--dart-define=SUPABASE_ANON_KEY=... 를 추가하세요.',
+      );
+    }
+    return Supabase.instance.client;
+  }
+
   // MARK: - 데이터 불러오기
-  // SharedPreferences에서 MemoryItem 리스트를 읽어와 반환한다.
-  Future<List<MemoryItem>> loadItems() => _storage.loadItems();
+  // 서버 우선으로 기억섬 리스트를 읽고, 실패 시 로컬 캐시를 반환한다.
+  Future<List<MemoryItem>> loadItems() async {
+    if (!SupabaseConfig.isConfigured) {
+      return _storage.loadItems();
+    }
+
+    final currentUser = Supabase.instance.client.auth.currentUser;
+    if (currentUser == null) {
+      return _storage.loadItems();
+    }
+
+    try {
+      final response = await _client
+          .from('island_members')
+          .select(
+            'island_id, is_favorite, is_muted, islands(id, name, bg_image_url, theme_color, invite_code, updated_at)',
+          )
+          .eq('user_id', currentUser.id)
+          .order('is_favorite', ascending: false)
+          .order('updated_at', ascending: false, referencedTable: 'islands');
+
+      final memberRows = (response as List<dynamic>)
+          .map((row) => Map<String, dynamic>.from(row as Map))
+          .toList();
+
+      final islandIds = memberRows
+          .map((row) => row['island_id'])
+          .whereType<String>()
+          .toSet()
+          .toList();
+
+      final membersByIsland = await _loadIslandMembers(islandIds);
+      final islands = memberRows
+          .map(
+            (row) => MemoryItem.fromIslandMemberMap(
+              row,
+              members: membersByIsland[row['island_id']] ?? const [],
+            ),
+          )
+          .toList();
+
+      await saveItems(islands);
+      return islands;
+    } catch (_) {
+      return _storage.loadItems();
+    }
+  }
 
   // MARK: - 데이터 저장
   // 변경된 MemoryItem 리스트를 SharedPreferences에 저장한다.
   Future<void> saveItems(List<MemoryItem> items) => _storage.saveItems(items);
+
+  Future<List<InviteeUser>> searchUsers(String searchTerm) async {
+    final response = await _client.rpc(
+      'search_users',
+      params: {'search_term': searchTerm},
+    );
+
+    final rows = (response as List<dynamic>)
+        .map((row) => InviteeUser.fromMap(Map<String, dynamic>.from(row as Map)))
+        .toList();
+
+    return rows;
+  }
+
+  Future<String> uploadIslandBackground(XFile imageFile) async {
+    final Uint8List bytes = await imageFile.readAsBytes();
+    final originalName = imageFile.name.isEmpty ? 'background.jpg' : imageFile.name;
+    final sanitizedName = originalName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+    final path =
+        'memory_islands/${DateTime.now().microsecondsSinceEpoch}_$sanitizedName';
+
+    await _client.storage.from('island_backgrounds').uploadBinary(
+      path,
+      bytes,
+      fileOptions: FileOptions(
+        upsert: true,
+        contentType: _contentTypeFor(sanitizedName),
+      ),
+    );
+
+    return _client.storage.from('island_backgrounds').getPublicUrl(path);
+  }
+
+  Future<String> createIslandWithMembers({
+    required String islandName,
+    required String color,
+    String? bgUrl,
+    List<String> inviteeIds = const [],
+  }) async {
+    final response = await _client.rpc(
+      'create_island_with_members',
+      params: {
+        'island_name': islandName,
+        'color': color,
+        'bg_url': bgUrl,
+        'invitee_ids': inviteeIds,
+      },
+    );
+
+    return response as String;
+  }
+
+  Future<void> updateIslandMemberSettings({
+    required String islandId,
+    bool? isFavorite,
+    bool? isMuted,
+  }) async {
+    final currentUser = _client.auth.currentUser;
+    if (currentUser == null) {
+      throw StateError('로그인이 필요합니다.');
+    }
+
+    final updates = <String, dynamic>{};
+    if (isFavorite != null) {
+      updates['is_favorite'] = isFavorite;
+    }
+    if (isMuted != null) {
+      updates['is_muted'] = isMuted;
+    }
+
+    if (updates.isEmpty) {
+      return;
+    }
+
+    await _client
+        .from('island_members')
+        .update(updates)
+        .eq('island_id', islandId)
+        .eq('user_id', currentUser.id);
+  }
+
+  Future<void> updateIslandName({
+    required String islandId,
+    required String name,
+  }) async {
+    await _client.from('islands').update({'name': name}).eq('id', islandId);
+  }
+
+  Future<void> leaveIsland(String islandId) async {
+    await _client.rpc(
+      'leave_island',
+      params: {'target_island_id': islandId},
+    );
+  }
+
+  Future<String?> fetchInviteCode(String islandId) async {
+    final response = await _client
+        .from('islands')
+        .select('invite_code')
+        .eq('id', islandId)
+        .maybeSingle();
+
+    if (response == null) {
+      return null;
+    }
+
+    return response['invite_code'] as String?;
+  }
+
+  String buildInviteLink(String inviteCode) {
+    return '${SupabaseConfig.inviteBaseUrl}?code=$inviteCode';
+  }
+
+  Future<IslandInviteDetail?> fetchIslandInviteDetail(String inviteCode) async {
+    final islandResponse = await _client
+        .from('islands')
+        .select('id, name, bg_image_url, invite_code')
+        .eq('invite_code', inviteCode)
+        .maybeSingle();
+
+    if (islandResponse == null) {
+      return null;
+    }
+
+    final island = Map<String, dynamic>.from(islandResponse);
+    final islandId = island['id'] as String;
+    final membersByIsland = await _loadIslandMembers([islandId]);
+
+    return IslandInviteDetail(
+      islandId: islandId,
+      name: island['name'] as String,
+      bgImageUrl: island['bg_image_url'] as String?,
+      inviteCode: (island['invite_code'] ?? inviteCode) as String,
+      members: membersByIsland[islandId] ?? const [],
+    );
+  }
+
+  Future<IslandInviteDetail> joinIslandByInviteCode(String inviteCode) async {
+    final currentUser = _client.auth.currentUser;
+    if (currentUser == null) {
+      throw StateError('로그인 후 입장할 수 있어요.');
+    }
+
+    final detail = await fetchIslandInviteDetail(inviteCode);
+    if (detail == null) {
+      throw StateError('유효하지 않은 초대 링크예요.');
+    }
+
+    final existingMembership = await _client
+        .from('island_members')
+        .select('id')
+        .eq('island_id', detail.islandId)
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+
+    if (existingMembership == null) {
+      await _client.from('island_members').insert({
+        'island_id': detail.islandId,
+        'user_id': currentUser.id,
+        'role': 'member',
+        'is_favorite': false,
+        'is_muted': false,
+      });
+    }
+
+    return detail;
+  }
+
+  String _contentTypeFor(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return 'image/jpeg';
+    }
+  }
+
+  Future<Map<String, List<MemoryMemberPreview>>> _loadIslandMembers(
+    List<String> islandIds,
+  ) async {
+    if (islandIds.isEmpty) {
+      return {};
+    }
+
+    final response = await _client
+        .from('island_members')
+        .select('island_id, user_id, profiles!user_id(id, nickname, avatar_url)')
+        .inFilter('island_id', islandIds);
+
+    final grouped = <String, List<MemoryMemberPreview>>{};
+
+    for (final row in response as List<dynamic>) {
+      final map = Map<String, dynamic>.from(row as Map);
+      final islandId = map['island_id'] as String?;
+      final profileRaw = map['profiles'];
+
+      if (islandId == null || profileRaw is! Map) {
+        continue;
+      }
+
+      final profile = Map<String, dynamic>.from(profileRaw);
+      final preview = MemoryMemberPreview.fromMap(profile);
+      grouped.putIfAbsent(islandId, () => []).add(preview);
+    }
+
+    return grouped;
+  }
 }
