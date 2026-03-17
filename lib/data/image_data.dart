@@ -50,4 +50,19 @@ class ImagePath {
   // 마이페이지
   static String get myPageOn => 'assets/images/my_page_on.png';
   static String get myPageOff => 'assets/images/my_page.png';
+  static String get myPageMain => 'assets/images/my_page_main.png';
+  static String get myProfile => 'assets/images/my_profile.png';
+  static String get mypageOtter => 'assets/images/mypage/otter.png';
+  static String get mypagePearl => 'assets/images/mypage/pearl.png';
+  static String get mypageNoticeSheet => 'assets/images/mypage/notice.png';
+  static String get notice => 'assets/images/notice.png';
+  static String get friendList => 'assets/images/friend_list.png';
+  static String get friendProfile => 'assets/images/friend_profile.png';
+  static String get inviteFriend => 'assets/images/invite_friend.png';
+  static String get storePage => 'assets/images/store_page.png';
+  static String get pearl => 'assets/images/pearl.png';
+  static String get pearlBasket => 'assets/images/pearl_basket.png';
+  static String get pearlShell => 'assets/images/pearl_shell.png';
+  static String get pearlBox => 'assets/images/pearl_box.png';
+  static String get pearls => 'assets/images/pearls.png';
 }
