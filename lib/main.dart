@@ -1,7 +1,11 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
+
 import 'package:app_links/app_links.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/app.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 import 'package:uyoung/src/view/pages/login/login_main_page.dart';
@@ -9,9 +13,6 @@ import 'package:uyoung/src/view/pages/memory/invite_island_page.dart';
 import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'dart:async';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,14 +25,15 @@ void main() async {
     }
   };
 
-  // 날짜 포맷 초기화
   await initializeDateFormatting('ko_KR', null);
 
   if (SupabaseConfig.isConfigured) {
-    await Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey);
+    await Supabase.initialize(
+      url: SupabaseConfig.url,
+      anonKey: SupabaseConfig.anonKey,
+    );
   }
 
-  // 필요 시 안전 대기
   await Future.delayed(const Duration(milliseconds: 300));
 
   runApp(
@@ -160,6 +162,7 @@ class AuthGate extends StatelessWidget {
         debugPrint(
           '[auth] event=$event session=${session != null} user=${session?.user.email ?? auth.currentUser?.email}',
         );
+
         if (session == null) {
           return const LoginMainPage();
         }

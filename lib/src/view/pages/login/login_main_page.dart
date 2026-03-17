@@ -36,12 +36,16 @@ class LoginMainPage extends StatelessWidget {
                   const Spacer(),
                   Text(
                     '기억이 머무는 곳,\nUYOUNG',
-                    style: AppFontStyle.F6.copyWith(color: const Color(0xFF202020)),
+                    style: AppFontStyle.F6.copyWith(
+                      color: const Color(0xFF202020),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     '카카오 또는 구글 계정으로 로그인하고\n기억섬 초대를 바로 이어서 진행할 수 있어요.',
-                    style: AppFontStyle.F4.copyWith(color: const Color(0xFF6E6E73)),
+                    style: AppFontStyle.F4.copyWith(
+                      color: const Color(0xFF6E6E73),
+                    ),
                   ),
                   const SizedBox(height: 28),
                   _LoginButton(
@@ -51,10 +55,7 @@ class LoginMainPage extends StatelessWidget {
                     foregroundColor: const Color(0xFF191919),
                     onTap: authVm.isLoading
                         ? null
-                        : () => _signIn(
-                              context,
-                              OAuthProvider.kakao,
-                            ),
+                        : () => _signIn(context, OAuthProvider.kakao),
                   ),
                   const SizedBox(height: 12),
                   _LoginButton(
@@ -65,10 +66,7 @@ class LoginMainPage extends StatelessWidget {
                     borderColor: const Color(0xFFE1E3E8),
                     onTap: authVm.isLoading
                         ? null
-                        : () => _signIn(
-                              context,
-                              OAuthProvider.google,
-                            ),
+                        : () => _signIn(context, OAuthProvider.google),
                   ),
                   const SizedBox(height: 12),
                   _LoginButton(
@@ -90,10 +88,7 @@ class LoginMainPage extends StatelessWidget {
     );
   }
 
-  Future<void> _signIn(
-    BuildContext context,
-    OAuthProvider provider,
-  ) async {
+  Future<void> _signIn(BuildContext context, OAuthProvider provider) async {
     try {
       await context.read<AuthViewModel>().signInWithSocial(provider);
     } catch (error) {

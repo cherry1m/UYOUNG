@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
-import 'package:uyoung/app.dart'; // ✅ 여기! (RootPage가 app.dart에 있을 때)
+import 'package:uyoung/app.dart';
+import 'package:uyoung/src/view/pages/ocean/template_save_complete_page.dart'; // ✅ 여기! (RootPage가 app.dart에 있을 때)
 
 class TemplateResultPage extends StatelessWidget {
   const TemplateResultPage({super.key});
@@ -16,12 +17,11 @@ class TemplateResultPage extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const UyoungApp(initialIndex: 3),
+                  builder: (_) => const TemplateSaveCompletePage(),
                 ),
-                (route) => false,
               );
             },
             child: Text(

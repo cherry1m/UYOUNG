@@ -45,3 +45,11 @@ flutter:
     - family: memomentKkukkkuk
       fonts:
         - asset: assets/fonts/memomentKkukkkuk.ttf
+    - family: PretendardStatic
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.ttf
+          weight: 400
+
+    - family: PretendardVariable
+      fonts:
+        - asset: assets/fonts/PretendardVariable.ttf
