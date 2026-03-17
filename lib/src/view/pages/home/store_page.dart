@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uyoung/data/image_data.dart';
 
 class StorePage extends StatelessWidget {
   const StorePage({super.key});
@@ -11,7 +12,7 @@ class StorePage extends StatelessWidget {
           /// 배경
           Positioned.fill(
             child: Image.asset(
-              "assets/images/store_page.png",
+              ImagePath.storePage,
               fit: BoxFit.cover,
             ),
           ),

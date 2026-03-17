@@ -7,10 +7,10 @@ class UyoungBottomNavBar extends StatelessWidget {
   final ValueChanged<int> onTap;
 
   const UyoungBottomNavBar({
-    Key? key,
+    super.key,
     required this.currentIndex,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +60,7 @@ class UyoungBottomNavBar extends StatelessWidget {
       case 2:
         return isActive ? ImagePath.calendarOn : ImagePath.calendarOff;
       case 3:
-        return isActive ? ImagePath.diaryOn : ImagePath.diaryOff;
+        return isActive ? ImagePath.storeOn : ImagePath.storeOff;
       case 4:
         return isActive ? ImagePath.myPageOn : ImagePath.myPageOff;
       default:
