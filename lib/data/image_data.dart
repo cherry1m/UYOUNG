@@ -61,6 +61,11 @@ class ImagePath {
   static String get inviteFriend => 'assets/images/invite_friend.png';
   static String get storePage => 'assets/images/store_page.png';
   static String get pearl => 'assets/images/pearl.png';
+  static String get pearl10 => 'assets/images/pearl_10.png';
+  static String get pearl50 => 'assets/images/pearl_50.png';
+  static String get pearl100 => 'assets/images/pearl_100.png';
+  static String get pearl200 => 'assets/images/pearl_200.png';
+  static String get pearl300 => 'assets/images/pearl_300.png';
   static String get pearlBasket => 'assets/images/pearl_basket.png';
   static String get pearlShell => 'assets/images/pearl_shell.png';
   static String get pearlBox => 'assets/images/pearl_box.png';
