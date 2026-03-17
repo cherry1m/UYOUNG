@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
+import 'package:uyoung/data/image_data.dart';
 import 'friend_profile_fake_page.dart';
 
 class FriendListFakePage extends StatelessWidget {
@@ -20,7 +21,7 @@ class FriendListFakePage extends StatelessWidget {
               AbsorbPointer(
                 absorbing: true,
                 child: Image.asset(
-                  'assets/images/friend_list.png',
+                  ImagePath.friendList,
                   width: w,
                   fit: BoxFit.fitWidth,
                 ),
