@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uyoung/data/image_data.dart';
 
 class InviteFakePage extends StatelessWidget {
   const InviteFakePage({super.key});
@@ -14,7 +15,7 @@ class InviteFakePage extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 25),
           child: Image.asset(
-            'assets/images/invite_friend.png',
+            ImagePath.inviteFriend,
             width: w,
             fit: BoxFit.fitWidth,
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
+import 'package:uyoung/data/image_data.dart';
 
 class StoreFakePage extends StatelessWidget {
   const StoreFakePage({super.key});
@@ -15,7 +16,7 @@ class StoreFakePage extends StatelessWidget {
         children: [
           // ✅ 전체 화면 이미지
           Image.asset(
-            'assets/images/store_page.png',
+            ImagePath.storePage,
             width: width,
             fit: BoxFit.fitWidth,
           ),
