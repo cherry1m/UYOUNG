@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
@@ -6,6 +7,7 @@ import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/friend_list_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/invite_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/pear_fake_page.dart';
+import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 
 class MyPageMainScreen extends StatelessWidget {
   const MyPageMainScreen({super.key});
@@ -32,7 +34,13 @@ class MyPageMainScreen extends StatelessWidget {
                   Expanded(
                     child: _QuickActionCard(
                       label: '친구 목록',
-                      child: const _FriendDoodle(),
+                      child: SizedBox(
+                        width: 58,
+                        child: Image.asset(
+                          ImagePath.friendListButton,
+                          fit: BoxFit.contain,
+                        ),
+                      ),
                       onTap: () => _push(context, const FriendListFakePage()),
                     ),
                   ),
@@ -53,8 +61,7 @@ class MyPageMainScreen extends StatelessWidget {
                     child: _QuickActionCard(
                       label: '공지',
                       child: SizedBox(
-                        width: 44,
-                        height: 44,
+                        width: 58,
                         child: Image.asset(
                           ImagePath.notice,
                           fit: BoxFit.contain,
@@ -118,9 +125,11 @@ class MyPageMainScreen extends StatelessWidget {
               const SizedBox(height: 18),
               const Divider(height: 1, color: Color(0xFFE8E8ED)),
               const SizedBox(height: 18),
-              Text(
-                '로그아웃',
-                style: AppFontStyle.H7.copyWith(color: AppColors.black),
+              _FooterActionText(
+                title: '로그아웃',
+                onTap: () async {
+                  await context.read<AuthViewModel>().signOut();
+                },
               ),
               const SizedBox(height: 20),
               Text(
@@ -136,6 +145,27 @@ class MyPageMainScreen extends StatelessWidget {
 
   static void _push(BuildContext context, Widget page) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  }
+}
+
+class _FooterActionText extends StatelessWidget {
+  final String title;
+  final Future<void> Function()? onTap;
+
+  const _FooterActionText({required this.title, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap == null ? null : () => onTap!.call(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          title,
+          style: AppFontStyle.H7.copyWith(color: AppColors.black),
+        ),
+      ),
+    );
   }
 }
 
@@ -249,7 +279,7 @@ class _PearlCard extends StatelessWidget {
               const Spacer(),
               Text(
                 '128개',
-                style: AppFontStyle.H6.copyWith(color: AppColors.black),
+                style: AppFontStyle.H7.copyWith(color: AppColors.black),
               ),
               const SizedBox(width: 4),
               const Icon(
@@ -308,52 +338,6 @@ class _QuickActionCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _FriendDoodle extends StatelessWidget {
-  const _FriendDoodle();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 52,
-      height: 34,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Positioned(
-            left: 4,
-            top: 6,
-            child: Transform.rotate(
-              angle: -0.35,
-              child: Icon(
-                Icons.favorite,
-                color: const Color(0xFFF58CB0),
-                size: 22,
-              ),
-            ),
-          ),
-          Positioned(
-            left: 18,
-            top: 8,
-            child: Transform.rotate(
-              angle: 0.25,
-              child: Icon(
-                Icons.favorite,
-                color: const Color(0xFF7FB6FF),
-                size: 22,
-              ),
-            ),
-          ),
-          const Positioned(
-            right: 4,
-            top: 0,
-            child: Icon(Icons.water_drop, color: Color(0xFF7FB6FF), size: 12),
-          ),
-        ],
       ),
     );
   }

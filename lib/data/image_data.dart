@@ -57,6 +57,7 @@ class ImagePath {
   static String get mypageNoticeSheet => 'assets/images/mypage/notice.png';
   static String get notice => 'assets/images/notice.png';
   static String get friendList => 'assets/images/friend_list.png';
+  static String get friendListButton => 'assets/images/friend_list_button.png';
   static String get friendProfile => 'assets/images/friend_profile.png';
   static String get inviteFriend => 'assets/images/invite_friend.png';
   static String get storePage => 'assets/images/store_page.png';
