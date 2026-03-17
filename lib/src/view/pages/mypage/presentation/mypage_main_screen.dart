@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/friend_list_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/invite_fake_page.dart';
@@ -8,10 +9,6 @@ import 'package:uyoung/src/view/pages/mypage/presentation/fake/pear_fake_page.da
 
 class MyPageMainScreen extends StatelessWidget {
   const MyPageMainScreen({super.key});
-
-  static const String _otterImagePath = 'assets/images/mypage/otter.png';
-  static const String _pearlImagePath = 'assets/images/mypage/pearl.png';
-  static const String _noticeImagePath = 'assets/images/mypage/notice.png';
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +52,17 @@ class MyPageMainScreen extends StatelessWidget {
                   Expanded(
                     child: _QuickActionCard(
                       label: '공지',
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
+                      child: SizedBox(
+                        width: 44,
+                        height: 44,
                         child: Image.asset(
-                          _noticeImagePath,
-                          width: 50,
-                          height: 50,
+                          ImagePath.notice,
                           fit: BoxFit.contain,
+                          errorBuilder: (_, _, _) => const Icon(
+                            Icons.campaign_outlined,
+                            color: Color(0xFFDEC870),
+                            size: 30,
+                          ),
                         ),
                       ),
                     ),
@@ -146,48 +147,18 @@ class _ProfileHero extends StatelessWidget {
     return Column(
       children: [
         SizedBox(
-          height: 240,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Positioned(
-                bottom: 6,
-                child: Container(
-                  width: 180,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFDCE3FB),
-                    borderRadius: BorderRadius.circular(999),
-                  ),
-                ),
+          height: 228,
+          child: Center(
+            child: SizedBox(
+              width: 210,
+              height: 210,
+              child: Image.asset(
+                ImagePath.myProfile,
+                fit: BoxFit.contain,
+                errorBuilder: (_, _, _) =>
+                    Image.asset(ImagePath.friendProfile, fit: BoxFit.contain),
               ),
-              Positioned(
-                top: 68,
-                left: 28,
-                child: _sparkle(const Color(0xFFD9DFF8), 10),
-              ),
-              Positioned(
-                top: 148,
-                left: 16,
-                child: _sparkle(const Color(0xFFD9DFF8), 12),
-              ),
-              Positioned(
-                top: 116,
-                right: 22,
-                child: _sparkle(const Color(0xFFD9DFF8), 8),
-              ),
-              Positioned.fill(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 44),
-                  child: Image.asset(
-                    MyPageMainScreen._otterImagePath,
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              const Positioned(top: 18, left: 88, child: _BowDecoration()),
-              const Positioned(top: 12, right: 96, child: _BowDecoration()),
-            ],
+            ),
           ),
         ),
         const SizedBox(height: 8),
@@ -231,14 +202,6 @@ class _ProfileHero extends StatelessWidget {
       ],
     );
   }
-
-  Widget _sparkle(Color color, double size) {
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-    );
-  }
 }
 
 class _PearlCard extends StatelessWidget {
@@ -264,10 +227,18 @@ class _PearlCard extends StatelessWidget {
             children: [
               ClipOval(
                 child: Image.asset(
-                  MyPageMainScreen._pearlImagePath,
+                  ImagePath.mypagePearl,
                   width: 40,
                   height: 40,
                   fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    width: 40,
+                    height: 40,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Color(0xFFF1E8F7),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: 12),
@@ -315,6 +286,7 @@ class _QuickActionCard extends StatelessWidget {
         onTap: onTap,
         child: Container(
           height: 84,
+          clipBehavior: Clip.antiAlias,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             border: Border.all(color: const Color(0xFFE7E7EC)),
@@ -322,7 +294,12 @@ class _QuickActionCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(height: 38, child: Center(child: child)),
+              SizedBox(
+                height: 38,
+                child: Center(
+                  child: FittedBox(fit: BoxFit.scaleDown, child: child),
+                ),
+              ),
               const SizedBox(height: 8),
               Text(
                 label,
@@ -442,59 +419,6 @@ class _MenuRow extends StatelessWidget {
             if (trailingWidget != null) trailingWidget,
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _BowDecoration extends StatelessWidget {
-  const _BowDecoration();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 36,
-      height: 22,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Positioned(
-            left: 0,
-            child: Transform.rotate(
-              angle: -0.45,
-              child: Container(
-                width: 14,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF8DB2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            right: 0,
-            child: Transform.rotate(
-              angle: 0.45,
-              child: Container(
-                width: 14,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF8DB2),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-          ),
-          Container(
-            width: 10,
-            height: 10,
-            decoration: const BoxDecoration(
-              color: Color(0xFFFF82AA),
-              shape: BoxShape.circle,
-            ),
-          ),
-        ],
       ),
     );
   }
