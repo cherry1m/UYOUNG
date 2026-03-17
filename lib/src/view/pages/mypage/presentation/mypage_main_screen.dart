@@ -4,7 +4,7 @@ import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
-import 'package:uyoung/src/view/pages/mypage/presentation/fake/friend_list_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/friend_list_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/invite_fake_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/pear_fake_page.dart';
 import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
@@ -41,7 +41,7 @@ class MyPageMainScreen extends StatelessWidget {
                           fit: BoxFit.contain,
                         ),
                       ),
-                      onTap: () => _push(context, const FriendListFakePage()),
+                      onTap: () => _push(context, const FriendListPage()),
                     ),
                   ),
                   const SizedBox(width: 6),
