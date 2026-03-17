@@ -6,10 +6,10 @@ import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/friend_invite_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_list_page.dart';
-import 'package:uyoung/src/view/pages/mypage/presentation/fake/invite_fake_page.dart';
-import 'package:uyoung/src/view/pages/mypage/presentation/fake/pear_fake_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
 import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 
 class MyPageMainScreen extends StatelessWidget {
@@ -30,7 +30,7 @@ class MyPageMainScreen extends StatelessWidget {
               const SizedBox(height: 18),
               const _ProfileHero(),
               const SizedBox(height: 18),
-              _PearlCard(onTap: () => _push(context, const PearFakePage())),
+              _PearlCard(onTap: () => _push(context, const PearlChargePage())),
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -95,7 +95,7 @@ class MyPageMainScreen extends StatelessWidget {
                   size: 22,
                   color: AppColors.black,
                 ),
-                onTap: () => _push(context, const InviteFakePage()),
+                onTap: () => _push(context, const FriendInvitePage()),
               ),
               const SizedBox(height: 18),
               const Divider(height: 1, color: Color(0xFFE8E8ED)),
@@ -174,6 +174,7 @@ class MyPageMainScreen extends StatelessWidget {
     showDialog<void>(
       context: context,
       barrierDismissible: false,
+      barrierColor: Colors.transparent,
       builder: (dialogContext) {
         Future.delayed(const Duration(milliseconds: 1100), () {
           if (dialogContext.mounted) {
@@ -182,8 +183,8 @@ class MyPageMainScreen extends StatelessWidget {
         });
 
         return Dialog(
-          backgroundColor: Colors.white,
-          insetPadding: const EdgeInsets.symmetric(horizontal: 110),
+          backgroundColor: const Color(0xFF7B7B80),
+          insetPadding: const EdgeInsets.symmetric(horizontal: 135),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -192,7 +193,7 @@ class MyPageMainScreen extends StatelessWidget {
             child: Text(
               '초대 문구 복사됨',
               textAlign: TextAlign.center,
-              style: AppFontStyle.H8.copyWith(color: AppColors.black),
+              style: AppFontStyle.H8.copyWith(color: Colors.white),
             ),
           ),
         );

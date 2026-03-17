@@ -62,6 +62,7 @@ class ImagePath {
   static String get choProfile => 'assets/images/cho_profile.png';
   static String get yoonProfile => 'assets/images/yoon_profile.png';
   static String get inviteFriend => 'assets/images/invite_friend.png';
+  static String get inviteBg => 'assets/images/invite_bg.png';
   static String get storePage => 'assets/images/store_page.png';
   static String get pearl => 'assets/images/pearl.png';
   static String get pearl10 => 'assets/images/pearl_10.png';
