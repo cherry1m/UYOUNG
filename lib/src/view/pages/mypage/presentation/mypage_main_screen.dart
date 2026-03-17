@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
+import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_list_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/fake/invite_fake_page.dart';
@@ -82,7 +85,7 @@ class MyPageMainScreen extends StatelessWidget {
               _MenuRow(
                 icon: Icons.lock_outline_rounded,
                 title: '프로필 URL 복사',
-                onTap: () {},
+                onTap: () => _copyProfileUrl(context),
               ),
               _MenuRow(
                 icon: Icons.person_add_alt_1_outlined,
@@ -145,6 +148,56 @@ class MyPageMainScreen extends StatelessWidget {
 
   static void _push(BuildContext context, Widget page) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  }
+
+  static Future<void> _copyProfileUrl(BuildContext context) async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('로그인 정보가 없어요.')));
+      return;
+    }
+
+    final profileBaseUrl = SupabaseConfig.inviteBaseUrl.replaceFirst(
+      RegExp(r'/invite$'),
+      '/profile',
+    );
+    final profileUrl = '$profileBaseUrl?userId=${user.id}';
+
+    await Clipboard.setData(ClipboardData(text: profileUrl));
+
+    if (!context.mounted) {
+      return;
+    }
+
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        Future.delayed(const Duration(milliseconds: 1100), () {
+          if (dialogContext.mounted) {
+            Navigator.of(dialogContext).pop();
+          }
+        });
+
+        return Dialog(
+          backgroundColor: Colors.white,
+          insetPadding: const EdgeInsets.symmetric(horizontal: 110),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Text(
+              '초대 문구 복사됨',
+              textAlign: TextAlign.center,
+              style: AppFontStyle.H8.copyWith(color: AppColors.black),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 
