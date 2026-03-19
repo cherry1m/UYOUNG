@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
 import 'package:uyoung/src/view/pages/home/attend/attend_stemp.dart';
 import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
@@ -21,6 +22,16 @@ class HomeMain extends StatelessWidget {
               "assets/images/home_main.png",
               fit: BoxFit.cover,
               alignment: const Alignment(0, -1.0),
+            ),
+          ),
+          Positioned(
+            left: 90,
+            top: 342,
+            child: Image.asset(
+              ImagePath.homeMyCharacter,
+              width: 211,
+              height: 224,
+              fit: BoxFit.contain,
             ),
           ),
           _pearlBox(context),

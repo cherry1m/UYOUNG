@@ -24,6 +24,7 @@ class ImagePath {
   // 홈
   static String get homeOn => 'assets/images/home_on.png';
   static String get homeOff => 'assets/images/home.png';
+  static String get homeMyCharacter => 'assets/images/home_my_character.png';
 
   // 기억섬(방)
   static String get roomOn => 'assets/images/room_on.png';
