@@ -4,6 +4,7 @@ import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
 import 'package:uyoung/src/view/pages/home/attend/attend_stemp.dart';
 import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
+import 'package:uyoung/src/view/pages/home/notification_page.dart';
 
 class HomeMain extends StatelessWidget {
   const HomeMain({super.key});
@@ -34,7 +35,7 @@ class HomeMain extends StatelessWidget {
             ),
           ),
           _pearlBox(context),
-          _alert(),
+          _alert(context),
           _check(),
         ],
       ),
@@ -80,14 +81,22 @@ class HomeMain extends StatelessWidget {
   }
 
   //MARK: - 상단 알림 아이콘
-  Widget _alert() {
+  Widget _alert(BuildContext context) {
     return Positioned(
       top: 60,
       right: 15,
-      child: Image(
-        image: AssetImage("assets/images/alert.png"),
-        width: 28,
-        height: 30,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const NotificationPage()),
+          );
+        },
+        child: const Image(
+          image: AssetImage("assets/images/alert.png"),
+          width: 28,
+          height: 30,
+        ),
       ),
     );
   }
