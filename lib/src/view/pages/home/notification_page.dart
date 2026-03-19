@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/image_data.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
@@ -65,9 +66,7 @@ class NotificationPage extends StatelessWidget {
                   const SnackBar(content: Text('알림 설정은 준비 중이에요.')),
                 );
             },
-            icon: const Icon(Icons.settings_outlined),
-            color: AppColors.black,
-            iconSize: 34,
+            icon: ImageData(path: ImagePath.setting, width: 35, height: 35),
           ),
           const SizedBox(width: 8),
         ],
@@ -93,7 +92,7 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bodyStyle = AppFontStyle.H7.copyWith(
+    final bodyStyle = AppFontStyle.H8.copyWith(
       color: AppColors.black,
       height: 1.45,
     );
@@ -108,14 +107,14 @@ class _NotificationCard extends StatelessWidget {
         );
 
         return Container(
-          height: isMultiLine ? 98 : 75,
+          height: isMultiLine ? 98 : 74,
           padding: const EdgeInsets.fromLTRB(18, 15, 18, 15),
           decoration: BoxDecoration(
             color: const Color(0xFFF0F0F2),
             borderRadius: BorderRadius.circular(18),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 44,
@@ -128,6 +127,7 @@ class _NotificationCard extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -138,7 +138,7 @@ class _NotificationCard extends StatelessWidget {
                             item.category,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppFontStyle.H6.copyWith(
+                            style: AppFontStyle.H7.copyWith(
                               color: AppColors.black,
                             ),
                           ),
@@ -146,7 +146,7 @@ class _NotificationCard extends StatelessWidget {
                         const SizedBox(width: 12),
                         Text(
                           item.timeAgo,
-                          style: AppFontStyle.H7.copyWith(
+                          style: AppFontStyle.H8.copyWith(
                             color: AppColors.black,
                           ),
                         ),
