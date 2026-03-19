@@ -33,6 +33,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/mypage/
     - assets/images/memory/
     - assets/images/memory/alcohol/
     - assets/images/memory/couple/
