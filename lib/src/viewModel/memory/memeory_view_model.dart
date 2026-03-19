@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
-import 'package:uyoung/data/sources/memory/memory_storage.dart';
+import 'package:uyoung/data/repositories/memory/memory_repository.dart';
 
 class MemoryViewModel extends ChangeNotifier {
-  // MARK: - 저장소 인스턴스
-  // SharedPreferences를 통해 데이터를 저장하고 불러오기 위한 클래스
-  final MemoryStorage _storage = MemoryStorage();
+  final MemoryRepository _repository = MemoryRepository();
 
   // MARK: - 화면에 표시할 기억섬 리스트
   List<MemoryItem> items = [];
@@ -16,6 +14,7 @@ class MemoryViewModel extends ChangeNotifier {
   // MARK: - 이름 수정 관련 상태
   int? editingIndex;
   final TextEditingController textController = TextEditingController();
+  String? errorMessage;
 
   // MARK: - 초기 데이터 불러오기
   Future<void> load() async {
@@ -26,10 +25,15 @@ class MemoryViewModel extends ChangeNotifier {
     // MARK: - 기존 저장된 기억섬 데이터 초기화 (필요할 때만 사용)
     // 상콩즈, 일본팸 ID 꼬일 때 반드시 필요함
     // 최초 1회만 쓰고 이후엔 주석 처리 권장
-    // await _storage.clearAll();
+    // await _repository.clearAll();
 
-    // SharedPreferences에서 데이터 로드
-    items = await _storage.loadItems();
+    try {
+      items = await _repository.loadItems();
+      _sortItems();
+      errorMessage = null;
+    } catch (error) {
+      errorMessage = error.toString();
+    }
 
     // 로딩 완료
     isLoaded = true;
@@ -50,43 +54,122 @@ class MemoryViewModel extends ChangeNotifier {
   }
 
   // MARK: - 이름 변경
-  void renameItem(int index, String newTitle) {
+  Future<void> renameItem(int index, String newTitle) async {
     if (index < 0 || index >= items.length) return;
 
+    final previousTitle = items[index].title;
     items[index].title = newTitle;
     editingIndex = null;
-
-    _storage.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.updateIslandName(
+        islandId: items[index].id,
+        name: newTitle,
+      );
+      items[index].updatedAt = DateTime.now();
+      _sortItems();
+      await _repository.saveItems(items);
+      notifyListeners();
+    } catch (_) {
+      items[index].title = previousTitle;
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // MARK: - 즐겨찾기 토글
-  void toggleFavorite(int index) {
+  Future<void> toggleFavorite(int index) async {
     if (index < 0 || index >= items.length) return;
 
+    final previousValue = items[index].isFavorite;
     items[index].isFavorite = !items[index].isFavorite;
-
-    _storage.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.updateIslandMemberSettings(
+        islandId: items[index].id,
+        isFavorite: items[index].isFavorite,
+      );
+      _sortItems();
+      await _repository.saveItems(items);
+      notifyListeners();
+    } catch (_) {
+      items[index].isFavorite = previousValue;
+      _sortItems();
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // MARK: - 알림 토글
-  void toggleAlarm(int index) {
+  Future<void> toggleAlarm(int index) async {
     if (index < 0 || index >= items.length) return;
 
+    final previousValue = items[index].isNotificationOn;
     items[index].isNotificationOn = !items[index].isNotificationOn;
-
-    _storage.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.updateIslandMemberSettings(
+        islandId: items[index].id,
+        isMuted: !items[index].isNotificationOn,
+      );
+      await _repository.saveItems(items);
+      notifyListeners();
+    } catch (_) {
+      items[index].isNotificationOn = previousValue;
+      notifyListeners();
+      rethrow;
+    }
   }
 
   // MARK: - 기억섬 삭제
-  void removeItem(int index) {
+  Future<void> removeItem(int index) async {
     if (index < 0 || index >= items.length) return;
 
+    final removedItem = items[index];
     items.removeAt(index);
-
-    _storage.saveItems(items);
     notifyListeners();
+
+    try {
+      await _repository.leaveIsland(removedItem.id);
+      await _repository.saveItems(items);
+    } catch (_) {
+      items.insert(index, removedItem);
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> insertCreatedItem(MemoryItem item) async {
+    items.insert(0, item);
+    _sortItems();
+    await _repository.saveItems(items);
+    notifyListeners();
+  }
+
+  Future<void> insertOrUpdateItem(MemoryItem item) async {
+    final index = items.indexWhere((existing) => existing.id == item.id);
+    if (index >= 0) {
+      items[index] = item;
+    } else {
+      items.insert(0, item);
+    }
+    _sortItems();
+    await _repository.saveItems(items);
+    notifyListeners();
+  }
+
+  void _sortItems() {
+    items.sort((a, b) {
+      if (a.isFavorite != b.isFavorite) {
+        return a.isFavorite ? -1 : 1;
+      }
+
+      final aUpdatedAt = a.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      final bUpdatedAt = b.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0);
+      return bUpdatedAt.compareTo(aUpdatedAt);
+    });
   }
 }

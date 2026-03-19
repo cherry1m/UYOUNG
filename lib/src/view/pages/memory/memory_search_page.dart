@@ -113,6 +113,7 @@ class MemorySearchPage extends StatelessWidget {
                       isFavorite: item.isFavorite,
                       isNotificationOn: item.isNotificationOn,
                       imagePath: item.imagePath,
+                      members: item.members,
                       isEditing: false,
                       controller: TextEditingController(),
                       onEditComplete: () {},

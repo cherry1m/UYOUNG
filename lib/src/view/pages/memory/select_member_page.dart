@@ -1,133 +1,220 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/model/memory/invitee_user_model.dart';
+import 'package:uyoung/data/repositories/memory/memory_repository.dart';
+import 'package:uyoung/src/view/pages/memory/memory_creation_result.dart';
+import 'package:uyoung/src/viewModel/memory/create_memory_view_model.dart';
+import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
+import 'package:uyoung/src/viewModel/memory/select_member_view_model.dart';
 
-class SelectMemberPage extends StatefulWidget {
+class SelectMemberPage extends StatelessWidget {
   const SelectMemberPage({super.key});
 
   @override
-  State<SelectMemberPage> createState() => _SelectMemberPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => SelectMemberViewModel()..search(''),
+      child: const _SelectMemberStepView(),
+    );
+  }
 }
 
-class _SelectMemberPageState extends State<SelectMemberPage> {
-  final TextEditingController _searchController = TextEditingController();
-
-  final List<String> allMembers = ["윤채림", "이윤서", "조성은", "최보빈", "한승하"];
-  List<String> selectedMembers = [];
+class _SelectMemberStepView extends StatefulWidget {
+  const _SelectMemberStepView();
 
   @override
-  void initState() {
-    super.initState();
-    _searchController.addListener(() => setState(() {}));
+  State<_SelectMemberStepView> createState() => _SelectMemberStepViewState();
+}
+
+class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
+  final TextEditingController _searchController = TextEditingController();
+  final MemoryRepository _repository = MemoryRepository();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
-  List<String> get filteredMembers {
-    if (_searchController.text.isEmpty) return allMembers;
-    return allMembers.where((m) => m.contains(_searchController.text)).toList();
+  Future<void> _submit() async {
+    final createVm = context.read<CreateMemoryViewModel>();
+    final memoryVm = context.read<MemoryViewModel>();
+
+    try {
+      final createdItem = await createVm.createIsland();
+      await memoryVm.insertCreatedItem(createdItem);
+
+      if (!mounted) {
+        return;
+      }
+
+      final messenger = ScaffoldMessenger.of(context);
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('기억섬이 생성됐어요. ID: ${createdItem.id}'),
+          action: createdItem.inviteCode?.isNotEmpty == true
+              ? SnackBarAction(
+                  label: '링크 복사',
+                  onPressed: () {
+                    Clipboard.setData(
+                      ClipboardData(
+                        text: _repository.buildInviteLink(createdItem.inviteCode!),
+                      ),
+                    );
+                  },
+                )
+              : null,
+        ),
+      );
+      Navigator.pop(context, MemoryCreationResult(item: createdItem));
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error.toString())),
+      );
+    }
+  }
+
+  Future<void> _copyInviteLink() async {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('기억섬 생성 후 링크를 복사할 수 있어요.')));
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool hasSelected = selectedMembers.isNotEmpty;
+    final createVm = context.watch<CreateMemoryViewModel>();
+    final selectVm = context.watch<SelectMemberViewModel>();
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: _appBar(),
-
+      appBar: _appBar(context),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // MARK: 선택된 멤버 리스트 (가로 스크롤)
-          if (selectedMembers.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(18, 8, 18, 0),
+            child: _inviteByLinkButton(),
+          ),
+          if (createVm.selectedMembers.isNotEmpty)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: selectedMembers
-                      .map((name) => _selectedProfile(name))
+                  children: createVm.selectedMembers
+                      .map((member) => _selectedProfile(createVm, member))
                       .toList(),
                 ),
               ),
             ),
-
-          // MARK: 검색창
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: _searchField(),
+            child: _searchField(selectVm),
           ),
-
           const SizedBox(height: 8),
-
-          // MARK: 전체 멤버 리스트
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              itemCount: filteredMembers.length,
-              itemBuilder: (_, index) {
-                final name = filteredMembers[index];
-                final bool isSelected = selectedMembers.contains(name);
-
-                return _memberRow(name, isSelected);
-              },
-            ),
-          ),
-
-          // MARK: 추가하기 버튼
-          Container(
-            padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
-            child: SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: TextButton(
-                onPressed: hasSelected
-                    ? () {
-                        Navigator.pop(context, selectedMembers);
-                      }
-                    : null,
-                style: TextButton.styleFrom(
-                  backgroundColor: hasSelected
-                      ? const Color(0xFF6EA8EB)
-                      : const Color(0xFFEDEDED),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-                child: Text(
-                  "추가하기",
-                  style: AppFontStyle.M_18.copyWith(
-                    color: hasSelected ? Colors.white : Colors.grey,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          Expanded(child: _buildBody(createVm, selectVm)),
+          _bottomButtons(createVm),
         ],
       ),
     );
   }
 
-  // MARK: 멤버 단일 Row
-  Widget _memberRow(String name, bool isSelected) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          isSelected ? selectedMembers.remove(name) : selectedMembers.add(name);
-        });
+  Widget _inviteByLinkButton() {
+    return InkWell(
+      onTap: _copyInviteLink,
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5F8FC),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: const Color(0xFFE3EBF5)),
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.link_rounded, color: Color(0xFF6EA8EB)),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text('링크로 초대하기', style: AppFontStyle.M_16),
+            ),
+            const Icon(Icons.chevron_right, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    CreateMemoryViewModel createVm,
+    SelectMemberViewModel selectVm,
+  ) {
+    if (selectVm.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
+    if (selectVm.errorText != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Text(
+            selectVm.errorText!,
+            style: AppFontStyle.M_14.copyWith(color: Colors.redAccent),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    if (selectVm.searchResults.isEmpty) {
+      return Center(
+        child: Text(
+          '검색 결과가 없어요.',
+          style: AppFontStyle.M_16.copyWith(color: Colors.grey),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      itemCount: selectVm.searchResults.length,
+      itemBuilder: (_, index) {
+        final user = selectVm.searchResults[index];
+        return _memberRow(createVm, user);
       },
+    );
+  }
+
+  Widget _memberRow(CreateMemoryViewModel createVm, InviteeUser user) {
+    final isSelected = createVm.isSelected(user.id);
+
+    return GestureDetector(
+      onTap: () => createVm.toggleInvitee(user),
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: Row(
           children: [
-            Container(
-              width: 56,
-              height: 56,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE6E6E6),
-                shape: BoxShape.circle,
-              ),
+            CircleAvatar(
+              radius: 28,
+              backgroundColor: const Color(0xFFE6E6E6),
+              backgroundImage: user.avatarUrl?.isNotEmpty == true
+                  ? NetworkImage(user.avatarUrl!)
+                  : null,
+              child: user.avatarUrl?.isNotEmpty == true
+                  ? null
+                  : Text(
+                      user.nickname.isEmpty ? '?' : user.nickname[0],
+                      style: AppFontStyle.M_18.copyWith(color: Colors.black54),
+                    ),
             ),
             const SizedBox(width: 16),
-            Expanded(child: Text(name, style: AppFontStyle.M_16)),
+            Expanded(child: Text(user.nickname, style: AppFontStyle.M_16)),
             Container(
               width: 28,
               height: 28,
@@ -135,9 +222,7 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
                 color: isSelected ? const Color(0xFF6EA8EB) : Colors.white,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: isSelected
-                      ? Colors.transparent
-                      : const Color(0xFFBDBDBD),
+                  color: isSelected ? Colors.transparent : const Color(0xFFBDBDBD),
                   width: 1.3,
                 ),
               ),
@@ -151,28 +236,31 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
     );
   }
 
-  // MARK: 선택된 멤버 원 + 제거
-  Widget _selectedProfile(String name) {
+  Widget _selectedProfile(CreateMemoryViewModel createVm, InviteeUser user) {
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: Column(
         children: [
           Stack(
             children: [
-              Container(
-                width: 64,
-                height: 64,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: const Color(0xFFE6E6E6), width: 1),
-                ),
+              CircleAvatar(
+                radius: 32,
+                backgroundColor: Colors.white,
+                backgroundImage: user.avatarUrl?.isNotEmpty == true
+                    ? NetworkImage(user.avatarUrl!)
+                    : null,
+                child: user.avatarUrl?.isNotEmpty == true
+                    ? null
+                    : Text(
+                        user.nickname.isEmpty ? '?' : user.nickname[0],
+                        style: AppFontStyle.M_18.copyWith(color: Colors.black54),
+                      ),
               ),
               Positioned(
                 top: -2,
                 right: -2,
                 child: GestureDetector(
-                  onTap: () => setState(() => selectedMembers.remove(name)),
+                  onTap: () => createVm.removeInvitee(user.id),
                   child: Container(
                     width: 22,
                     height: 22,
@@ -181,29 +269,25 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
                       color: const Color(0xFF6EA8EB),
                       border: Border.all(color: Colors.white, width: 2),
                     ),
-                    child: const Icon(
-                      Icons.close,
-                      size: 14,
-                      color: Colors.white,
-                    ),
+                    child: const Icon(Icons.close, size: 14, color: Colors.white),
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 6),
-          Text(name, style: AppFontStyle.M_14),
+          Text(user.nickname, style: AppFontStyle.M_14),
         ],
       ),
     );
   }
 
-  // MARK: 검색창
-  Widget _searchField() {
+  Widget _searchField(SelectMemberViewModel selectVm) {
     return TextField(
       controller: _searchController,
+      onChanged: selectVm.scheduleSearch,
       decoration: InputDecoration(
-        hintText: "이름 검색",
+        hintText: '이름 또는 초성 검색',
         hintStyle: AppFontStyle.M_16.copyWith(color: Colors.grey),
         suffixIcon: const Icon(Icons.search, color: Colors.black),
         enabledBorder: const UnderlineInputBorder(
@@ -217,8 +301,68 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
     );
   }
 
-  // MARK: AppBar
-  AppBar _appBar() => AppBar(
+  Widget _bottomButtons(CreateMemoryViewModel createVm) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
+      child: Row(
+        children: [
+          Expanded(
+            child: SizedBox(
+              height: 56,
+              child: OutlinedButton(
+                onPressed: createVm.isSubmitting ? null : () => Navigator.pop(context),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFD9E2EC)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: Text(
+                  '이전',
+                  style: AppFontStyle.M_18.copyWith(color: Colors.black87),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SizedBox(
+              height: 56,
+              child: TextButton(
+                onPressed: createVm.canSubmit && !createVm.isSubmitting ? _submit : null,
+                style: TextButton.styleFrom(
+                  backgroundColor: createVm.canSubmit
+                      ? const Color(0xFF6EA8EB)
+                      : const Color(0xFFEDEDED),
+                  disabledBackgroundColor: const Color(0xFFEDEDED),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(18),
+                  ),
+                ),
+                child: createVm.isSubmitting
+                    ? const SizedBox(
+                        width: 22,
+                        height: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.4,
+                          color: Colors.white,
+                        ),
+                      )
+                    : Text(
+                        '확인',
+                        style: AppFontStyle.M_18.copyWith(
+                          color: createVm.canSubmit ? Colors.white : Colors.grey,
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  AppBar _appBar(BuildContext context) => AppBar(
     backgroundColor: Colors.white,
     elevation: 0,
     centerTitle: true,
@@ -226,6 +370,6 @@ class _SelectMemberPageState extends State<SelectMemberPage> {
       icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
       onPressed: () => Navigator.pop(context),
     ),
-    title: Text("대화 상대", style: AppFontStyle.M_20),
+    title: Text('대화 상대', style: AppFontStyle.M_20),
   );
 }

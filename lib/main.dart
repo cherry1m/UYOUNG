@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
 import 'package:uyoung/app.dart';
-import 'package:uyoung/src/view/pages/login/login_main_page.dart';
+
 import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -48,9 +49,7 @@ class UyoungRoot extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-
-      // ✅ feat/login 브랜치에서는 로그인 화면부터 시작
-      home: LoginMainPage(),
+      home: UyoungApp(),
     );
   }
 }
