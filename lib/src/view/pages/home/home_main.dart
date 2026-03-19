@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
 import 'package:uyoung/src/view/pages/home/attend/attend_stemp.dart';
 import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
-import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
-import 'package:uyoung/src/view/pages/home/store_page.dart';
-import 'package:uyoung/src/view/pages/home/today_shell_story_page.dart';
+import 'package:uyoung/src/view/pages/home/notification_page.dart';
 
 class HomeMain extends StatelessWidget {
   const HomeMain({super.key});
+
+  static const String _defaultPearlCountLabel = '128개';
 
   @override
   Widget build(BuildContext context) {
@@ -23,67 +24,19 @@ class HomeMain extends StatelessWidget {
               alignment: const Alignment(0, -1.0),
             ),
           ),
-          _pearlBox(context),
-          _alert(),
-          _pearlContent(),
-          _shop(),
-          _check(),
-          _bottomStoryCard(context),
-        ],
-      ),
-    );
-  }
-
-  // MARK: - 하단 조개 이야기 카드
-  Widget _bottomStoryCard(BuildContext context) {
-    return Positioned(
-      left: 16,
-      right: 16,
-      bottom: 19,
-      child: Stack(
-        children: [
-          Image.asset(
-            "assets/images/home_alert_background.png",
-            width: double.infinity,
-            fit: BoxFit.contain,
-          ),
-
-          Positioned.fill(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 28),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: Text(
-                      "완성되지 않은 조개 이야기!\n이어가면 진주가 생길지도…?",
-                      style: AppFontStyle.M_18,
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => TodayShellStoryPage(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      "이어서 진행하기 >",
-                      style: AppFontStyle.M_14.copyWith(
-                        color: const Color(0xFF666666),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          Positioned(
+            left: 90,
+            top: 342,
+            child: Image.asset(
+              ImagePath.homeMyCharacter,
+              width: 211,
+              height: 224,
+              fit: BoxFit.contain,
             ),
           ),
+          _pearlBox(context),
+          _alert(context),
+          _check(),
         ],
       ),
     );
@@ -101,64 +54,50 @@ class HomeMain extends StatelessWidget {
             MaterialPageRoute(builder: (_) => AttendCheckPage()),
           );
         },
-        child: Image(
-          image: AssetImage("assets/images/pearl_box.png"),
+        child: SizedBox(
           width: 82,
           height: 36,
+          child: Stack(
+            children: [
+              const Image(
+                image: AssetImage("assets/images/pearl_box.png"),
+                width: 82,
+                height: 36,
+              ),
+              Positioned(
+                top: 12,
+                left: 39,
+                child: Text(
+                  // TODO(seongeunii): Replace with the user's live pearl count.
+                  _defaultPearlCountLabel,
+                  style: AppFontStyle.H8.copyWith(color: Colors.black),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // MARK: - 조개 이야기 아이콘
-  Widget _pearlContent() {
-    return Builder(
-      builder: (context) {
-        return CommonIconBages(
-          left: 20,
-          top: 106,
-          imagePath: "assets/images/shell_content.png",
-          imageSize: 60,
-          title: "조개 이야기",
-
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => ShellStoryPage()),
-          ),
-        );
-      },
-    );
-  }
-
   //MARK: - 상단 알림 아이콘
-  Widget _alert() {
+  Widget _alert(BuildContext context) {
     return Positioned(
       top: 60,
       right: 15,
-      child: Image(
-        image: AssetImage("assets/images/alert.png"),
-        width: 28,
-        height: 30,
-      ),
-    );
-  }
-
-  // MARK: - 상점 아이콘
-  Widget _shop() {
-    return Builder(
-      builder: (context) {
-        return CommonIconBages(
-          left: 330,
-          top: 106,
-          imagePath: "assets/images/store.png",
-          imageSize: 60,
-          title: "상점",
-          onTap: () => Navigator.push(
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => StorePage()),
-          ),
-        );
-      },
+            MaterialPageRoute(builder: (_) => const NotificationPage()),
+          );
+        },
+        child: const Image(
+          image: AssetImage("assets/images/alert.png"),
+          width: 28,
+          height: 30,
+        ),
+      ),
     );
   }
 
@@ -167,8 +106,8 @@ class HomeMain extends StatelessWidget {
     return Builder(
       builder: (context) {
         return CommonIconBages(
-          left: 335,
-          top: 186,
+          left: 20,
+          top: 106,
           imagePath: "assets/images/pearl_shell.png",
           imageSize: 35,
           title: "출석 체크",
