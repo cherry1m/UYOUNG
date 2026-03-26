@@ -58,7 +58,10 @@ class _TimelineMemoryPageState extends State<TimelineMemoryPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MemoryCommonAppBar(title: widget.item.title),
+      appBar: MemoryCommonAppBar(
+        title: widget.item.title,
+        islandId: widget.item.id,
+      ),
       body: Column(
         children: [
           // ✅ MAP 자리 -> 이미지로 대체

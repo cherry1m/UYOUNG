@@ -23,7 +23,7 @@ class DateMemoryPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MemoryCommonAppBar(title: item.title),
+      appBar: MemoryCommonAppBar(title: item.title, islandId: item.id),
       body: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         itemCount: dates.length,
@@ -145,7 +145,7 @@ class DateMemoryPage extends StatelessWidget {
   String _formatKoreanDate(DateTime d) {
     const w = ['월', '화', '수', '목', '금', '토', '일'];
     final weekday = w[d.weekday - 1];
-    return '${d.year}년 ${d.month}월 ${d.day}일 ${weekday}요일';
+    return '${d.year}년 ${d.month}월 ${d.day}일 $weekday요일';
   }
 }
 

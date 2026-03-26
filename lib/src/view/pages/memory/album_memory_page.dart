@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/model/memory/memory_item_model.dart';
 import 'package:uyoung/src/view/common/memory/common_memory_appbar.dart';
 
@@ -30,7 +29,10 @@ class _AlbumMemoryPageState extends State<AlbumMemoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: MemoryCommonAppBar(title: widget.item.title),
+      appBar: MemoryCommonAppBar(
+        title: widget.item.title,
+        islandId: widget.item.id,
+      ),
       body: _photoGrid(),
     );
   }

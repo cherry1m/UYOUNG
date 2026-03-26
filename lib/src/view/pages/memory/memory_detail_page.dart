@@ -76,7 +76,9 @@ class _MemoryDetailPageState extends State<MemoryDetailPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const MemberInquiryPage(),
+                        builder: (_) => MemberInquiryPage(
+                          islandId: widget.item.id,
+                        ),
                       ),
                     );
                   },
