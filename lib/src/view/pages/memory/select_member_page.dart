@@ -81,12 +81,6 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
     }
   }
 
-  Future<void> _copyInviteLink() async {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('기억섬 생성 후 링크를 복사할 수 있어요.')));
-  }
-
   @override
   Widget build(BuildContext context) {
     final createVm = context.watch<CreateMemoryViewModel>();
@@ -98,13 +92,9 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 8, 18, 0),
-            child: _inviteByLinkButton(),
-          ),
           if (createVm.selectedMembers.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
               child: SelectedUserChipList(
                 users: createVm.selectedMembers,
                 onRemove: createVm.removeInvitee,
@@ -118,32 +108,6 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
           Expanded(child: _buildBody(createVm, selectVm)),
           _bottomButtons(createVm),
         ],
-      ),
-    );
-  }
-
-  Widget _inviteByLinkButton() {
-    return InkWell(
-      onTap: _copyInviteLink,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5F8FC),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE3EBF5)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.link_rounded, color: Color(0xFF6EA8EB)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text('링크로 초대하기', style: AppFontStyle.M_16),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.grey),
-          ],
-        ),
       ),
     );
   }
