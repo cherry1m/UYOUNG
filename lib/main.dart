@@ -1,31 +1,37 @@
+import 'dart:async';
+
+import 'package:app_links/app_links.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uyoung/src/view/pages/memory/memory_main_page.dart';
-import 'package:uyoung/app.dart';
-import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
-import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:uyoung/app.dart';
+import 'package:uyoung/data/repositories/user/profile_repository.dart';
+import 'package:uyoung/data/sources/supabase/supabase_config.dart';
+import 'package:uyoung/src/view/pages/login/login_main_page.dart';
+import 'package:uyoung/src/view/pages/login/profile_setup_page.dart';
+import 'package:uyoung/src/view/pages/memory/invite_island_page.dart';
+import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
+import 'package:uyoung/src/viewModel/calendar/calendar_view_model.dart';
+import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
 
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Supabase 초기화 추가
-  await Supabase.initialize(
-    url: 'YOUR_PROJECT_URL',
-    anonKey: 'YOUR_PUBLIC_ANON_KEY',
-  );
-
-  // 날짜 포맷 초기화
   await initializeDateFormatting('ko_KR', null);
 
-  // 필요 시 안전 대기
-  await Future.delayed(const Duration(milliseconds: 300));
+  if (SupabaseConfig.isConfigured) {
+    await Supabase.initialize(
+      url: SupabaseConfig.url,
+      anonKey: SupabaseConfig.anonKey,
+    );
+  }
 
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => MemoryViewModel()..load()),
         ChangeNotifierProvider(create: (_) => CalendarViewModel()),
       ],
@@ -34,21 +40,164 @@ Future<void> main() async {
   );
 }
 
-class UyoungRoot extends StatelessWidget {
+class UyoungRoot extends StatefulWidget {
   const UyoungRoot({super.key});
 
   @override
+  State<UyoungRoot> createState() => _UyoungRootState();
+}
+
+class _UyoungRootState extends State<UyoungRoot> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  final AppLinks _appLinks = AppLinks();
+  StreamSubscription<Uri>? _linkSubscription;
+  final Set<String> _handledInviteCodes = <String>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _listenInitialLink();
+    _linkSubscription = _appLinks.uriLinkStream.listen(_handleUri);
+  }
+
+  Future<void> _listenInitialLink() async {
+    final uri = await _appLinks.getInitialLink();
+    if (uri != null) {
+      _handleUri(uri);
+    }
+  }
+
+  void _handleUri(Uri uri) {
+    if (_isAuthCallback(uri)) {
+      return;
+    }
+
+    final inviteCode = _extractInviteCode(uri);
+    if (inviteCode == null || _handledInviteCodes.contains(inviteCode)) {
+      return;
+    }
+
+    _handledInviteCodes.add(inviteCode);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final navigator = _navigatorKey.currentState;
+      if (navigator == null) {
+        return;
+      }
+      navigator.push(
+        MaterialPageRoute(
+          builder: (_) => InviteIslandPage(inviteCode: inviteCode),
+        ),
+      );
+    });
+  }
+
+  bool _isAuthCallback(Uri uri) {
+    return uri.host == 'login-callback' ||
+        uri.pathSegments.contains('login-callback');
+  }
+
+  String? _extractInviteCode(Uri uri) {
+    final queryCode = uri.queryParameters['code'];
+    if (queryCode != null && queryCode.isNotEmpty) {
+      return queryCode;
+    }
+
+    final segments = uri.pathSegments;
+    if (segments.length >= 2 && segments.first == 'invite') {
+      return segments[1];
+    }
+
+    if (segments.isNotEmpty && segments.last.isNotEmpty) {
+      return segments.last;
+    }
+
+    return null;
+  }
+
+  @override
+  void dispose() {
+    _linkSubscription?.cancel();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+      navigatorKey: _navigatorKey,
       debugShowCheckedModeBanner: false,
-      locale: Locale('ko', 'KR'),
-      supportedLocales: [Locale('ko', 'KR')],
-      localizationsDelegates: [
+      locale: const Locale('ko', 'KR'),
+      supportedLocales: const [Locale('ko', 'KR')],
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: UyoungApp(),
+      home: const AuthGate(),
+    );
+  }
+}
+
+class AuthGate extends StatelessWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = Supabase.instance.client.auth;
+
+    return StreamBuilder<AuthState>(
+      stream: auth.onAuthStateChange,
+      builder: (context, snapshot) {
+        final session = snapshot.data?.session ?? auth.currentSession;
+        if (session == null) {
+          return const LoginMainPage();
+        }
+
+        return const ProfileSetupGate();
+      },
+    );
+  }
+}
+
+class ProfileSetupGate extends StatefulWidget {
+  const ProfileSetupGate({super.key});
+
+  @override
+  State<ProfileSetupGate> createState() => _ProfileSetupGateState();
+}
+
+class _ProfileSetupGateState extends State<ProfileSetupGate> {
+  late final Future _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = ProfileRepository().fetchCurrentProfile();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _profileFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return const Scaffold(
+            body: Center(child: Text('프로필 정보를 불러오지 못했어요.')),
+          );
+        }
+
+        final profile = snapshot.data;
+        if (profile == null || profile.needsSetup) {
+          return const ProfileSetupPage();
+        }
+
+        return const UyoungApp();
+      },
     );
   }
 }
