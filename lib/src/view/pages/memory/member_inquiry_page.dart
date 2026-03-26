@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
-import 'package:uyoung/data/model/memory/island_model.dart';
+import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/viewModel/memory/island_detail_view_model.dart';
@@ -222,7 +222,9 @@ class _MemberInquiryView extends StatelessWidget {
     );
   }
 
-  Widget _memberTile(IslandMemberModel member) {
+  Widget _memberTile(AppUserProfile member) {
+    final displayName = member.nickname.trim().isEmpty ? '이름 없음' : member.nickname.trim();
+
     return ListTile(
       leading: CircleAvatar(
         radius: 18,
@@ -233,11 +235,11 @@ class _MemberInquiryView extends StatelessWidget {
         child: member.avatarUrl?.isNotEmpty == true
             ? null
             : Text(
-                member.displayName.isEmpty ? '?' : member.displayName[0],
+                displayName.isEmpty ? '?' : displayName[0],
                 style: AppFontStyle.M_14.copyWith(color: Colors.black54),
               ),
       ),
-      title: Text(member.displayName, style: AppFontStyle.M_16),
+      title: Text(displayName, style: AppFontStyle.M_16),
       onTap: () {},
     );
   }

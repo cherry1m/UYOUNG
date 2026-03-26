@@ -1,4 +1,5 @@
 import 'package:uyoung/data/model/memory/island_model.dart';
+import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/data/sources/supabase/memory/island_service.dart';
 
 class IslandRepository {
@@ -19,7 +20,7 @@ class IslandRepository {
     }
   }
 
-  Future<List<IslandMemberModel>> fetchIslandMembers(String islandId) async {
+  Future<List<AppUserProfile>> fetchIslandMembers(String islandId) async {
     try {
       return await _service.fetchIslandMembers(islandId);
     } catch (error) {

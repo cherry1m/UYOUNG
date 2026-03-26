@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/model/memory/island_model.dart';
+import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/data/repositories/memory/island_repository.dart';
 
 class IslandDetailViewModel extends ChangeNotifier {
@@ -12,12 +13,12 @@ class IslandDetailViewModel extends ChangeNotifier {
   final IslandRepository _repository;
 
   IslandModel? _island;
-  List<IslandMemberModel> _members = const [];
+  List<AppUserProfile> _members = const [];
   bool _isLoading = false;
   String? _errorText;
 
   IslandModel? get island => _island;
-  List<IslandMemberModel> get members => List.unmodifiable(_members);
+  List<AppUserProfile> get members => List.unmodifiable(_members);
   bool get isLoading => _isLoading;
   String? get errorText => _errorText;
 
@@ -33,7 +34,7 @@ class IslandDetailViewModel extends ChangeNotifier {
       ]);
 
       _island = results[0] as IslandModel;
-      _members = results[1] as List<IslandMemberModel>;
+      _members = results[1] as List<AppUserProfile>;
     } catch (error) {
       _errorText = error.toString();
       _members = const [];
