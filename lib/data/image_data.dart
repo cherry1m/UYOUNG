@@ -48,6 +48,10 @@ class ImagePath {
   static String get diaryOn => 'assets/images/diary_on.png';
   static String get diaryOff => 'assets/images/diary.png';
 
+  // 상점
+  static String get storeOn => 'assets/images/store_on.png';
+  static String get storeOff => 'assets/images/store_off.png';
+
   // 마이페이지
   static String get myPageOn => 'assets/images/my_page_on.png';
   static String get myPageOff => 'assets/images/my_page.png';
