@@ -62,4 +62,21 @@ class IslandService {
         .whereType<AppUserProfile>()
         .toList();
   }
+
+  Future<void> inviteMembersToIsland({
+    required String islandId,
+    required List<String> selectedUserIds,
+  }) async {
+    if (selectedUserIds.isEmpty) {
+      return;
+    }
+
+    await _client.rpc(
+      'invite_members_to_island',
+      params: {
+        'target_island_id': islandId,
+        'target_user_ids': selectedUserIds,
+      },
+    );
+  }
 }

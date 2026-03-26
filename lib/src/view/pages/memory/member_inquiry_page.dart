@@ -4,7 +4,8 @@ import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/src/view/pages/calendar/calendar_main_page.dart';
-import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
+import 'package:uyoung/src/view/pages/memory/favorite_photos_page.dart';
+import 'package:uyoung/src/view/pages/memory/island_invite_page.dart';
 import 'package:uyoung/src/viewModel/memory/island_detail_view_model.dart';
 
 class MemberInquiryPage extends StatelessWidget {
@@ -121,16 +122,17 @@ class _MemberInquiryView extends StatelessWidget {
                       ),
                       Container(height: 1, color: const Color(0xFFE6E6E6)),
                       ListTile(
-                        leading: Image.asset(
-                          "assets/images/shell_content.png",
-                          width: 45,
+                        leading: const Icon(
+                          Icons.favorite_border_rounded,
+                          color: Color(0xFF6EA8EB),
+                          size: 28,
                         ),
-                        title: Text("조개 이야기", style: AppFontStyle.S7),
+                        title: Text("즐겨찾는 사진", style: AppFontStyle.S7),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const ShellStoryPage(),
+                              builder: (_) => FavoritePhotosPage(islandId: island.id),
                             ),
                           );
                         },
@@ -165,7 +167,23 @@ class _MemberInquiryView extends StatelessWidget {
                           child: const Icon(Icons.add, size: 22),
                         ),
                         title: Text("초대하기", style: AppFontStyle.M_16),
-                        onTap: () {},
+                        onTap: () async {
+                          final invited = await Navigator.push<bool>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => IslandInvitePage(
+                                islandId: island.id,
+                                existingMemberIds: viewModel.members
+                                    .map((member) => member.id)
+                                    .toSet(),
+                              ),
+                            ),
+                          );
+
+                          if (invited == true && context.mounted) {
+                            await context.read<IslandDetailViewModel>().load();
+                          }
+                        },
                       ),
                       if (viewModel.members.isEmpty)
                         Padding(

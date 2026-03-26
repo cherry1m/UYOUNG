@@ -27,4 +27,18 @@ class IslandRepository {
       throw StateError('멤버 정보를 불러오지 못했어요. $error');
     }
   }
+
+  Future<void> inviteMembersToIsland({
+    required String islandId,
+    required List<String> selectedUserIds,
+  }) async {
+    try {
+      await _service.inviteMembersToIsland(
+        islandId: islandId,
+        selectedUserIds: selectedUserIds,
+      );
+    } catch (error) {
+      throw StateError('멤버를 초대하지 못했어요. $error');
+    }
+  }
 }

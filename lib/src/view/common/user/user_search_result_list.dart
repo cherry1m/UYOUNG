@@ -8,6 +8,7 @@ class UserSearchResultList extends StatelessWidget {
     super.key,
     required this.users,
     required this.selectedUserIds,
+    this.disabledUserIds = const {},
     required this.isLoading,
     required this.errorText,
     required this.query,
@@ -16,6 +17,7 @@ class UserSearchResultList extends StatelessWidget {
 
   final List<InviteeUser> users;
   final Set<String> selectedUserIds;
+  final Set<String> disabledUserIds;
   final bool isLoading;
   final String? errorText;
   final String query;
@@ -56,8 +58,9 @@ class UserSearchResultList extends StatelessWidget {
       itemBuilder: (_, index) {
         final user = users[index];
         final isSelected = selectedUserIds.contains(user.id);
+        final isDisabled = disabledUserIds.contains(user.id);
         return GestureDetector(
-          onTap: () => onTapUser(user),
+          onTap: isDisabled ? null : () => onTapUser(user),
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: Row(
@@ -77,23 +80,36 @@ class UserSearchResultList extends StatelessWidget {
                     ],
                   ),
                 ),
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: isSelected ? const Color(0xFF6EA8EB) : Colors.white,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: isSelected
-                          ? Colors.transparent
-                          : const Color(0xFFBDBDBD),
-                      width: 1.3,
+                if (isDisabled)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF4F4F4),
+                      borderRadius: BorderRadius.circular(999),
                     ),
+                    child: Text(
+                      '이미 참여 중',
+                      style: AppFontStyle.M_12.copyWith(color: Colors.grey),
+                    ),
+                  )
+                else
+                  Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: isSelected ? const Color(0xFF6EA8EB) : Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.transparent
+                            : const Color(0xFFBDBDBD),
+                        width: 1.3,
+                      ),
+                    ),
+                    child: isSelected
+                        ? const Icon(Icons.check, color: Colors.white, size: 16)
+                        : null,
                   ),
-                  child: isSelected
-                      ? const Icon(Icons.check, color: Colors.white, size: 16)
-                      : null,
-                ),
               ],
             ),
           ),
