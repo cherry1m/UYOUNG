@@ -36,23 +36,63 @@ class ProfileService {
     return AppUserProfile.fromMap(Map<String, dynamic>.from(response));
   }
 
-  Future<AppUserProfile> upsertProfile({
+  Future<AppUserProfile> saveProfile({
+    required String nickname,
+    String? avatarUrl,
+  }) async {
+    final existingProfile = await fetchCurrentProfile();
+
+    if (existingProfile == null) {
+      return insertProfile(nickname: nickname, avatarUrl: avatarUrl);
+    }
+
+    return updateProfile(nickname: nickname, avatarUrl: avatarUrl);
+  }
+
+  Future<AppUserProfile> insertProfile({
     required String nickname,
     String? avatarUrl,
   }) async {
     final user = _currentUser;
-    final payload = {
-      'id': user.id,
-      'nickname': nickname.trim(),
-      'avatar_url': avatarUrl?.trim().isEmpty == true ? null : avatarUrl?.trim(),
-    };
-
     final response = await _client
         .from('profiles')
-        .upsert(payload)
+        .insert(_buildPayload(user.id, nickname, avatarUrl))
         .select('id, nickname, avatar_url, created_at, user_code')
         .single();
 
     return AppUserProfile.fromMap(Map<String, dynamic>.from(response));
+  }
+
+  Future<AppUserProfile> updateProfile({
+    required String nickname,
+    String? avatarUrl,
+  }) async {
+    final user = _currentUser;
+    final response = await _client
+        .from('profiles')
+        .update(_buildPayload(user.id, nickname, avatarUrl, includeId: false))
+        .eq('id', user.id)
+        .select('id, nickname, avatar_url, created_at, user_code')
+        .single();
+
+    return AppUserProfile.fromMap(Map<String, dynamic>.from(response));
+  }
+
+  Map<String, dynamic> _buildPayload(
+    String userId,
+    String nickname,
+    String? avatarUrl, {
+    bool includeId = true,
+  }) {
+    final payload = <String, dynamic>{
+      'nickname': nickname.trim(),
+      'avatar_url': avatarUrl?.trim().isEmpty == true ? null : avatarUrl?.trim(),
+    };
+
+    if (includeId) {
+      payload['id'] = userId;
+    }
+
+    return payload;
   }
 }

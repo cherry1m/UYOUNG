@@ -24,7 +24,7 @@ class ProfileRepository {
     }
 
     try {
-      return await _service.upsertProfile(
+      return await _service.saveProfile(
         nickname: nickname,
         avatarUrl: avatarUrl,
       );
