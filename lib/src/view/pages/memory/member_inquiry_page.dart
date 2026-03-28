@@ -17,13 +17,15 @@ class MemberInquiryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => IslandDetailViewModel(islandId: islandId)..load(),
-      child: const _MemberInquiryView(),
+      child: _MemberInquiryView(islandId: islandId),
     );
   }
 }
 
 class _MemberInquiryView extends StatelessWidget {
-  const _MemberInquiryView();
+  const _MemberInquiryView({required this.islandId});
+
+  final String islandId;
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +134,7 @@ class _MemberInquiryView extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => FavoritePhotosPage(islandId: island.id),
+                              builder: (_) => FavoritePhotosPage(islandId: islandId),
                             ),
                           );
                         },
@@ -172,7 +174,7 @@ class _MemberInquiryView extends StatelessWidget {
                             context,
                             MaterialPageRoute(
                               builder: (_) => IslandInvitePage(
-                                islandId: island.id,
+                                islandId: islandId,
                                 existingMemberIds: viewModel.members
                                     .map((member) => member.id)
                                     .toSet(),

@@ -271,6 +271,8 @@ class MemoryRepository {
       return {};
     }
 
+    // TODO(choseoungeun): member inquiry와 동일하게 2단계 조회로 통일 검토.
+    // 현재 프리뷰 목록은 관계 기반 select를 사용 중이라 RLS/관계 캐시 이슈가 다시 생길 수 있다.
     final response = await _client
         .from('island_members')
         .select('island_id, user_id, profiles!user_id(id, nickname, avatar_url)')

@@ -30,37 +30,52 @@ class IslandService {
   }
 
   Future<List<AppUserProfile>> fetchIslandMembers(String islandId) async {
-    final memberRows = await _client
-        .from('island_members')
-        .select('user_id')
-        .eq('island_id', islandId);
-
-    final userIds = (memberRows as List<dynamic>)
-        .map((row) => Map<String, dynamic>.from(row as Map))
-        .map((row) => row['user_id'] as String?)
-        .whereType<String>()
-        .toList();
+    final userIds = await fetchIslandMemberIds(islandId);
 
     if (userIds.isEmpty) {
       return const [];
     }
 
-    final profileRows = await _client
-        .from('profiles')
-        .select('id, nickname, avatar_url, user_code, created_at')
-        .inFilter('id', userIds);
-
-    final profilesById = (profileRows as List<dynamic>)
-        .map((row) => AppUserProfile.fromMap(Map<String, dynamic>.from(row as Map)))
-        .fold<Map<String, AppUserProfile>>(
-          <String, AppUserProfile>{},
-          (map, profile) => map..[profile.id] = profile,
-        );
-
-    return userIds
+    final profilesById = await fetchProfilesByIds(userIds);
+    final members = userIds
         .map((userId) => profilesById[userId])
         .whereType<AppUserProfile>()
         .toList();
+
+    return members;
+  }
+
+  Future<List<String>> fetchIslandMemberIds(String islandId) async {
+    final memberRows = await _client
+        .from('island_members')
+        .select('user_id')
+        .eq('island_id', islandId);
+
+    final rows = (memberRows as List<dynamic>)
+        .map((row) => Map<String, dynamic>.from(row as Map))
+        .toList();
+
+    return rows.map((row) => row['user_id'] as String?).whereType<String>().toList();
+  }
+
+  Future<Map<String, AppUserProfile>> fetchProfilesByIds(List<String> userIds) async {
+    if (userIds.isEmpty) {
+      return const {};
+    }
+
+    final profileRows = await _client
+        .from('profiles')
+        .select('*')
+        .inFilter('id', userIds);
+
+    final rows = (profileRows as List<dynamic>)
+        .map((row) => AppUserProfile.fromMap(Map<String, dynamic>.from(row as Map)))
+        .toList();
+
+    return rows.fold<Map<String, AppUserProfile>>(
+          <String, AppUserProfile>{},
+          (map, profile) => map..[profile.id] = profile,
+        );
   }
 
   Future<void> inviteMembersToIsland({
