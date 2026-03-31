@@ -2,20 +2,22 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/model/memory/invitee_user_model.dart';
-import 'package:uyoung/data/repositories/memory/memory_repository.dart';
+import 'package:uyoung/data/repositories/user/user_search_repository.dart';
 
 class SelectMemberViewModel extends ChangeNotifier {
-  SelectMemberViewModel({MemoryRepository? repository})
-    : _repository = repository ?? MemoryRepository();
+  SelectMemberViewModel({UserSearchRepository? repository})
+    : _repository = repository ?? UserSearchRepository();
 
-  final MemoryRepository _repository;
+  final UserSearchRepository _repository;
 
   final List<InviteeUser> _searchResults = [];
   Timer? _debounce;
   bool isLoading = false;
   String? errorText;
+  String _query = '';
 
   List<InviteeUser> get searchResults => List.unmodifiable(_searchResults);
+  String get query => _query;
 
   void scheduleSearch(String keyword) {
     _debounce?.cancel();
@@ -26,6 +28,7 @@ class SelectMemberViewModel extends ChangeNotifier {
   }
 
   Future<void> search(String keyword) async {
+    _query = keyword;
     isLoading = true;
     errorText = null;
     notifyListeners();

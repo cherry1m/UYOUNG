@@ -5,8 +5,13 @@ import 'package:uyoung/src/view/pages/memory/member_inquiry_page.dart';
 class MemoryCommonAppBar extends StatelessWidget
     implements PreferredSizeWidget {
   final String title;
+  final String islandId;
 
-  const MemoryCommonAppBar({super.key, required this.title});
+  const MemoryCommonAppBar({
+    super.key,
+    required this.title,
+    required this.islandId,
+  });
 
   // MARK: - AppBar 전체 높이 축소 (기존 56 → 48)
   @override
@@ -45,7 +50,9 @@ class MemoryCommonAppBar extends StatelessWidget
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const MemberInquiryPage()),
+              MaterialPageRoute(
+                builder: (_) => MemberInquiryPage(islandId: islandId),
+              ),
             );
           },
           icon: Image.asset('assets/images/menu.png', width: 16),

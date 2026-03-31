@@ -5,15 +5,24 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
+import 'package:uyoung/data/repositories/user/profile_repository.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_invite_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_list_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/profile_edit_page.dart';
 import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
 
-class MyPageMainScreen extends StatelessWidget {
+class MyPageMainScreen extends StatefulWidget {
   const MyPageMainScreen({super.key});
+
+  @override
+  State<MyPageMainScreen> createState() => _MyPageMainScreenState();
+}
+
+class _MyPageMainScreenState extends State<MyPageMainScreen> {
+  int _profileRefreshToken = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +37,14 @@ class MyPageMainScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 18),
-              const _ProfileHero(),
+              _ProfileHero(
+                refreshToken: _profileRefreshToken,
+                onEditComplete: () {
+                  setState(() {
+                    _profileRefreshToken++;
+                  });
+                },
+              ),
               const SizedBox(height: 18),
               _PearlCard(onTap: () => _push(context, const PearlChargePage())),
               const SizedBox(height: 8),
@@ -224,66 +240,104 @@ class _FooterActionText extends StatelessWidget {
 }
 
 class _ProfileHero extends StatelessWidget {
-  const _ProfileHero();
+  const _ProfileHero({
+    required this.refreshToken,
+    required this.onEditComplete,
+  });
+
+  final int refreshToken;
+  final VoidCallback onEditComplete;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 228,
-          child: Center(
-            child: SizedBox(
-              width: 210,
-              height: 210,
-              child: Image.asset(
-                ImagePath.myProfile,
-                fit: BoxFit.contain,
-                errorBuilder: (_, _, _) =>
-                    Image.asset(ImagePath.friendProfile, fit: BoxFit.contain),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Stack(
-          clipBehavior: Clip.none,
+    final repository = ProfileRepository();
+
+    return FutureBuilder(
+      key: ValueKey(refreshToken),
+      future: repository.fetchCurrentProfile(),
+      builder: (context, snapshot) {
+        final profile = snapshot.data;
+        final displayName = profile?.nickname.trim().isNotEmpty == true
+            ? profile!.nickname
+            : '이윤서';
+
+        return Column(
           children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 38, vertical: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: const Color(0xFFE6E6EB)),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x0A000000),
-                    blurRadius: 10,
-                    offset: Offset(0, 3),
+            SizedBox(
+              height: 228,
+              child: Center(
+                child: SizedBox(
+                  width: 210,
+                  height: 210,
+                  child: Image.asset(
+                    ImagePath.myProfile,
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, _, _) => Image.asset(
+                      ImagePath.friendProfile,
+                      fit: BoxFit.contain,
+                    ),
                   ),
-                ],
-              ),
-              child: Text(
-                '이윤서',
-                style: AppFontStyle.H5.copyWith(color: AppColors.black),
+                ),
               ),
             ),
-            Positioned(
-              right: -10,
-              top: -6,
-              child: Container(
-                width: 28,
-                height: 28,
-                decoration: const BoxDecoration(
-                  color: AppColors.b02,
-                  shape: BoxShape.circle,
+            const SizedBox(height: 8),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 38,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(22),
+                    border: Border.all(color: const Color(0xFFE6E6EB)),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x0A000000),
+                        blurRadius: 10,
+                        offset: Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: Text(
+                    displayName,
+                    style: AppFontStyle.H5.copyWith(color: AppColors.black),
+                  ),
                 ),
-                child: const Icon(Icons.edit, color: Colors.white, size: 15),
-              ),
+                Positioned(
+                  right: -10,
+                  top: -6,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfileEditPage(),
+                        ),
+                      ).then((didUpdate) {
+                        if (didUpdate == true) {
+                          onEditComplete();
+                        }
+                      });
+                    },
+                    child: Container(
+                      width: 28,
+                      height: 28,
+                      decoration: const BoxDecoration(
+                        color: AppColors.b02,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.edit, color: Colors.white, size: 15),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-      ],
+        );
+      },
     );
   }
 }

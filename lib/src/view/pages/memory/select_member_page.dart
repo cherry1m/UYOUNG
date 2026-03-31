@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
-import 'package:uyoung/data/model/memory/invitee_user_model.dart';
 import 'package:uyoung/data/repositories/memory/memory_repository.dart';
+import 'package:uyoung/src/view/common/user/selected_user_chip_list.dart';
+import 'package:uyoung/src/view/common/user/user_search_result_list.dart';
 import 'package:uyoung/src/view/pages/memory/memory_creation_result.dart';
 import 'package:uyoung/src/viewModel/memory/create_memory_view_model.dart';
 import 'package:uyoung/src/viewModel/memory/memeory_view_model.dart';
@@ -80,12 +81,6 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
     }
   }
 
-  Future<void> _copyInviteLink() async {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('기억섬 생성 후 링크를 복사할 수 있어요.')));
-  }
-
   @override
   Widget build(BuildContext context) {
     final createVm = context.watch<CreateMemoryViewModel>();
@@ -97,20 +92,12 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 8, 18, 0),
-            child: _inviteByLinkButton(),
-          ),
           if (createVm.selectedMembers.isNotEmpty)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: createVm.selectedMembers
-                      .map((member) => _selectedProfile(createVm, member))
-                      .toList(),
-                ),
+              padding: const EdgeInsets.fromLTRB(18, 12, 18, 12),
+              child: SelectedUserChipList(
+                users: createVm.selectedMembers,
+                onRemove: createVm.removeInvitee,
               ),
             ),
           Padding(
@@ -125,32 +112,6 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
     );
   }
 
-  Widget _inviteByLinkButton() {
-    return InkWell(
-      onTap: _copyInviteLink,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: const Color(0xFFF5F8FC),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: const Color(0xFFE3EBF5)),
-        ),
-        child: Row(
-          children: [
-            const Icon(Icons.link_rounded, color: Color(0xFF6EA8EB)),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text('링크로 초대하기', style: AppFontStyle.M_16),
-            ),
-            const Icon(Icons.chevron_right, color: Colors.grey),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildBody(
     CreateMemoryViewModel createVm,
     SelectMemberViewModel selectVm,
@@ -158,127 +119,13 @@ class _SelectMemberStepViewState extends State<_SelectMemberStepView> {
     if (selectVm.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-
-    if (selectVm.errorText != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            selectVm.errorText!,
-            style: AppFontStyle.M_14.copyWith(color: Colors.redAccent),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      );
-    }
-
-    if (selectVm.searchResults.isEmpty) {
-      return Center(
-        child: Text(
-          '검색 결과가 없어요.',
-          style: AppFontStyle.M_16.copyWith(color: Colors.grey),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 18),
-      itemCount: selectVm.searchResults.length,
-      itemBuilder: (_, index) {
-        final user = selectVm.searchResults[index];
-        return _memberRow(createVm, user);
-      },
-    );
-  }
-
-  Widget _memberRow(CreateMemoryViewModel createVm, InviteeUser user) {
-    final isSelected = createVm.isSelected(user.id);
-
-    return GestureDetector(
-      onTap: () => createVm.toggleInvitee(user),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: const Color(0xFFE6E6E6),
-              backgroundImage: user.avatarUrl?.isNotEmpty == true
-                  ? NetworkImage(user.avatarUrl!)
-                  : null,
-              child: user.avatarUrl?.isNotEmpty == true
-                  ? null
-                  : Text(
-                      user.nickname.isEmpty ? '?' : user.nickname[0],
-                      style: AppFontStyle.M_18.copyWith(color: Colors.black54),
-                    ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(child: Text(user.nickname, style: AppFontStyle.M_16)),
-            Container(
-              width: 28,
-              height: 28,
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF6EA8EB) : Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: isSelected ? Colors.transparent : const Color(0xFFBDBDBD),
-                  width: 1.3,
-                ),
-              ),
-              child: isSelected
-                  ? const Icon(Icons.check, color: Colors.white, size: 16)
-                  : null,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _selectedProfile(CreateMemoryViewModel createVm, InviteeUser user) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 10),
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              CircleAvatar(
-                radius: 32,
-                backgroundColor: Colors.white,
-                backgroundImage: user.avatarUrl?.isNotEmpty == true
-                    ? NetworkImage(user.avatarUrl!)
-                    : null,
-                child: user.avatarUrl?.isNotEmpty == true
-                    ? null
-                    : Text(
-                        user.nickname.isEmpty ? '?' : user.nickname[0],
-                        style: AppFontStyle.M_18.copyWith(color: Colors.black54),
-                      ),
-              ),
-              Positioned(
-                top: -2,
-                right: -2,
-                child: GestureDetector(
-                  onTap: () => createVm.removeInvitee(user.id),
-                  child: Container(
-                    width: 22,
-                    height: 22,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: const Color(0xFF6EA8EB),
-                      border: Border.all(color: Colors.white, width: 2),
-                    ),
-                    child: const Icon(Icons.close, size: 14, color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(user.nickname, style: AppFontStyle.M_14),
-        ],
-      ),
+    return UserSearchResultList(
+      users: selectVm.searchResults,
+      selectedUserIds: createVm.selectedMembers.map((user) => user.id).toSet(),
+      isLoading: selectVm.isLoading,
+      errorText: selectVm.errorText,
+      query: selectVm.query,
+      onTapUser: createVm.toggleInvitee,
     );
   }
 
