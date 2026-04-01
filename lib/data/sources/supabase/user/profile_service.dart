@@ -1,3 +1,4 @@
+import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
@@ -78,6 +79,26 @@ class ProfileService {
     return AppUserProfile.fromMap(Map<String, dynamic>.from(response));
   }
 
+  Future<String> uploadProfileImage(XFile imageFile) async {
+    final user = _currentUser;
+    final bytes = await imageFile.readAsBytes();
+    final originalName = imageFile.name.isEmpty ? 'profile.jpg' : imageFile.name;
+    final sanitizedName = originalName.replaceAll(RegExp(r'[^a-zA-Z0-9._-]'), '_');
+    final path =
+        'profiles/${user.id}/${DateTime.now().microsecondsSinceEpoch}_$sanitizedName';
+
+    await _client.storage.from('profile_images').uploadBinary(
+      path,
+      bytes,
+      fileOptions: FileOptions(
+        upsert: true,
+        contentType: _contentTypeFor(sanitizedName),
+      ),
+    );
+
+    return _client.storage.from('profile_images').getPublicUrl(path);
+  }
+
   Map<String, dynamic> _buildPayload(
     String userId,
     String nickname,
@@ -94,5 +115,21 @@ class ProfileService {
     }
 
     return payload;
+  }
+
+  String _contentTypeFor(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      case 'jpg':
+      case 'jpeg':
+      default:
+        return 'image/jpeg';
+    }
   }
 }
