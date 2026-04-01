@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
-import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
 import 'package:uyoung/src/viewModel/home/pearl_view_model.dart';
 
 class StorePage extends StatefulWidget {
@@ -67,7 +67,7 @@ class _StorePageState extends State<StorePage> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendCheckPage()),
+            MaterialPageRoute(builder: (_) => const PearlChargePage()),
           );
         },
         child: SizedBox(

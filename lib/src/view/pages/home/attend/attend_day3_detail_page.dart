@@ -25,9 +25,9 @@ class AttendDay3DetailPage extends StatelessWidget {
                 children: [
                   Expanded(
                     child: _bottomButton(
-                      text: "상점으로 가기",
+                      text: "출석 확인하기",
                       onTap: () {
-                        // TODO: 상점 페이지 이동
+                        Navigator.pop(context);
                       },
                     ),
                   ),

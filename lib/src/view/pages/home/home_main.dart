@@ -3,9 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
-import 'package:uyoung/src/view/pages/home/attend/attend_stemp.dart';
 import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
 import 'package:uyoung/src/view/pages/home/notification_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
 import 'package:uyoung/src/viewModel/home/notification_view_model.dart';
 import 'package:uyoung/src/viewModel/home/pearl_view_model.dart';
 
@@ -83,7 +83,7 @@ class _HomeMainState extends State<HomeMain> {
         onTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (_) => AttendCheckPage()),
+            MaterialPageRoute(builder: (_) => const PearlChargePage()),
           );
         },
         child: SizedBox(
@@ -162,11 +162,15 @@ class _HomeMainState extends State<HomeMain> {
           imagePath: "assets/images/pearl_shell.png",
           imageSize: 35,
           title: "출석 체크",
-
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => AttendStempPage()),
-          ),
+          onTap: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AttendCheckPage()),
+            );
+            if (context.mounted) {
+              await _pearlViewModel.load();
+            }
+          },
         );
       },
     );

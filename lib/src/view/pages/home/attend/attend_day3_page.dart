@@ -26,7 +26,7 @@ class AttendDay3Page extends StatelessWidget {
                 child: _bottomButton(
                   text: "아이템 확인해 보기",
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const AttendDay3DetailPage(),
