@@ -7,6 +7,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/app.dart';
+import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/data/repositories/user/profile_repository.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 import 'package:uyoung/src/view/pages/login/login_main_page.dart';
@@ -166,7 +167,7 @@ class ProfileSetupGate extends StatefulWidget {
 }
 
 class _ProfileSetupGateState extends State<ProfileSetupGate> {
-  late final Future _profileFuture;
+  late final Future<AppUserProfile?> _profileFuture;
 
   @override
   void initState() {
@@ -176,7 +177,7 @@ class _ProfileSetupGateState extends State<ProfileSetupGate> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<AppUserProfile?>(
       future: _profileFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState != ConnectionState.done) {
@@ -192,7 +193,11 @@ class _ProfileSetupGateState extends State<ProfileSetupGate> {
         }
 
         final profile = snapshot.data;
-        if (profile == null || profile.needsSetup) {
+        final nickname = profile?.nickname;
+        final needsSetup =
+            profile == null || nickname == null || nickname.trim().isEmpty;
+
+        if (needsSetup) {
           return const ProfileSetupPage();
         }
 
