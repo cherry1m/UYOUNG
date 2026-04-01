@@ -41,33 +41,35 @@ class _HomeMainState extends State<HomeMain> {
         ChangeNotifierProvider.value(value: _pearlViewModel),
         ChangeNotifierProvider.value(value: _notificationViewModel),
       ],
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                "assets/images/home_main.png",
-                fit: BoxFit.cover,
-                alignment: const Alignment(0, -1.0),
+      builder: (context, child) {
+        return Scaffold(
+          backgroundColor: Colors.white,
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  "assets/images/home_main.png",
+                  fit: BoxFit.cover,
+                  alignment: const Alignment(0, -1.0),
+                ),
               ),
-            ),
-            Positioned(
-              left: 90,
-              top: 342,
-              child: Image.asset(
-                ImagePath.homeMyCharacter,
-                width: 211,
-                height: 224,
-                fit: BoxFit.contain,
+              Positioned(
+                left: 90,
+                top: 342,
+                child: Image.asset(
+                  ImagePath.homeMyCharacter,
+                  width: 211,
+                  height: 224,
+                  fit: BoxFit.contain,
+                ),
               ),
-            ),
-            _pearlBox(context),
-            _alert(context),
-            _check(),
-          ],
-        ),
-      ),
+              _pearlBox(context),
+              _alert(context),
+              _check(),
+            ],
+          ),
+        );
+      },
     );
   }
 

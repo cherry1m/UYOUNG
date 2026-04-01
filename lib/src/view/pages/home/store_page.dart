@@ -33,25 +33,27 @@ class _StorePageState extends State<StorePage> {
 
     return ChangeNotifierProvider.value(
       value: _pearlViewModel,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Image.asset(
-                  ImagePath.storePage,
-                  width: screenWidth,
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.topCenter,
+      builder: (context, child) {
+        return Scaffold(
+          body: Stack(
+            children: [
+              Positioned.fill(
+                child: SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  child: Image.asset(
+                    ImagePath.storePage,
+                    width: screenWidth,
+                    fit: BoxFit.fitWidth,
+                    alignment: Alignment.topCenter,
+                  ),
                 ),
               ),
-            ),
-            _pearlBox(context),
-            _saveButton(context),
-          ],
-        ),
-      ),
+              _pearlBox(context),
+              _saveButton(context),
+            ],
+          ),
+        );
+      },
     );
   }
 
