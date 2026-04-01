@@ -1,39 +1,63 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
+import 'package:uyoung/src/viewModel/home/pearl_view_model.dart';
 
-class StorePage extends StatelessWidget {
+class StorePage extends StatefulWidget {
   const StorePage({super.key});
 
-  static const String _defaultPearlCountLabel = '128개';
+  @override
+  State<StorePage> createState() => _StorePageState();
+}
+
+class _StorePageState extends State<StorePage> {
+  late final PearlViewModel _pearlViewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _pearlViewModel = PearlViewModel()..load();
+  }
+
+  @override
+  void dispose() {
+    _pearlViewModel.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Image.asset(
-                ImagePath.storePage,
-                width: screenWidth,
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.topCenter,
+    return ChangeNotifierProvider.value(
+      value: _pearlViewModel,
+      child: Scaffold(
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Image.asset(
+                  ImagePath.storePage,
+                  width: screenWidth,
+                  fit: BoxFit.fitWidth,
+                  alignment: Alignment.topCenter,
+                ),
               ),
             ),
-          ),
-          _pearlBox(context),
-          _saveButton(context),
-        ],
+            _pearlBox(context),
+            _saveButton(context),
+          ],
+        ),
       ),
     );
   }
 
   Widget _pearlBox(BuildContext context) {
+    final pearlVm = context.watch<PearlViewModel>();
+
     return Positioned(
       top: 60,
       left: 20,
@@ -58,8 +82,7 @@ class StorePage extends StatelessWidget {
                 top: 12,
                 left: 39,
                 child: Text(
-                  // TODO(seongeunii): Replace with the user's live pearl count.
-                  _defaultPearlCountLabel,
+                  pearlVm.pearlCountLabel,
                   style: AppFontStyle.H8.copyWith(color: Colors.black),
                 ),
               ),
