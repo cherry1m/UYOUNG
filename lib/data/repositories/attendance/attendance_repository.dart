@@ -1,5 +1,6 @@
-import 'package:uyoung/data/model/home/attendance_result_model.dart';
-import 'package:uyoung/data/sources/supabase/home/attendance_service.dart';
+import 'package:uyoung/data/model/attendance/attendance_model.dart';
+import 'package:uyoung/data/model/attendance/attendance_result_model.dart';
+import 'package:uyoung/data/sources/supabase/attendance/attendance_service.dart';
 import 'package:uyoung/data/sources/supabase/user/user_asset_service.dart';
 
 class AttendanceRepository {
@@ -26,6 +27,14 @@ class AttendanceRepository {
       return asset.pearlCount;
     } catch (error) {
       throw StateError('진주 개수를 불러오지 못했어요. $error');
+    }
+  }
+
+  Future<List<AttendanceLogEntry>> fetchAttendanceLogs() async {
+    try {
+      return await _attendanceService.fetchAttendanceLogs();
+    } catch (error) {
+      throw StateError('출석 보드를 불러오지 못했어요. $error');
     }
   }
 }
