@@ -213,7 +213,7 @@ class _AttendanceBoardLayout extends StatelessWidget {
               starWidth: starWidth,
               iconSize: iconSize,
               imagePath: viewModel.boardItemPathForDay(7),
-              highlighted: true,
+              highlighted: viewModel.checkedDays >= 7,
               labelStyle: labelStyle,
             ),
           ],

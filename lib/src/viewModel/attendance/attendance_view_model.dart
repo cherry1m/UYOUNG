@@ -135,6 +135,7 @@ class AttendanceViewModel extends ChangeNotifier {
     try {
       _logs = await _repository.fetchAttendanceLogs();
       _pearlCount = await _repository.fetchPearlCount();
+      _hasCheckedToday = _logs.isNotEmpty;
       notifyListeners();
     } catch (_) {
       // Entry/board UI should stay usable even if board history fails to load.
