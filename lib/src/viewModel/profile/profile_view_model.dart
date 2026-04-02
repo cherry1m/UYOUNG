@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:uyoung/data/model/user/app_user_profile_model.dart';
 import 'package:uyoung/data/repositories/user/profile_repository.dart';
 
@@ -9,9 +12,10 @@ class ProfileViewModel extends ChangeNotifier {
   final ProfileRepository _repository;
 
   final TextEditingController nicknameController = TextEditingController();
-  final TextEditingController avatarUrlController = TextEditingController();
 
   AppUserProfile? _profile;
+  XFile? _selectedImage;
+  Uint8List? _selectedImageBytes;
   bool _isLoading = false;
   bool _isSaving = false;
   String? _errorText;
@@ -20,6 +24,8 @@ class ProfileViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get errorText => _errorText;
+  Uint8List? get selectedImageBytes => _selectedImageBytes;
+  String? get currentAvatarUrl => _profile?.avatarUrl;
   bool get canSave => nicknameController.text.trim().isNotEmpty && !_isSaving;
   bool get needsSetup => _profile == null || (_profile?.needsSetup ?? true);
 
@@ -43,7 +49,14 @@ class ProfileViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void onAvatarUrlChanged() {
+  Future<void> pickProfileImage() async {
+    final pickedImage = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedImage == null) {
+      return;
+    }
+
+    _selectedImage = pickedImage;
+    _selectedImageBytes = await pickedImage.readAsBytes();
     notifyListeners();
   }
 
@@ -55,8 +68,11 @@ class ProfileViewModel extends ChangeNotifier {
     try {
       _profile = await _repository.saveProfile(
         nickname: nicknameController.text,
-        avatarUrl: avatarUrlController.text,
+        avatarUrl: _profile?.avatarUrl,
+        selectedImage: _selectedImage,
       );
+      _selectedImage = null;
+      _selectedImageBytes = null;
       _syncControllers();
       return true;
     } catch (error) {
@@ -70,13 +86,11 @@ class ProfileViewModel extends ChangeNotifier {
 
   void _syncControllers() {
     nicknameController.text = _profile?.nickname ?? nicknameController.text;
-    avatarUrlController.text = _profile?.avatarUrl ?? avatarUrlController.text;
   }
 
   @override
   void dispose() {
     nicknameController.dispose();
-    avatarUrlController.dispose();
     super.dispose();
   }
 }

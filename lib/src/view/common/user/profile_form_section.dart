@@ -22,15 +22,35 @@ class ProfileFormSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Center(
-          child: CircleAvatar(
-            radius: 42,
-            backgroundColor: const Color(0xFFE6EEF8),
-            backgroundImage: viewModel.avatarUrlController.text.trim().isNotEmpty
-                ? NetworkImage(viewModel.avatarUrlController.text.trim())
-                : null,
-            child: viewModel.avatarUrlController.text.trim().isNotEmpty
-                ? null
-                : const Icon(Icons.person_outline_rounded, size: 38),
+          child: Column(
+            children: [
+              CircleAvatar(
+                radius: 42,
+                backgroundColor: const Color(0xFFE6EEF8),
+                backgroundImage: viewModel.selectedImageBytes != null
+                    ? MemoryImage(viewModel.selectedImageBytes!)
+                    : (viewModel.currentAvatarUrl?.trim().isNotEmpty == true
+                          ? NetworkImage(viewModel.currentAvatarUrl!.trim())
+                          : null) as ImageProvider<Object>?,
+                child: viewModel.selectedImageBytes != null ||
+                        viewModel.currentAvatarUrl?.trim().isNotEmpty == true
+                    ? null
+                    : const Icon(Icons.person_outline_rounded, size: 38),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: viewModel.isSaving ? null : viewModel.pickProfileImage,
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Color(0xFFD9E2EC)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(999),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                ),
+                icon: const Icon(Icons.photo_library_outlined, size: 18),
+                label: Text('갤러리에서 사진 선택', style: AppFontStyle.M_14),
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 16),
@@ -69,32 +89,6 @@ class ProfileFormSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Text('프로필 이미지 URL', style: AppFontStyle.M_14),
-        const SizedBox(height: 8),
-        TextField(
-          controller: viewModel.avatarUrlController,
-          onChanged: (_) => viewModel.onAvatarUrlChanged(),
-          decoration: InputDecoration(
-            hintText: '지금은 임시로 URL만 입력할 수 있어요',
-            hintStyle: AppFontStyle.M_16.copyWith(color: Colors.grey),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFFE4E7EC)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFFE4E7EC)),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Color(0xFF6EA8EB), width: 1.5),
-            ),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 14,
-            ),
-          ),
-        ),
         if (viewModel.errorText != null) ...[
           const SizedBox(height: 12),
           Text(
