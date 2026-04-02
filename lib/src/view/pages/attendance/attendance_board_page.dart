@@ -30,6 +30,8 @@ class _AttendanceBoardView extends StatelessWidget {
     final mediaQuery = MediaQuery.of(context);
     final safeTop = mediaQuery.padding.top;
     final safeBottom = mediaQuery.padding.bottom;
+    // Shared horizontal inset for the board screen.
+    const horizontalPadding = 20.0;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -46,76 +48,111 @@ class _AttendanceBoardView extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(18, 20, 18, 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              padding: const EdgeInsets.fromLTRB(horizontalPadding, 14, horizontalPadding, 0),
+              child: Stack(
                 children: [
-                  Center(
-                    child: Text(
-                      '출석체크',
-                      style: AppFontStyle.H4.copyWith(color: Colors.black),
-                    ),
-                  ),
-                  const SizedBox(height: 28),
-                  Text(
-                    '오늘도 출석완료!\n아이템 확인해주세요',
-                    style: AppFontStyle.F3.copyWith(
-                      color: Colors.black,
-                      height: 1.35,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  Text(
-                    '연속 출석체크 스타트!',
-                    style: AppFontStyle.H6.copyWith(
-                      color: const Color(0xFF7E7E7E),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Image.asset(
-                      viewModel.boardDecorationImagePath,
-                      width: 146,
-                      height: 146,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.fromLTRB(12, 18, 12, 18),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFD9E9FF),
-                        borderRadius: BorderRadius.circular(28),
-                      ),
-                      child: _AttendanceBoardLayout(viewModel: viewModel),
-                    ),
-                  ),
-                  const SizedBox(height: 18),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.popUntil(context, (route) => route.isFirst);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF6EA8EB),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
+                  Positioned.fill(
+                    child: Stack(
+                      children: [
+                        Align(
+                          // Screen title.
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                            '출석체크',
+                            style: AppFontStyle.H4.copyWith(color: Colors.black),
+                          ),
                         ),
-                        elevation: 0,
-                      ),
-                      child: Text(
-                        '홈으로 가기',
-                        style: AppFontStyle.H6.copyWith(color: Colors.white),
+                        Positioned(
+                          // Header copy + trash bundle illustration row.
+                          top: 68,
+                          left: 0,
+                          right: 0,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 10),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '오늘도 출석완료!\n아이템 확인해주세요',
+                                        style: AppFontStyle.F3.copyWith(
+                                          color: Colors.black,
+                                          height: 1.35,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        '연속 출석체크 스타트!',
+                                        style: AppFontStyle.H6.copyWith(
+                                          color: const Color(0xFF7E7E7E),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child: Image.asset(
+                                  viewModel.boardDecorationImagePath,
+                                  width: 124,
+                                  height: 124,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Positioned(
+                          // Main attendance board card.
+                          left: 0,
+                          right: 0,
+                          top: 214,
+                          bottom: 82,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.fromLTRB(10, 16, 10, 18),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFD9E9FF),
+                              borderRadius: BorderRadius.circular(28),
+                            ),
+                            child: _AttendanceBoardLayout(viewModel: viewModel),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    // Bottom CTA button on the board screen.
+                    left: 0,
+                    right: 0,
+                    bottom: safeBottom + 2,
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 58,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF6EA8EB),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          '홈으로 가기',
+                          style: AppFontStyle.H6.copyWith(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(height: safeBottom > 0 ? 8 : 0),
                 ],
               ),
             ),
@@ -135,8 +172,10 @@ class _AttendanceBoardLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final starWidth = (constraints.maxWidth * 0.23).clamp(74.0, 102.0);
-        final iconSize = (starWidth * 0.48).clamp(28.0, 46.0);
+        // Star tile size on the board.
+        final starWidth = (constraints.maxWidth * 0.26).clamp(84.0, 110.0);
+        // Reward icon size inside each star.
+        final iconSize = (starWidth * 0.52).clamp(34.0, 50.0);
         final labelStyle = constraints.maxWidth < 360
             ? AppFontStyle.S8.copyWith(color: const Color(0xFF6EA8EB))
             : AppFontStyle.H6.copyWith(color: const Color(0xFF6EA8EB));
@@ -145,7 +184,7 @@ class _AttendanceBoardLayout extends StatelessWidget {
           children: [
             Positioned.fill(
               child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 6),
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 12),
                 child: Image.asset(
                   ImagePath.attendanceBoardPath,
                   fit: BoxFit.fill,
@@ -153,8 +192,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               ),
             ),
             _BoardTile(
+              // Day 1 star position.
               left: constraints.maxWidth * 0.05,
-              top: constraints.maxHeight * 0.02,
+              top: constraints.maxHeight * 0.05,
               day: 1,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -162,8 +202,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.35,
-              top: 0,
+              // Day 2 star position.
+              left: constraints.maxWidth * 0.39,
+              top: constraints.maxHeight * 0.00,
               day: 2,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -171,8 +212,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              right: constraints.maxWidth * 0.05,
-              top: constraints.maxHeight * 0.10,
+              // Day 3 star position.
+              right: constraints.maxWidth * 0.03,
+              top: constraints.maxHeight * 0.14,
               day: 3,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -180,8 +222,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.34,
-              top: constraints.maxHeight * 0.37,
+              // Day 4 star position.
+              left: constraints.maxWidth * 0.40,
+              top: constraints.maxHeight * 0.38,
               day: 4,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -189,8 +232,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.03,
-              top: constraints.maxHeight * 0.56,
+              // Day 5 star position.
+              left: constraints.maxWidth * 0.02,
+              top: constraints.maxHeight * 0.60,
               day: 5,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -198,8 +242,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.37,
-              bottom: constraints.maxHeight * 0.02,
+              // Day 6 star position.
+              left: constraints.maxWidth * 0.40,
+              bottom: constraints.maxHeight * 0.01,
               day: 6,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -207,8 +252,9 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              right: constraints.maxWidth * 0.05,
-              bottom: constraints.maxHeight * 0.10,
+              // Day 7 star position.
+              right: constraints.maxWidth * 0.03,
+              bottom: constraints.maxHeight * 0.12,
               day: 7,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -287,7 +333,7 @@ class _BoardTile extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 2),
           Text(
             '$day일차',
             style: labelStyle,

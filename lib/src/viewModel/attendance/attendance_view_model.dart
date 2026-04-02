@@ -76,9 +76,6 @@ class AttendanceViewModel extends ChangeNotifier {
   }
 
   String get boardDecorationImagePath {
-    if (rewardKind == AttendanceRewardKind.pearl) {
-      return ImagePath.attendanceItemPearlCollect;
-    }
     return ImagePath.attendanceItemTrashBundle;
   }
 
