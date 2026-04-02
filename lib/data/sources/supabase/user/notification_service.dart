@@ -3,6 +3,9 @@ import 'package:uyoung/data/model/user/app_notification_model.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 
 class NotificationService {
+  static const String _notificationsTable = 'notifications';
+  static const String _noticesTable = 'notices';
+
   SupabaseClient get _client {
     if (!SupabaseConfig.isConfigured) {
       throw StateError(
@@ -24,32 +27,66 @@ class NotificationService {
   }
 
   Future<List<AppNotification>> fetchNotifications() async {
-    final response = await _client
-        .from('notifications')
-        .select('*')
-        .eq('user_id', _currentUser.id)
-        .order('created_at', ascending: false);
+    try {
+      final response = await _client
+          .from(_notificationsTable)
+          .select('*')
+          .eq('user_id', _currentUser.id)
+          .order('created_at', ascending: false);
 
-    return (response as List<dynamic>)
-        .map(
-          (row) => AppNotification.fromMap(Map<String, dynamic>.from(row as Map)),
-        )
-        .toList();
+      return (response as List<dynamic>)
+          .map(
+            (row) =>
+                AppNotification.fromMap(Map<String, dynamic>.from(row as Map)),
+          )
+          .toList();
+    } on PostgrestException catch (error) {
+      if (error.code != 'PGRST205') {
+        rethrow;
+      }
+
+      final response = await _client
+          .from(_noticesTable)
+          .select('*')
+          .order('created_at', ascending: false);
+
+      return (response as List<dynamic>)
+          .map((row) {
+            final map = Map<String, dynamic>.from(row as Map);
+            map['type'] ??= 'notice';
+            map['is_read'] ??= true;
+            map['user_id'] ??= _currentUser.id;
+            return AppNotification.fromMap(map);
+          })
+          .toList();
+    }
   }
 
   Future<void> markNotificationAsRead(String notificationId) async {
-    await _client
-        .from('notifications')
-        .update({'is_read': true})
-        .eq('id', notificationId)
-        .eq('user_id', _currentUser.id);
+    try {
+      await _client
+          .from(_notificationsTable)
+          .update({'is_read': true})
+          .eq('id', notificationId)
+          .eq('user_id', _currentUser.id);
+    } on PostgrestException catch (error) {
+      if (error.code != 'PGRST205') {
+        rethrow;
+      }
+    }
   }
 
   Future<void> markAllNotificationsAsRead() async {
-    await _client
-        .from('notifications')
-        .update({'is_read': true})
-        .eq('user_id', _currentUser.id)
-        .eq('is_read', false);
+    try {
+      await _client
+          .from(_notificationsTable)
+          .update({'is_read': true})
+          .eq('user_id', _currentUser.id)
+          .eq('is_read', false);
+    } on PostgrestException catch (error) {
+      if (error.code != 'PGRST205') {
+        rethrow;
+      }
+    }
   }
 }
