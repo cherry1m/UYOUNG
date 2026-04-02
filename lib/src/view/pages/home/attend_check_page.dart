@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
-import 'package:uyoung/data/model/home/attendance_result_model.dart';
-import 'package:uyoung/src/view/pages/home/attend/attend_day1_page.dart';
-import 'package:uyoung/src/view/pages/home/attend/attend_day2_page.dart';
-import 'package:uyoung/src/view/pages/home/attend/attend_day3_page.dart';
 import 'package:uyoung/src/viewModel/home/attendance_view_model.dart';
 
 class AttendCheckPage extends StatefulWidget {
@@ -120,33 +116,6 @@ class _AttendCheckPageState extends State<AttendCheckPage> {
     final result = viewModel.result;
     if (result == null || !result.isSuccess) {
       return;
-    }
-
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => _pageForResult(result)),
-    );
-
-    if (context.mounted) {
-      setState(() {});
-    }
-  }
-
-  Widget _pageForResult(AttendanceResult result) {
-    // TODO(chore): 출석 결과 화면 UX는 디자인 확정 후 result 기반으로 재정리
-    // 지금은 RPC 결과를 최소 흐름으로 연결합니다.
-    switch (result.streak) {
-      case 1:
-        return const AttendDay1Page();
-      case 2:
-        return const AttendDay2Page();
-      case 3:
-        return const AttendDay3Page();
-      default:
-        if (result.isWin && result.reward > 0) {
-          return const AttendDay1Page();
-        }
-        return const AttendDay3Page();
     }
   }
 

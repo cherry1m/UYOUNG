@@ -1,13 +1,15 @@
 class AttendanceResult {
   final String status;
   final bool isWin;
-  final int reward;
+  final String rewardLabel;
+  final int rewardCount;
   final int streak;
 
   const AttendanceResult({
     required this.status,
     required this.isWin,
-    required this.reward,
+    required this.rewardLabel,
+    required this.rewardCount,
     required this.streak,
   });
 
@@ -20,7 +22,8 @@ class AttendanceResult {
     return AttendanceResult(
       status: (map['status'] ?? '').toString(),
       isWin: _parseBool(map['is_win']),
-      reward: _parseInt(map['reward']),
+      rewardLabel: (map['reward'] ?? '').toString(),
+      rewardCount: _parseInt(map['reward_count']),
       streak: _parseInt(map['streak']),
     );
   }

@@ -41,7 +41,14 @@ class AttendanceViewModel extends ChangeNotifier {
     }
 
     if (_result!.isWin) {
-      return '오늘은 진주 $_result!.reward개를 받았어요!';
+      final rewardLabel = _result!.rewardLabel;
+      final rewardCount = _result!.rewardCount;
+      if (rewardCount > 0) {
+        return '오늘은 진주 $rewardCount개를 받았어요!';
+      }
+      return rewardLabel.isNotEmpty
+          ? '오늘은 ${_displayRewardLabel(rewardLabel)}을 받았어요!'
+          : '오늘은 진주를 받았어요!';
     }
 
     return '오늘은 아쉽게 꽝이에요';
@@ -109,5 +116,9 @@ class AttendanceViewModel extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  String _displayRewardLabel(String rewardLabel) {
+    return rewardLabel.replaceAll('등장!', '').replaceAll('등장', '').trim();
   }
 }
