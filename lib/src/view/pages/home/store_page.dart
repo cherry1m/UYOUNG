@@ -57,6 +57,14 @@ class _StorePageState extends State<StorePage> {
     );
   }
 
+  Future<void> _openPearlChargePage(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PearlChargePage()),
+    );
+    await _pearlViewModel.load();
+  }
+
   Widget _pearlBox(BuildContext context) {
     final pearlVm = context.watch<PearlViewModel>();
 
@@ -64,12 +72,7 @@ class _StorePageState extends State<StorePage> {
       top: 60,
       left: 20,
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PearlChargePage()),
-          );
-        },
+        onTap: () => _openPearlChargePage(context),
         child: SizedBox(
           width: 82,
           height: 36,

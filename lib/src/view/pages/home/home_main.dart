@@ -73,6 +73,32 @@ class _HomeMainState extends State<HomeMain> {
     );
   }
 
+  Future<void> _openPearlChargePage(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PearlChargePage()),
+    );
+    await _pearlViewModel.load();
+  }
+
+  Future<void> _openNotificationPage(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => NotificationPage(viewModel: _notificationViewModel),
+      ),
+    );
+    await _notificationViewModel.load();
+  }
+
+  Future<void> _openAttendCheckPage(BuildContext context) async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const AttendCheckPage()),
+    );
+    await _pearlViewModel.load();
+  }
+
   Widget _pearlBox(BuildContext context) {
     final pearlVm = context.watch<PearlViewModel>();
 
@@ -80,12 +106,7 @@ class _HomeMainState extends State<HomeMain> {
       top: 60,
       left: 20,
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const PearlChargePage()),
-          );
-        },
+        onTap: () => _openPearlChargePage(context),
         child: SizedBox(
           width: 82,
           height: 36,
@@ -119,19 +140,7 @@ class _HomeMainState extends State<HomeMain> {
       top: 60,
       right: 15,
       child: GestureDetector(
-        onTap: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => NotificationPage(
-                viewModel: _notificationViewModel,
-              ),
-            ),
-          );
-          if (context.mounted) {
-            await _notificationViewModel.load();
-          }
-        },
+        onTap: () => _openNotificationPage(context),
         child: Stack(
           clipBehavior: Clip.none,
           children: [
@@ -162,15 +171,7 @@ class _HomeMainState extends State<HomeMain> {
           imagePath: "assets/images/pearl_shell.png",
           imageSize: 35,
           title: "출석 체크",
-          onTap: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const AttendCheckPage()),
-            );
-            if (context.mounted) {
-              await _pearlViewModel.load();
-            }
-          },
+          onTap: () => _openAttendCheckPage(context),
         );
       },
     );

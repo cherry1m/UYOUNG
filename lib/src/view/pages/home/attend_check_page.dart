@@ -133,6 +133,8 @@ class _AttendCheckPageState extends State<AttendCheckPage> {
   }
 
   Widget _pageForResult(AttendanceResult result) {
+    // TODO(chore): 출석 결과 화면 UX는 디자인 확정 후 result 기반으로 재정리
+    // 지금은 RPC 결과를 최소 흐름으로 연결합니다.
     switch (result.streak) {
       case 1:
         return const AttendDay1Page();
