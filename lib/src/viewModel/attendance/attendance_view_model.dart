@@ -75,10 +75,6 @@ class AttendanceViewModel extends ChangeNotifier {
     return ImagePath.attendanceItemTrashBoot;
   }
 
-  String get boardDecorationImagePath {
-    return ImagePath.attendanceItemTrashBundle;
-  }
-
   String get boardItemSummary {
     if (isAlreadyChecked) {
       return '오늘도 출석완료!\n아이템 확인해주세요';
