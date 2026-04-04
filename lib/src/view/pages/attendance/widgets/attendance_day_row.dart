@@ -32,8 +32,7 @@ class AttendanceDayRow extends StatelessWidget {
         children: List.generate(7, (index) {
           final day = index + 1;
           final isReceived = day <= viewModel.checkedDays;
-          final isToday =
-              !viewModel.hasCheckedToday && day == viewModel.currentDay;
+          final isToday = day == viewModel.currentDay;
           final isFuture =
               day >
               (viewModel.hasCheckedToday
@@ -61,6 +60,15 @@ class AttendanceDayRow extends StatelessWidget {
                           : Colors.transparent,
                       width: 2,
                     ),
+                    boxShadow: isToday
+                        ? const [
+                            BoxShadow(
+                              color: Color(0x40FFD54F),
+                              blurRadius: 12,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
