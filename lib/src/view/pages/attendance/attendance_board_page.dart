@@ -5,10 +5,7 @@ import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/viewModel/attendance/attendance_view_model.dart';
 
 class AttendanceBoardPage extends StatelessWidget {
-  const AttendanceBoardPage({
-    super.key,
-    required this.viewModel,
-  });
+  const AttendanceBoardPage({super.key, required this.viewModel});
 
   final AttendanceViewModel viewModel;
 
@@ -48,7 +45,12 @@ class _AttendanceBoardView extends StatelessWidget {
           ),
           SafeArea(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(horizontalPadding, 14, horizontalPadding, 0),
+              padding: const EdgeInsets.fromLTRB(
+                horizontalPadding,
+                14,
+                horizontalPadding,
+                0,
+              ),
               child: Stack(
                 children: [
                   Positioned.fill(
@@ -58,7 +60,9 @@ class _AttendanceBoardView extends StatelessWidget {
                           alignment: Alignment.topCenter,
                           child: Text(
                             '출석체크',
-                            style: AppFontStyle.H4.copyWith(color: Colors.black),
+                            style: AppFontStyle.H4.copyWith(
+                              color: Colors.black,
+                            ),
                           ),
                         ),
                         _AttendanceBoardHeader(viewModel: viewModel),
@@ -177,11 +181,13 @@ class _AttendanceBoardLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final starWidth = (constraints.maxWidth * 0.26).clamp(84.0, 110.0);
+        const starWidth = 200.0;
         final iconSize = (starWidth * 0.52).clamp(34.0, 50.0);
         final labelStyle = constraints.maxWidth < 360
             ? AppFontStyle.S8.copyWith(color: const Color(0xFF6EA8EB))
             : AppFontStyle.H6.copyWith(color: const Color(0xFF6EA8EB));
+        final boardWidth = constraints.maxWidth;
+        final boardHeight = constraints.maxHeight;
 
         return Stack(
           children: [
@@ -198,8 +204,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               ),
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.05,
-              top: constraints.maxHeight * 0.05,
+              left: boardWidth * -0.07,
+              top: boardHeight * 0.02,
               day: 1,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -207,8 +213,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.39,
-              top: constraints.maxHeight * 0.00,
+              left: boardWidth * 0.27,
+              top: boardHeight * -0.03,
               day: 2,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -216,8 +222,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              right: constraints.maxWidth * 0.03,
-              top: constraints.maxHeight * 0.14,
+              left: boardWidth * 0.64,
+              top: boardHeight * 0.14,
               day: 3,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -225,8 +231,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.40,
-              top: constraints.maxHeight * 0.38,
+              left: boardWidth * 0.27,
+              top: boardHeight * 0.34,
               day: 4,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -234,8 +240,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.02,
-              top: constraints.maxHeight * 0.60,
+              left: boardWidth * -0.06,
+              top: boardHeight * 0.56,
               day: 5,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -243,8 +249,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: constraints.maxWidth * 0.40,
-              bottom: constraints.maxHeight * 0.01,
+              left: boardWidth * 0.19,
+              top: boardHeight * 0.76,
               day: 6,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -252,8 +258,8 @@ class _AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              right: constraints.maxWidth * 0.03,
-              bottom: constraints.maxHeight * 0.12,
+              left: boardWidth * 0.62,
+              top: boardHeight * 0.69,
               day: 7,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -271,9 +277,7 @@ class _AttendanceBoardLayout extends StatelessWidget {
 class _BoardTile extends StatelessWidget {
   const _BoardTile({
     this.left,
-    this.right,
     this.top,
-    this.bottom,
     required this.day,
     required this.starWidth,
     required this.iconSize,
@@ -283,9 +287,7 @@ class _BoardTile extends StatelessWidget {
   });
 
   final double? left;
-  final double? right;
   final double? top;
-  final double? bottom;
   final int day;
   final double starWidth;
   final double iconSize;
@@ -297,9 +299,7 @@ class _BoardTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned(
       left: left,
-      right: right,
       top: top,
-      bottom: bottom,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -315,21 +315,33 @@ class _BoardTile extends StatelessWidget {
                     ],
                   )
                 : null,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Image.asset(
-                  ImagePath.attendanceBoardStar,
-                  width: starWidth,
-                  fit: BoxFit.contain,
-                ),
-                Image.asset(
-                  imagePath,
-                  width: iconSize,
-                  height: iconSize,
-                  fit: BoxFit.contain,
-                ),
-              ],
+            child: SizedBox(
+              width: starWidth,
+              height: starWidth,
+              child: Stack(
+                children: [
+                  Positioned.fill(
+                    child: Center(
+                      child: Image.asset(
+                        ImagePath.attendanceBoardStar,
+                        width: starWidth,
+                        height: starWidth,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: Center(
+                      child: Image.asset(
+                        imagePath,
+                        width: iconSize,
+                        height: iconSize,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 2),
