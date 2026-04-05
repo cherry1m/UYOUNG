@@ -12,7 +12,7 @@ class AttendanceBoardLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        const starWidth = 160.0;
+        const starWidth = 150.0;
         const iconSize = 75.0;
 
         final labelStyle = AppFontStyle.H6.copyWith(
@@ -22,9 +22,19 @@ class AttendanceBoardLayout extends StatelessWidget {
         final boardWidth = constraints.maxWidth;
         final boardHeight = constraints.maxHeight;
 
+        // Path image keeps its own horizontal inset.
         const pathHorizontalInset = 18.0;
         const pathBottom = 130.0;
         final pathWidth = boardWidth - (pathHorizontalInset * 2);
+
+        // Star tiles are positioned against the path area coordinate system.
+        final day1Left = pathWidth * 0.00;
+        final day2Left = pathWidth * 0.41;
+        final day3Left = pathWidth * 0.75;
+        final day4Left = pathWidth * 0.35;
+        final day5Left = pathWidth * 0.00 - 20.0;
+        final day6Left = pathWidth * 0.27;
+        final day7Left = pathWidth * 0.70;
 
         return Stack(
           children: [
@@ -36,8 +46,8 @@ class AttendanceBoardLayout extends StatelessWidget {
             ),
 
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.03,
-              top: boardHeight * 0.02,
+              left: day1Left,
+              top: boardHeight * 0.01,
               day: 1,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -45,7 +55,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.44,
+              left: day2Left,
               top: boardHeight * 0.00,
               day: 2,
               starWidth: starWidth,
@@ -54,7 +64,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.75,
+              left: day3Left,
               top: boardHeight * 0.18,
               day: 3,
               starWidth: starWidth,
@@ -63,8 +73,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.35,
-              top: boardHeight * 0.30,
+              left: day4Left,
+              top: boardHeight * 0.27,
               day: 4,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -72,7 +82,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.00 - 40.0,
+              left: day5Left,
               top: boardHeight * 0.42,
               day: 5,
               starWidth: starWidth,
@@ -81,8 +91,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.25,
-              top: boardHeight * 0.61,
+              left: day6Left,
+              top: boardHeight * 0.57,
               day: 6,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -90,7 +100,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: pathHorizontalInset + pathWidth * 0.70,
+              left: day7Left,
               top: boardHeight * 0.54,
               day: 7,
               starWidth: starWidth,
@@ -176,7 +186,6 @@ class _BoardTile extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 2),
           Text('$day일차', style: labelStyle),
         ],
       ),
