@@ -24,17 +24,18 @@ class AttendanceBoardLayout extends StatelessWidget {
 
         // Path image keeps its own horizontal inset.
         const pathHorizontalInset = 18.0;
-        const pathBottom = 130.0;
+        const basePathBottom = 150.0;
+        const pathBottom = 150.0;
         final pathWidth = boardWidth - (pathHorizontalInset * 2);
+        final verticalShift = basePathBottom - pathBottom;
 
-        // Star tiles are positioned against the path area coordinate system.
-        final day1Left = pathWidth * 0.00;
-        final day2Left = pathWidth * 0.41;
-        final day3Left = pathWidth * 0.75;
-        final day4Left = pathWidth * 0.35;
-        final day5Left = pathWidth * 0.00 - 20.0;
-        final day6Left = pathWidth * 0.27;
-        final day7Left = pathWidth * 0.70;
+        double syncedLeft(double ratio, {double offset = 0}) {
+          return pathHorizontalInset + pathWidth * ratio + offset;
+        }
+
+        double syncedTop(double ratio, {double offset = 0}) {
+          return boardHeight * ratio + verticalShift + offset;
+        }
 
         return Stack(
           children: [
@@ -46,8 +47,8 @@ class AttendanceBoardLayout extends StatelessWidget {
             ),
 
             _BoardTile(
-              left: day1Left,
-              top: boardHeight * 0.01,
+              left: syncedLeft(0.00),
+              top: syncedTop(0.01),
               day: 1,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -55,8 +56,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: day2Left,
-              top: boardHeight * 0.00,
+              left: syncedLeft(0.41),
+              top: syncedTop(0.00),
               day: 2,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -64,8 +65,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: day3Left,
-              top: boardHeight * 0.18,
+              left: syncedLeft(0.75),
+              top: syncedTop(0.18),
               day: 3,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -73,8 +74,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: day4Left,
-              top: boardHeight * 0.27,
+              left: syncedLeft(0.35),
+              top: syncedTop(0.27),
               day: 4,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -82,8 +83,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: day5Left,
-              top: boardHeight * 0.42,
+              left: syncedLeft(0.00, offset: -20),
+              top: syncedTop(0.42),
               day: 5,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -91,8 +92,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: day6Left,
-              top: boardHeight * 0.57,
+              left: syncedLeft(0.27),
+              top: syncedTop(0.57),
               day: 6,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -100,8 +101,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: day7Left,
-              top: boardHeight * 0.54,
+              left: syncedLeft(0.70),
+              top: syncedTop(0.54),
               day: 7,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -186,7 +187,10 @@ class _BoardTile extends StatelessWidget {
               ),
             ),
           ),
-          Text('$day일차', style: labelStyle),
+          Transform.translate(
+            offset: const Offset(0, -20),
+            child: Text('$day일차', style: labelStyle),
+          ),
         ],
       ),
     );
