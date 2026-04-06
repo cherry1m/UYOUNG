@@ -29,11 +29,11 @@ class AttendanceBoardLayout extends StatelessWidget {
         final pathWidth = boardWidth - (pathHorizontalInset * 2);
         final verticalShift = basePathBottom - pathBottom;
 
-        double syncedLeft(double ratio, {double offset = 0}) {
-          return pathHorizontalInset + pathWidth * ratio + offset;
+        double syncedLeft(double ratio, {double offset = -30}) {
+          return pathWidth * ratio + offset;
         }
 
-        double syncedTop(double ratio, {double offset = 0}) {
+        double syncedTop(double ratio, {double offset = -30}) {
           return boardHeight * ratio + verticalShift + offset;
         }
 
@@ -47,8 +47,8 @@ class AttendanceBoardLayout extends StatelessWidget {
             ),
 
             _BoardTile(
-              left: syncedLeft(0.00),
-              top: syncedTop(0.01),
+              left: syncedLeft(0.05),
+              top: syncedTop(0.03),
               day: 1,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -56,7 +56,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: syncedLeft(0.41),
+              left: syncedLeft(0.51),
               top: syncedTop(0.00),
               day: 2,
               starWidth: starWidth,
@@ -65,7 +65,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: syncedLeft(0.75),
+              left: syncedLeft(0.85),
               top: syncedTop(0.18),
               day: 3,
               starWidth: starWidth,
@@ -74,7 +74,7 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: syncedLeft(0.35),
+              left: syncedLeft(0.43),
               top: syncedTop(0.27),
               day: 4,
               starWidth: starWidth,
@@ -83,8 +83,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: syncedLeft(0.00, offset: -20),
-              top: syncedTop(0.42),
+              left: syncedLeft(0.00),
+              top: syncedTop(0.38),
               day: 5,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -92,8 +92,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: syncedLeft(0.27),
-              top: syncedTop(0.57),
+              left: syncedLeft(0.24),
+              top: syncedTop(0.59),
               day: 6,
               starWidth: starWidth,
               iconSize: iconSize,
@@ -101,8 +101,8 @@ class AttendanceBoardLayout extends StatelessWidget {
               labelStyle: labelStyle,
             ),
             _BoardTile(
-              left: syncedLeft(0.70),
-              top: syncedTop(0.54),
+              left: syncedLeft(0.67),
+              top: syncedTop(0.58),
               day: 7,
               starWidth: starWidth,
               iconSize: iconSize,
