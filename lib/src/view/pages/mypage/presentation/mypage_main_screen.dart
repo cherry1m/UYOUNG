@@ -5,157 +5,180 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
-import 'package:uyoung/data/repositories/user/profile_repository.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
-import 'package:uyoung/src/view/pages/mypage/presentation/friend_invite_page.dart';
+import 'package:uyoung/src/view/pages/home/notification_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/friend_invite_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_list_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/profile_edit_page.dart';
 import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
+import 'package:uyoung/src/viewModel/home/notification_view_model.dart';
+import 'package:uyoung/src/viewModel/mypage/mypage_main_view_model.dart';
 
-class MyPageMainScreen extends StatefulWidget {
+class MyPageMainScreen extends StatelessWidget {
   const MyPageMainScreen({super.key});
 
   @override
-  State<MyPageMainScreen> createState() => _MyPageMainScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => MyPageMainViewModel()..load(),
+      child: const _MyPageMainView(),
+    );
+  }
 }
 
-class _MyPageMainScreenState extends State<MyPageMainScreen> {
-  int _profileRefreshToken = 0;
+class _MyPageMainView extends StatelessWidget {
+  const _MyPageMainView();
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<MyPageMainViewModel>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(18, 4, 18, 112),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 18),
-              _ProfileHero(
-                refreshToken: _profileRefreshToken,
-                onEditComplete: () {
-                  setState(() {
-                    _profileRefreshToken++;
-                  });
-                },
-              ),
-              const SizedBox(height: 18),
-              _PearlCard(onTap: () => _push(context, const PearlChargePage())),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Expanded(
-                    child: _QuickActionCard(
-                      label: '친구 목록',
-                      child: SizedBox(
-                        width: 58,
-                        child: Image.asset(
-                          ImagePath.friendListButton,
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      onTap: () => _push(context, const FriendListPage()),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: _QuickActionCard(
-                      label: '친구와 한 컷',
-                      child: const Icon(
-                        Icons.photo_camera_outlined,
-                        color: AppColors.g04,
-                        size: 34,
-                      ),
-                      onTap: () => _push(context, const ShellStoryPage()),
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: _QuickActionCard(
-                      label: '공지',
-                      child: SizedBox(
-                        width: 58,
-                        child: Image.asset(
-                          ImagePath.notice,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, _, _) => const Icon(
-                            Icons.campaign_outlined,
-                            color: Color(0xFFDEC870),
-                            size: 30,
+        child: RefreshIndicator(
+          onRefresh: context.read<MyPageMainViewModel>().load,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            padding: const EdgeInsets.fromLTRB(18, 4, 18, 112),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 18),
+                _ProfileHero(
+                  viewModel: viewModel,
+                  onEditComplete: () => context.read<MyPageMainViewModel>().load(),
+                ),
+                const SizedBox(height: 18),
+                _PearlCard(
+                  pearlCount: viewModel.pearlCount,
+                  onTap: () => _push(context, const PearlChargePage()),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _QuickActionCard(
+                        label: '친구 목록',
+                        child: SizedBox(
+                          width: 58,
+                          child: Image.asset(
+                            ImagePath.friendListButton,
+                            fit: BoxFit.contain,
                           ),
                         ),
+                        onTap: () => _push(context, const FriendListPage()),
                       ),
                     ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: _QuickActionCard(
+                        label: '친구와 한 컷',
+                        child: const Icon(
+                          Icons.photo_camera_outlined,
+                          color: AppColors.g04,
+                          size: 34,
+                        ),
+                        onTap: () => _push(context, const ShellStoryPage()),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: _QuickActionCard(
+                        label: '공지',
+                        child: SizedBox(
+                          width: 58,
+                          child: Image.asset(
+                            ImagePath.notice,
+                            fit: BoxFit.contain,
+                            errorBuilder: (_, _, _) => const Icon(
+                              Icons.campaign_outlined,
+                              color: Color(0xFFDEC870),
+                              size: 30,
+                            ),
+                          ),
+                        ),
+                        onTap: () => _openNoticePage(context),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 22),
+                const _SectionTitle('초대 및 공유'),
+                const SizedBox(height: 10),
+                _MenuRow(
+                  icon: Icons.lock_outline_rounded,
+                  title: '프로필 URL 복사',
+                  onTap: () => _copyProfileUrl(context),
+                ),
+                _MenuRow(
+                  icon: Icons.person_add_alt_1_outlined,
+                  title: '친구 초대 및 등록',
+                  trailing: const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                    color: AppColors.black,
+                  ),
+                  onTap: () => _push(context, const FriendInvitePage()),
+                ),
+                const SizedBox(height: 18),
+                const Divider(height: 1, color: Color(0xFFE8E8ED)),
+                const SizedBox(height: 18),
+                const _SectionTitle('고객지원'),
+                const SizedBox(height: 10),
+                _MenuRow(
+                  icon: Icons.info_outline_rounded,
+                  title: '버전정보',
+                  trailingText: viewModel.appVersion,
+                ),
+                _MenuRow(
+                  icon: Icons.campaign_outlined,
+                  title: '공지사항',
+                  trailing: const Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                    color: AppColors.black,
+                  ),
+                  onTap: () => _openNoticePage(context),
+                ),
+                const _MenuRow(
+                  icon: Icons.help_outline_rounded,
+                  title: '고객센터/도움말',
+                  trailing: Icon(
+                    Icons.chevron_right_rounded,
+                    size: 22,
+                    color: AppColors.black,
+                  ),
+                ),
+                if (viewModel.errorText != null) ...[
+                  const SizedBox(height: 14),
+                  Text(
+                    viewModel.errorText!,
+                    style: AppFontStyle.H8.copyWith(color: Colors.redAccent),
+                    textAlign: TextAlign.center,
                   ),
                 ],
-              ),
-              const SizedBox(height: 22),
-              const _SectionTitle('초대 및 공유'),
-              const SizedBox(height: 10),
-              _MenuRow(
-                icon: Icons.lock_outline_rounded,
-                title: '프로필 URL 복사',
-                onTap: () => _copyProfileUrl(context),
-              ),
-              _MenuRow(
-                icon: Icons.person_add_alt_1_outlined,
-                title: '친구 초대 및 등록',
-                trailing: const Icon(
-                  Icons.chevron_right_rounded,
-                  size: 22,
-                  color: AppColors.black,
+                const SizedBox(height: 18),
+                const Divider(height: 1, color: Color(0xFFE8E8ED)),
+                const SizedBox(height: 18),
+                _FooterActionText(
+                  title: '로그아웃',
+                  onTap: () async {
+                    await context.read<AuthViewModel>().signOut();
+                  },
                 ),
-                onTap: () => _push(context, const FriendInvitePage()),
-              ),
-              const SizedBox(height: 18),
-              const Divider(height: 1, color: Color(0xFFE8E8ED)),
-              const SizedBox(height: 18),
-              const _SectionTitle('고객지원'),
-              const SizedBox(height: 10),
-              const _MenuRow(
-                icon: Icons.info_outline_rounded,
-                title: '버전정보',
-                trailingText: '0.00.00',
-              ),
-              const _MenuRow(
-                icon: Icons.help_outline_rounded,
-                title: '공지사항',
-                trailing: Icon(
-                  Icons.chevron_right_rounded,
-                  size: 22,
-                  color: AppColors.black,
+                const SizedBox(height: 20),
+                Text(
+                  '계정탈퇴',
+                  style: AppFontStyle.H7.copyWith(color: AppColors.black),
                 ),
-              ),
-              const _MenuRow(
-                icon: Icons.help_outline_rounded,
-                title: '고객센터/도움말',
-                trailing: Icon(
-                  Icons.chevron_right_rounded,
-                  size: 22,
-                  color: AppColors.black,
-                ),
-              ),
-              const SizedBox(height: 18),
-              const Divider(height: 1, color: Color(0xFFE8E8ED)),
-              const SizedBox(height: 18),
-              _FooterActionText(
-                title: '로그아웃',
-                onTap: () async {
-                  await context.read<AuthViewModel>().signOut();
-                },
-              ),
-              const SizedBox(height: 20),
-              Text(
-                '계정탈퇴',
-                style: AppFontStyle.H7.copyWith(color: AppColors.black),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -164,6 +187,13 @@ class _MyPageMainScreenState extends State<MyPageMainScreen> {
 
   static void _push(BuildContext context, Widget page) {
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
+  }
+
+  static void _openNoticePage(BuildContext context) {
+    final noticeViewModel = NotificationViewModel()
+      ..setFilter(NotificationFilter.notice)
+      ..load();
+    _push(context, NotificationPage(viewModel: noticeViewModel));
   }
 
   static Future<void> _copyProfileUrl(BuildContext context) async {
@@ -241,111 +271,135 @@ class _FooterActionText extends StatelessWidget {
 
 class _ProfileHero extends StatelessWidget {
   const _ProfileHero({
-    required this.refreshToken,
+    required this.viewModel,
     required this.onEditComplete,
   });
 
-  final int refreshToken;
+  final MyPageMainViewModel viewModel;
   final VoidCallback onEditComplete;
 
   @override
   Widget build(BuildContext context) {
-    final repository = ProfileRepository();
-
-    return FutureBuilder(
-      key: ValueKey(refreshToken),
-      future: repository.fetchCurrentProfile(),
-      builder: (context, snapshot) {
-        final profile = snapshot.data;
-        final displayName = profile?.nickname.trim().isNotEmpty == true
-            ? profile!.nickname
-            : '이윤서';
-
-        return Column(
+    return Column(
+      children: [
+        SizedBox(
+          height: 228,
+          child: Center(
+            child: SizedBox(
+              width: 210,
+              height: 210,
+              child: _ProfileAvatar(avatarUrl: viewModel.avatarUrl),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Stack(
+          clipBehavior: Clip.none,
           children: [
-            SizedBox(
-              height: 228,
-              child: Center(
-                child: SizedBox(
-                  width: 210,
-                  height: 210,
-                  child: Image.asset(
-                    ImagePath.myProfile,
-                    fit: BoxFit.contain,
-                    errorBuilder: (_, _, _) => Image.asset(
-                      ImagePath.friendProfile,
-                      fit: BoxFit.contain,
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(22),
+                border: Border.all(color: const Color(0xFFE6E6EB)),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0A000000),
+                    blurRadius: 10,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    viewModel.displayName,
+                    style: AppFontStyle.H5.copyWith(color: AppColors.black),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '초대 코드 ${viewModel.userCode}',
+                    style: AppFontStyle.H8.copyWith(
+                      color: const Color(0xFF7A7A80),
                     ),
                   ),
+                ],
+              ),
+            ),
+            Positioned(
+              right: -10,
+              top: -6,
+              child: GestureDetector(
+                onTap: () async {
+                  final didUpdate = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const ProfileEditPage(),
+                    ),
+                  );
+                  if (didUpdate == true) {
+                    onEditComplete();
+                  }
+                },
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: const BoxDecoration(
+                    color: AppColors.b02,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.edit, color: Colors.white, size: 15),
                 ),
               ),
             ),
-            const SizedBox(height: 8),
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 38,
-                    vertical: 12,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(22),
-                    border: Border.all(color: const Color(0xFFE6E6EB)),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Color(0x0A000000),
-                        blurRadius: 10,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Text(
-                    displayName,
-                    style: AppFontStyle.H5.copyWith(color: AppColors.black),
-                  ),
-                ),
-                Positioned(
-                  right: -10,
-                  top: -6,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push<bool>(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileEditPage(),
-                        ),
-                      ).then((didUpdate) {
-                        if (didUpdate == true) {
-                          onEditComplete();
-                        }
-                      });
-                    },
-                    child: Container(
-                      width: 28,
-                      height: 28,
-                      decoration: const BoxDecoration(
-                        color: AppColors.b02,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.edit, color: Colors.white, size: 15),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ],
-        );
-      },
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({required this.avatarUrl});
+
+  final String? avatarUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedUrl = avatarUrl?.trim();
+    if (trimmedUrl != null && trimmedUrl.isNotEmpty) {
+      return ClipOval(
+        child: Image.network(
+          trimmedUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => _fallback(),
+        ),
+      );
+    }
+
+    return _fallback();
+  }
+
+  Widget _fallback() {
+    return Image.asset(
+      ImagePath.myProfile,
+      fit: BoxFit.contain,
+      errorBuilder: (_, _, _) => Image.asset(
+        ImagePath.friendProfile,
+        fit: BoxFit.contain,
+      ),
     );
   }
 }
 
 class _PearlCard extends StatelessWidget {
+  final int pearlCount;
   final VoidCallback onTap;
 
-  const _PearlCard({required this.onTap});
+  const _PearlCard({
+    required this.pearlCount,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -386,7 +440,7 @@ class _PearlCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                '128개',
+                '$pearlCount개',
                 style: AppFontStyle.H7.copyWith(color: AppColors.black),
               ),
               const SizedBox(width: 4),
