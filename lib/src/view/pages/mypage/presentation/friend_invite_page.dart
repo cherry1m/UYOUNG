@@ -125,10 +125,19 @@ class _FriendInviteView extends StatelessWidget {
   }
 
   static Future<void> _openAddByCodePage(BuildContext context) async {
-    await Navigator.push(
+    final viewModel = context.read<FriendInviteViewModel>();
+    final didUpdate = await Navigator.push<bool>(
       context,
-      MaterialPageRoute(builder: (_) => const FriendAddByCodePage()),
+      MaterialPageRoute(
+        builder: (_) => FriendAddByCodePage(
+          initialFriendIds: viewModel.friendIds.toList(),
+        ),
+      ),
     );
+
+    if (didUpdate == true && context.mounted) {
+      Navigator.pop(context, true);
+    }
   }
 
   static Future<void> _copyInviteCode(

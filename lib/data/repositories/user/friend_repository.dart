@@ -35,6 +35,18 @@ class FriendRepository {
     }
   }
 
+  Future<FriendUser?> findUserByCode(String inputCode) async {
+    if (inputCode.trim().isEmpty) {
+      throw StateError('친구 코드를 입력해주세요.');
+    }
+
+    try {
+      return await _service.findUserByCode(inputCode);
+    } catch (error) {
+      throw StateError('친구 코드를 검색하지 못했어요. $error');
+    }
+  }
+
   Future<void> deleteFriend(String friendId) async {
     try {
       await _service.deleteFriend(friendId);

@@ -63,6 +63,25 @@ class FriendService {
     await _client.from('friends').insert({'friend_id': friendId});
   }
 
+  Future<FriendUser?> findUserByCode(String inputCode) async {
+    final normalizedCode = inputCode.trim();
+    if (normalizedCode.isEmpty) {
+      return null;
+    }
+
+    final response = await _client
+        .from('profiles')
+        .select('id, nickname, avatar_url, user_code')
+        .eq('user_code', normalizedCode)
+        .maybeSingle();
+
+    if (response == null) {
+      return null;
+    }
+
+    return FriendUser.fromMap(Map<String, dynamic>.from(response));
+  }
+
   Future<void> deleteFriend(String friendId) async {
     await _client
         .from('friends')
