@@ -62,4 +62,12 @@ class FriendService {
   Future<void> addFriendDirect(String friendId) async {
     await _client.from('friends').insert({'friend_id': friendId});
   }
+
+  Future<void> deleteFriend(String friendId) async {
+    await _client
+        .from('friends')
+        .delete()
+        .eq('user_id', _currentUser.id)
+        .eq('friend_id', friendId);
+  }
 }

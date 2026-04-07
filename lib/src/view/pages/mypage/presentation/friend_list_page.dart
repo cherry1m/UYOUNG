@@ -108,6 +108,7 @@ class _FriendListView extends StatelessWidget {
                         final friend = viewModel.friends[index];
                         return _FriendRow(
                           friend: friend,
+                          isDeleting: viewModel.isDeleting(friend.id),
                           onTap: () {
                             Navigator.push(
                               context,
@@ -116,13 +117,7 @@ class _FriendListView extends StatelessWidget {
                               ),
                             );
                           },
-                          onDelete: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('${friend.displayName} 친구 삭제는 아직 준비 중이에요.'),
-                              ),
-                            );
-                          },
+                          onDelete: () => _confirmDelete(context, friend),
                         );
                       },
                       separatorBuilder: (_, _) => const SizedBox(height: 14),
@@ -136,6 +131,65 @@ class _FriendListView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  static Future<void> _confirmDelete(
+    BuildContext context,
+    FriendUser friend,
+  ) async {
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text(
+            '친구를 삭제할까요?',
+            style: AppFontStyle.H6.copyWith(color: AppColors.black),
+          ),
+          content: Text(
+            '삭제 후에도 다시 친구 추가할 수 있어요.',
+            style: AppFontStyle.H8.copyWith(color: AppColors.black),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, false),
+              child: Text(
+                '취소',
+                style: AppFontStyle.H8.copyWith(color: const Color(0xFF8B8B91)),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext, true),
+              child: Text(
+                '삭제',
+                style: AppFontStyle.H8.copyWith(color: Colors.redAccent),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete != true || !context.mounted) {
+      return;
+    }
+
+    try {
+      await context.read<FriendListViewModel>().deleteFriend(friend.id);
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('${friend.displayName}님을 친구 목록에서 삭제했어요.')));
+    } catch (_) {
+      if (!context.mounted) {
+        return;
+      }
+      final errorText = context.read<FriendListViewModel>().errorText;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorText ?? '친구 삭제에 실패했어요.')));
+    }
   }
 }
 
@@ -181,11 +235,13 @@ class _FriendSearchField extends StatelessWidget {
 class _FriendRow extends StatelessWidget {
   const _FriendRow({
     required this.friend,
+    required this.isDeleting,
     required this.onTap,
     required this.onDelete,
   });
 
   final FriendUser friend;
+  final bool isDeleting;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
@@ -234,7 +290,7 @@ class _FriendRow extends StatelessWidget {
             ),
           ),
           OutlinedButton(
-            onPressed: onDelete,
+            onPressed: isDeleting ? null : onDelete,
             style: OutlinedButton.styleFrom(
               backgroundColor: const Color(0xFFF3F3F6),
               foregroundColor: const Color(0xFF87878D),
@@ -246,7 +302,13 @@ class _FriendRow extends StatelessWidget {
               padding: EdgeInsets.zero,
               textStyle: AppFontStyle.H8.copyWith(color: const Color(0xFF87878D)),
             ),
-            child: const Text('친구 삭제'),
+            child: isDeleting
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : const Text('친구 삭제'),
           ),
         ],
       ),

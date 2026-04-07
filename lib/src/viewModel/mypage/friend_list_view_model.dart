@@ -12,6 +12,7 @@ class FriendListViewModel extends ChangeNotifier {
 
   List<FriendUser> _friends = const [];
   bool _isLoading = false;
+  Set<String> _deletingFriendIds = {};
   String? _errorText;
 
   List<FriendUser> get friends {
@@ -27,6 +28,7 @@ class FriendListViewModel extends ChangeNotifier {
 
   List<String> get friendIds => _friends.map((friend) => friend.id).toList();
   bool get isLoading => _isLoading;
+  bool isDeleting(String friendId) => _deletingFriendIds.contains(friendId);
   String? get errorText => _errorText;
 
   Future<void> load() async {
@@ -47,6 +49,29 @@ class FriendListViewModel extends ChangeNotifier {
 
   void onSearchChanged(String _) {
     notifyListeners();
+  }
+
+  Future<void> deleteFriend(String friendId) async {
+    if (_deletingFriendIds.contains(friendId)) {
+      return;
+    }
+
+    final previousFriends = _friends;
+    _deletingFriendIds = {..._deletingFriendIds, friendId};
+    _friends = _friends.where((friend) => friend.id != friendId).toList();
+    _errorText = null;
+    notifyListeners();
+
+    try {
+      await _repository.deleteFriend(friendId);
+    } catch (error) {
+      _friends = previousFriends;
+      _errorText = error.toString();
+      rethrow;
+    } finally {
+      _deletingFriendIds = {..._deletingFriendIds}..remove(friendId);
+      notifyListeners();
+    }
   }
 
   @override

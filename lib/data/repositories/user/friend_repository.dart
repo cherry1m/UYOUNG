@@ -34,4 +34,12 @@ class FriendRepository {
       throw StateError('친구를 추가하지 못했어요. $error');
     }
   }
+
+  Future<void> deleteFriend(String friendId) async {
+    try {
+      await _service.deleteFriend(friendId);
+    } catch (error) {
+      throw StateError('친구를 삭제하지 못했어요. $error');
+    }
+  }
 }
