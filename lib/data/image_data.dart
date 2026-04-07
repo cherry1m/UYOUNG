@@ -70,13 +70,43 @@ class ImagePath {
   static String get inviteBg => 'assets/images/invite_bg.png';
   static String get storePage => 'assets/images/store_page.png';
   static String get pearl => 'assets/images/pearl.png';
-  static String get pearl10 => 'assets/images/pearl_10.png';
-  static String get pearl50 => 'assets/images/pearl_50.png';
-  static String get pearl100 => 'assets/images/pearl_100.png';
-  static String get pearl200 => 'assets/images/pearl_200.png';
-  static String get pearl300 => 'assets/images/pearl_300.png';
-  static String get pearlBasket => 'assets/images/pearl_basket.png';
+  static String get pearl10 => 'assets/images/common/pearl_10.png';
+  static String get pearl50 => 'assets/images/common/pearl_50.png';
+  static String get pearl100 => 'assets/images/common/pearl_100.png';
+  static String get pearl200 => 'assets/images/common/pearl_200.png';
+  static String get pearl300 => 'assets/images/common/pearl_300.png';
+  static String get pearlBasket => 'assets/images/common/pearl_basket.png';
   static String get pearlShell => 'assets/images/pearl_shell.png';
   static String get pearlBox => 'assets/images/pearl_box.png';
   static String get pearls => 'assets/images/pearls.png';
+
+  // 출석체크
+  static String get attendanceMainBg =>
+      'assets/images/attendance/bg/attendance_bg_main.png';
+  static String get attendanceItemBg =>
+      'assets/images/attendance/bg/attendance_bg_item.png';
+  static String get attendanceBoardPath =>
+      'assets/images/attendance/board/attendance_board_path.png';
+  static String get attendanceBoardStar =>
+      'assets/images/attendance/board/attendance_board_star.png';
+  static String get attendanceOtterDive =>
+      'assets/images/attendance/character/attendance_otter_dive.png';
+  static String get attendanceItemClam =>
+      'assets/images/attendance/item/attendance_item_clam.png';
+  static String get attendanceItemPearl =>
+      'assets/images/attendance/item/attendance_item_pearl.png';
+  static String get attendanceItemPearlBundle =>
+      'assets/images/attendance/item/attendance_item_pearl_bundle.png';
+  static String get attendanceItemPearlCollect =>
+      'assets/images/attendance/item/attendance_item_pearl_collect.png';
+  static String get attendanceItemQuestion =>
+      'assets/images/attendance/item/attendance_item_question.png';
+  static String get attendanceItemTrashBoot =>
+      'assets/images/attendance/item/attendance_item_trash_boot.png';
+  static String get attendanceItemTrashBundle =>
+      'assets/images/attendance/item/attendance_item_trash_bundle.png';
+  static String get attendanceItemTrashTire =>
+      'assets/images/attendance/item/attendance_item_trash_tire.png';
+  static String get attendanceStoryCard =>
+      'assets/images/attendance/ui/attendance_ui_story_card.png';
 }

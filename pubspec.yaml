@@ -33,6 +33,12 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/images/common/
+    - assets/images/attendance/bg/
+    - assets/images/attendance/board/
+    - assets/images/attendance/character/
+    - assets/images/attendance/item/
+    - assets/images/attendance/ui/
     - assets/images/mypage/
     - assets/images/memory/
     - assets/images/memory/alcohol/

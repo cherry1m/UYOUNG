@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/src/view/common/home/common_icon_bages.dart';
-import 'package:uyoung/src/view/pages/home/attend_check_page.dart';
+import 'package:uyoung/src/view/pages/attendance/attend_check_page.dart';
 import 'package:uyoung/src/view/pages/home/notification_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
 import 'package:uyoung/src/viewModel/home/notification_view_model.dart';
