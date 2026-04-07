@@ -6,14 +6,14 @@ import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
-import 'package:uyoung/src/view/pages/home/notification_page.dart';
 import 'package:uyoung/src/view/pages/home/shell_story_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_invite_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_list_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/inquiry_history_page.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/notice_list_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/pearl_charge_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/profile_edit_page.dart';
 import 'package:uyoung/src/viewModel/auth/auth_view_model.dart';
-import 'package:uyoung/src/viewModel/home/notification_view_model.dart';
 import 'package:uyoung/src/viewModel/mypage/mypage_main_view_model.dart';
 
 class MyPageMainScreen extends StatelessWidget {
@@ -146,14 +146,15 @@ class _MyPageMainView extends StatelessWidget {
                   ),
                   onTap: () => _openNoticePage(context),
                 ),
-                const _MenuRow(
-                  icon: Icons.help_outline_rounded,
-                  title: '고객센터/도움말',
-                  trailing: Icon(
+                _MenuRow(
+                  icon: Icons.edit_note_rounded,
+                  title: '문의 내역',
+                  trailing: const Icon(
                     Icons.chevron_right_rounded,
                     size: 22,
                     color: AppColors.black,
                   ),
+                  onTap: () => _openInquiryPage(context),
                 ),
                 if (viewModel.errorText != null) ...[
                   const SizedBox(height: 14),
@@ -190,10 +191,11 @@ class _MyPageMainView extends StatelessWidget {
   }
 
   static void _openNoticePage(BuildContext context) {
-    final noticeViewModel = NotificationViewModel()
-      ..setFilter(NotificationFilter.notice)
-      ..load();
-    _push(context, NotificationPage(viewModel: noticeViewModel));
+    _push(context, const NoticeListPage());
+  }
+
+  static void _openInquiryPage(BuildContext context) {
+    _push(context, const InquiryHistoryPage());
   }
 
   static Future<void> _copyProfileUrl(BuildContext context) async {
