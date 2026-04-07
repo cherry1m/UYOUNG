@@ -94,9 +94,50 @@ class _FriendListView extends StatelessWidget {
 
                     if (viewModel.friends.isEmpty) {
                       return Center(
-                        child: Text(
-                          '친구가 아직 없어요.',
-                          style: AppFontStyle.H8.copyWith(color: const Color(0xFF8B8B91)),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 32),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                '친구 목록이 없어요',
+                                style: AppFontStyle.H7.copyWith(
+                                  color: const Color(0xFF8B8B91),
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: 160,
+                                height: 46,
+                                child: FilledButton(
+                                  onPressed: () async {
+                                    final didUpdate = await Navigator.push<bool>(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => FriendInvitePage(
+                                          initialFriendIds: viewModel.friendIds,
+                                        ),
+                                      ),
+                                    );
+                                    if (didUpdate == true && context.mounted) {
+                                      context.read<FriendListViewModel>().load();
+                                    }
+                                  },
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: AppColors.b02,
+                                    foregroundColor: Colors.white,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(14),
+                                    ),
+                                    textStyle: AppFontStyle.H7.copyWith(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  child: const Text('친구 초대하기'),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }
