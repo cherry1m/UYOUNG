@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
+import 'package:uyoung/data/image_data.dart';
+import 'package:uyoung/data/model/user/friend_user_model.dart';
 
 class FriendProfilePage extends StatelessWidget {
-  final String name;
-  final String imagePath;
-
   const FriendProfilePage({
     super.key,
-    required this.name,
-    required this.imagePath,
+    required this.friend,
   });
+
+  final FriendUser friend;
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +28,21 @@ class FriendProfilePage extends StatelessWidget {
             SizedBox(
               height: 250,
               child: Center(
-                child: Image.asset(
-                  imagePath,
+                child: SizedBox(
                   width: 210,
-                  fit: BoxFit.contain,
+                  height: 210,
+                  child: _Avatar(avatarUrl: friend.avatarUrl),
                 ),
               ),
             ),
             Text(
-              name,
+              friend.displayName,
               style: AppFontStyle.F2.copyWith(color: AppColors.black),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              friend.userCode,
+              style: AppFontStyle.H8.copyWith(color: const Color(0xFF8B8B91)),
             ),
             const SizedBox(height: 22),
             SizedBox(
@@ -67,6 +72,34 @@ class FriendProfilePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _Avatar extends StatelessWidget {
+  const _Avatar({required this.avatarUrl});
+
+  final String? avatarUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedUrl = avatarUrl?.trim();
+    if (trimmedUrl != null && trimmedUrl.isNotEmpty) {
+      return ClipOval(
+        child: Image.network(
+          trimmedUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => _fallback(),
+        ),
+      );
+    }
+    return _fallback();
+  }
+
+  Widget _fallback() {
+    return Image.asset(
+      ImagePath.friendProfile,
+      fit: BoxFit.contain,
     );
   }
 }

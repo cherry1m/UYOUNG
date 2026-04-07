@@ -1,35 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uyoung/data/app_colors.dart';
 import 'package:uyoung/data/font_style.dart';
 import 'package:uyoung/data/image_data.dart';
+import 'package:uyoung/data/model/user/friend_user_model.dart';
+import 'package:uyoung/src/view/pages/mypage/presentation/friend_invite_page.dart';
 import 'package:uyoung/src/view/pages/mypage/presentation/friend_profile_page.dart';
+import 'package:uyoung/src/viewModel/mypage/friend_list_view_model.dart';
 
-class FriendListPage extends StatefulWidget {
+class FriendListPage extends StatelessWidget {
   const FriendListPage({super.key});
 
   @override
-  State<FriendListPage> createState() => _FriendListPageState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => FriendListViewModel()..load(),
+      child: const _FriendListView(),
+    );
+  }
 }
 
-class _FriendListPageState extends State<FriendListPage> {
-  final TextEditingController _searchController = TextEditingController();
-
-  static final List<_FriendItem> _friends = [
-    _FriendItem(name: '조성은', imagePath: ImagePath.choProfile),
-    _FriendItem(name: '윤채림', imagePath: ImagePath.yoonProfile),
-  ];
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
+class _FriendListView extends StatelessWidget {
+  const _FriendListView();
 
   @override
   Widget build(BuildContext context) {
-    final query = _searchController.text.trim();
-    final filteredFriends =
-        _friends.where((friend) => friend.name.contains(query)).toList();
+    final viewModel = context.watch<FriendListViewModel>();
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -41,50 +37,102 @@ class _FriendListPageState extends State<FriendListPage> {
           '친구 목록',
           style: AppFontStyle.H6.copyWith(color: AppColors.black),
         ),
+        actions: [
+          IconButton(
+            onPressed: () async {
+              final didUpdate = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FriendInvitePage(
+                    initialFriendIds: viewModel.friendIds,
+                  ),
+                ),
+              );
+              if (didUpdate == true && context.mounted) {
+                context.read<FriendListViewModel>().load();
+              }
+            },
+            icon: const Icon(Icons.person_add_alt_1_rounded),
+            color: AppColors.black,
+          ),
+          const SizedBox(width: 8),
+        ],
       ),
       body: SafeArea(
         top: false,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(18, 6, 18, 0),
-              child: _FriendSearchField(
-                controller: _searchController,
-                onChanged: (_) => setState(() {}),
+        child: RefreshIndicator(
+          onRefresh: context.read<FriendListViewModel>().load,
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(18, 6, 18, 0),
+                child: _FriendSearchField(
+                  controller: viewModel.searchController,
+                  onChanged: viewModel.onSearchChanged,
+                ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Expanded(
-              child: ListView.separated(
-                physics: const BouncingScrollPhysics(),
-                padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
-                itemBuilder: (context, index) {
-                  final friend = filteredFriends[index];
-                  return _FriendRow(
-                    friend: friend,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FriendProfilePage(
-                            name: friend.name,
-                            imagePath: friend.imagePath,
+              const SizedBox(height: 8),
+              Expanded(
+                child: Builder(
+                  builder: (context) {
+                    if (viewModel.isLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (viewModel.errorText != null) {
+                      return Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(
+                            viewModel.errorText!,
+                            style: AppFontStyle.H8.copyWith(color: Colors.redAccent),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       );
-                    },
-                    onDelete: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${friend.name} 친구 삭제는 아직 준비 중이에요.')),
+                    }
+
+                    if (viewModel.friends.isEmpty) {
+                      return Center(
+                        child: Text(
+                          '친구가 아직 없어요.',
+                          style: AppFontStyle.H8.copyWith(color: const Color(0xFF8B8B91)),
+                        ),
                       );
-                    },
-                  );
-                },
-                separatorBuilder: (_, _) => const SizedBox(height: 14),
-                itemCount: filteredFriends.length,
+                    }
+
+                    return ListView.separated(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 24),
+                      itemBuilder: (context, index) {
+                        final friend = viewModel.friends[index];
+                        return _FriendRow(
+                          friend: friend,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => FriendProfilePage(friend: friend),
+                              ),
+                            );
+                          },
+                          onDelete: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('${friend.displayName} 친구 삭제는 아직 준비 중이에요.'),
+                              ),
+                            );
+                          },
+                        );
+                      },
+                      separatorBuilder: (_, _) => const SizedBox(height: 14),
+                      itemCount: viewModel.friends.length,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -118,7 +166,7 @@ class _FriendSearchField extends StatelessWidget {
               decoration: InputDecoration(
                 isDense: true,
                 border: InputBorder.none,
-                hintText: '이름(초성) 검색',
+                hintText: '닉네임 또는 초대코드 검색',
                 hintStyle: AppFontStyle.H8.copyWith(color: const Color(0xFFB8B8BE)),
               ),
             ),
@@ -131,15 +179,15 @@ class _FriendSearchField extends StatelessWidget {
 }
 
 class _FriendRow extends StatelessWidget {
-  final _FriendItem friend;
-  final VoidCallback onTap;
-  final VoidCallback onDelete;
-
   const _FriendRow({
     required this.friend,
     required this.onTap,
     required this.onDelete,
   });
+
+  final FriendUser friend;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -165,14 +213,24 @@ class _FriendRow extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.all(5),
-              child: Image.asset(friend.imagePath, fit: BoxFit.contain),
+              child: _FriendAvatar(avatarUrl: friend.avatarUrl),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: Text(
-              friend.name,
-              style: AppFontStyle.H6.copyWith(color: AppColors.black),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  friend.displayName,
+                  style: AppFontStyle.H6.copyWith(color: AppColors.black),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  friend.userCode,
+                  style: AppFontStyle.H8.copyWith(color: const Color(0xFF8B8B91)),
+                ),
+              ],
             ),
           ),
           OutlinedButton(
@@ -196,12 +254,24 @@ class _FriendRow extends StatelessWidget {
   }
 }
 
-class _FriendItem {
-  final String name;
-  final String imagePath;
+class _FriendAvatar extends StatelessWidget {
+  const _FriendAvatar({required this.avatarUrl});
 
-  const _FriendItem({
-    required this.name,
-    required this.imagePath,
-  });
+  final String? avatarUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    final trimmedUrl = avatarUrl?.trim();
+    if (trimmedUrl != null && trimmedUrl.isNotEmpty) {
+      return ClipOval(
+        child: Image.network(
+          trimmedUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => Image.asset(ImagePath.friendProfile),
+        ),
+      );
+    }
+
+    return Image.asset(ImagePath.friendProfile, fit: BoxFit.contain);
+  }
 }
