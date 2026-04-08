@@ -60,7 +60,10 @@ class FriendService {
   }
 
   Future<void> addFriendDirect(String friendId) async {
-    await _client.from('friends').insert({'friend_id': friendId});
+    await _client.from('friends').insert({
+      'user_id': _currentUser.id,
+      'friend_id': friendId,
+    });
   }
 
   Future<FriendUser?> findUserByCode(String inputCode) async {
