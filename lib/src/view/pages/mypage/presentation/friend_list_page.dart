@@ -151,12 +151,23 @@ class _FriendListView extends StatelessWidget {
                           friend: friend,
                           isDeleting: viewModel.isDeleting(friend.id),
                           onTap: () {
-                            Navigator.push(
+                            Navigator.push<bool>(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => FriendProfilePage(friend: friend),
                               ),
-                            );
+                            ).then((didDelete) {
+                              if (didDelete == true && context.mounted) {
+                                context.read<FriendListViewModel>().load();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      '${friend.displayName}님을 친구 목록에서 삭제했어요.',
+                                    ),
+                                  ),
+                                );
+                              }
+                            });
                           },
                           onDelete: () => _confirmDelete(context, friend),
                         );
@@ -308,10 +319,7 @@ class _FriendRow extends StatelessWidget {
                 ),
               ],
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(5),
-              child: _FriendAvatar(avatarUrl: friend.avatarUrl),
-            ),
+            child: ClipOval(child: _FriendAvatar(avatarUrl: friend.avatarUrl)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -375,7 +383,7 @@ class _FriendAvatar extends StatelessWidget {
       );
     }
 
-    return Image.asset(ImagePath.friendProfile, fit: BoxFit.contain);
+    return Image.asset(ImagePath.friendProfile, fit: BoxFit.cover);
   }
 
   bool _isNetworkUrl(String? value) {
