@@ -84,16 +84,26 @@ class _Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final trimmedUrl = avatarUrl?.trim();
-    if (trimmedUrl != null && trimmedUrl.isNotEmpty) {
+    if (_isNetworkUrl(trimmedUrl)) {
       return ClipOval(
         child: Image.network(
-          trimmedUrl,
+          trimmedUrl!,
           fit: BoxFit.cover,
           errorBuilder: (_, _, _) => _fallback(),
         ),
       );
     }
     return _fallback();
+  }
+
+  bool _isNetworkUrl(String? value) {
+    if (value == null || value.isEmpty) {
+      return false;
+    }
+    final uri = Uri.tryParse(value);
+    return uri != null &&
+        uri.hasScheme &&
+        (uri.scheme == 'http' || uri.scheme == 'https');
   }
 
   Widget _fallback() {

@@ -184,6 +184,9 @@ class _SearchResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final trimmedUrl = avatarUrl?.trim();
+    final hasNetworkAvatar = _isNetworkUrl(trimmedUrl);
+
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 18, 18, 20),
       decoration: BoxDecoration(
@@ -196,10 +199,10 @@ class _SearchResultCard extends StatelessWidget {
           CircleAvatar(
             radius: 34,
             backgroundColor: const Color(0xFFF3F4F6),
-            backgroundImage: avatarUrl?.trim().isNotEmpty == true
-                ? NetworkImage(avatarUrl!.trim())
+            backgroundImage: hasNetworkAvatar
+                ? NetworkImage(trimmedUrl!)
                 : null,
-            child: avatarUrl?.trim().isNotEmpty == true
+            child: hasNetworkAvatar
                 ? null
                 : ClipOval(
                     child: Image.asset(
@@ -248,5 +251,15 @@ class _SearchResultCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  bool _isNetworkUrl(String? value) {
+    if (value == null || value.isEmpty) {
+      return false;
+    }
+    final uri = Uri.tryParse(value);
+    return uri != null &&
+        uri.hasScheme &&
+        (uri.scheme == 'http' || uri.scheme == 'https');
   }
 }
