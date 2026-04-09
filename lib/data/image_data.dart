@@ -63,7 +63,7 @@ class ImagePath {
   static String get notice => 'assets/images/notice.png';
   static String get friendList => 'assets/images/friend_list.png';
   static String get friendListButton => 'assets/images/friend_list_button.png';
-  static String get friendProfile => 'assets/images/friend_profile.png';
+  static String get friendProfile => 'assets/images/default_profile.png';
   static String get choProfile => 'assets/images/cho_profile.png';
   static String get yoonProfile => 'assets/images/yoon_profile.png';
   static String get inviteFriend => 'assets/images/invite_friend.png';

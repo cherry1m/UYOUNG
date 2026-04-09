@@ -82,9 +82,9 @@ class _AttendanceBoardView extends StatelessWidget {
                   ),
                 ),
                 Positioned(
-                  left: 20,
-                  right: 20,
-                  bottom: safeBottom + 18,
+                  left: 28,
+                  right: 28,
+                  bottom: safeBottom + 2,
                   child: SizedBox(
                     width: double.infinity,
                     height: 58,

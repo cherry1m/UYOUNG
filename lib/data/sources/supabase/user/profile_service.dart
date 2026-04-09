@@ -1,6 +1,7 @@
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uyoung/data/model/user/app_user_profile_model.dart';
+import 'package:uyoung/data/storage_buckets.dart';
 import 'package:uyoung/data/sources/supabase/supabase_config.dart';
 
 class ProfileService {
@@ -87,7 +88,7 @@ class ProfileService {
     final path =
         'profiles/${user.id}/${DateTime.now().microsecondsSinceEpoch}_$sanitizedName';
 
-    await _client.storage.from('profile_images').uploadBinary(
+    await _client.storage.from(StorageBuckets.profileImages).uploadBinary(
       path,
       bytes,
       fileOptions: FileOptions(
@@ -96,7 +97,9 @@ class ProfileService {
       ),
     );
 
-    return _client.storage.from('profile_images').getPublicUrl(path);
+    return _client.storage
+        .from(StorageBuckets.profileImages)
+        .getPublicUrl(path);
   }
 
   Map<String, dynamic> _buildPayload(
